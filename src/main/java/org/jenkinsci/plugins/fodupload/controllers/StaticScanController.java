@@ -80,12 +80,14 @@ public class StaticScanController extends ControllerBase {
             boolean includeOpenSourceScan = token.getIncludeOpenSourceAnalysis() || uploadRequest.isRunOpenSourceAnalysisOverride();
             int scanPreferenceId = uploadRequest.isExpressScanOverride() ? EXPRESS_SCAN_PREFERENCE_ID : token.getScanPreferenceId();
             int auditPreferenceId = uploadRequest.isExpressAuditOverride() ? EXPRESS_AUDIT_PREFERENCE_ID : token.getAuditPreferenceId();
+            String projectVersion;
+            try (InputStream inputStream = this.getClass().getResourceAsStream("/application.properties")) {
+                Properties props = new Properties();
+                props.load(inputStream);
+                projectVersion = props.getProperty("application.version", "Not Found");
+            }
 
-            Properties props = new Properties();     // TODO Remove test code
-            InputStream inputStream = this.getClass().getResourceAsStream("/application.properties");
-            props.load(inputStream);   // TODO Remove test code
-            String projectVersionAttempt4 = props.getProperty("application.version", "NotFound");
-            inputStream.close();
+            //inputStream.close();
             HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                     .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan", token.getProjectVersionId()))
                     .addQueryParameter("assessmentTypeId", Integer.toString(token.getAssessmentTypeId()))
@@ -100,7 +102,7 @@ public class StaticScanController extends ControllerBase {
                     .addQueryParameter("isRemediationScan", Boolean.toString(isRemediationScan))
                     .addQueryParameter("scanMethodType", "CICD")
                     .addQueryParameter("scanTool", "Jenkins")
-                    .addQueryParameter("scanToolVersion", projectVersionAttempt4 != null ? projectVersionAttempt4 : "NotFound"); // TODO Remove test code
+                    .addQueryParameter("scanToolVersion", projectVersion != null ? projectVersion : "NotFound"); // TODO Remove test code
 
             if (!Utils.isNullOrEmpty(notes)) {
                 String truncatedNotes = StringUtils.left(notes, MAX_NOTES_LENGTH);
