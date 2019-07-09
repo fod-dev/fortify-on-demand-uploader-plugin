@@ -17,6 +17,7 @@ import sun.applet.Main;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Properties;
@@ -81,9 +82,10 @@ public class StaticScanController extends ControllerBase {
             int auditPreferenceId = uploadRequest.isExpressAuditOverride() ? EXPRESS_AUDIT_PREFERENCE_ID : token.getAuditPreferenceId();
 
             Properties props = new Properties();     // TODO Remove test code
-            props.load(this.getClass().getResourceAsStream("/application.properties"));   // TODO Remove test code
+            InputStream inputStream = this.getClass().getResourceAsStream("/application.properties");
+            props.load(inputStream);   // TODO Remove test code
             String projectVersionAttempt4 = props.getProperty("application.version", "NotFound");
-
+            inputStream.close();
             HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                     .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan", token.getProjectVersionId()))
                     .addQueryParameter("assessmentTypeId", Integer.toString(token.getAssessmentTypeId()))
