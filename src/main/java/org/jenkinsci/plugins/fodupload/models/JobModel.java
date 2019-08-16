@@ -21,6 +21,8 @@ public class JobModel {
     private boolean purchaseEntitlements;
     private int entitlementPreference;
     private boolean isRemediationPreferred;
+    private String srcLocation;
+    private int inProgressScanActionOption;
 
     private File payload;
 
@@ -52,6 +54,10 @@ public class JobModel {
         return isRemediationPreferred;
     }
 
+    public int getInProgressScanActionOption() {
+        return inProgressScanActionOption;
+    }
+
     /**
      * Build model used to pass values around
      *
@@ -59,16 +65,22 @@ public class JobModel {
      * @param purchaseEntitlements  purchaseEntitlements
      * @param entitlementPreference entitlementPreference
      * @param isRemediationPreferred isRemediationPreferred
+     * @param srcLocation           srcLocation
+     * @param inProgressScanActionOption inProgressScanActionOption
      */
     public JobModel(String bsiToken,
                     boolean purchaseEntitlements,
                     int entitlementPreference,
-                    boolean isRemediationPreferred) {
+                    boolean isRemediationPreferred,
+                    String srcLocation,
+                    int inProgressScanActionOption) {
 
         this.bsiTokenOriginal = bsiToken;
         this.entitlementPreference = entitlementPreference;
         this.purchaseEntitlements = purchaseEntitlements;
         this.isRemediationPreferred = isRemediationPreferred;
+        this.srcLocation = srcLocation;
+        this.inProgressScanActionOption = inProgressScanActionOption;
     }
 
     private Object readResolve() throws URISyntaxException, UnsupportedEncodingException {
@@ -86,13 +98,14 @@ public class JobModel {
                         "Include All Files:                 %s%n" +
                         "Purchase Entitlements:             %s%n" +
                         "Entitlement Preference             %s%n" +
-                        "Bundled Assessment:                %s%n",
+                        "In Progress Scan Option:           %s%n",
                 bsiTokenCache.getProjectVersionId(),
                 bsiTokenCache.getAssessmentTypeId(),
                 bsiTokenCache.getTechnologyStack(),
                 bsiTokenCache.getLanguageLevel(),
                 purchaseEntitlements,
-                entitlementPreference);
+                entitlementPreference,
+                inProgressScanActionOption);
     }
 
     public boolean initializeBuildModel()
