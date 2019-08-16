@@ -38,6 +38,7 @@ public class FortifyStaticAssessment extends FortifyStep {
     private int entitlementPreference;
     private boolean isRemediationPreferred;
     private String srcLocation;
+    private int inProgressScanActionOption;
 
     private SharedUploadBuildStep commonBuildStep;
 
@@ -120,6 +121,14 @@ public class FortifyStaticAssessment extends FortifyStep {
         return srcLocation;
     }
 
+    @DataBoundSetter
+    public void setInProgressScanActionOption(int inProgressScanActionOption) {
+        this.inProgressScanActionOption = inProgressScanActionOption;
+    }
+    
+    public int getInProgressScanActionOption() {
+        return inProgressScanActionOption;
+    }
 
     @Override
     public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
@@ -133,7 +142,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 purchaseEntitlements,
                 entitlementPreference,
                 isRemediationPreferred,
-                srcLocation);
+                srcLocation,
+                inProgressScanActionOption);
 
         return true;
     }
@@ -155,7 +165,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 purchaseEntitlements,
                 entitlementPreference,
                 isRemediationPreferred,
-                srcLocation);
+                srcLocation,
+                inProgressScanActionOption);
 
         commonBuildStep.perform(build, workspace, launcher, listener);
     }

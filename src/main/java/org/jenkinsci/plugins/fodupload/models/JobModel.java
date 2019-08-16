@@ -22,6 +22,11 @@ public class JobModel {
     private int entitlementPreference;
     private boolean isRemediationPreferred;
     private String srcLocation;
+    private int inProgressScanActionOption;
+    private String entitlementPreferenceType;
+    private boolean purchaseEntitlement;
+    private String remediationScanPreferenceType;
+    private String inProgressScanActionType;
 
     private File payload;
 
@@ -57,6 +62,26 @@ public class JobModel {
         return srcLocation;
     }
 
+    public int getInProgressScanActionOption() {
+        return inProgressScanActionOption;
+    }
+
+    public String getEntitlementPreferenceType() {
+        return entitlementPreferenceType;
+    }
+
+    public boolean getPurchaseEntitlement() {
+        return purchaseEntitlement;
+    }
+
+    public String getRemediationScanPreferenceType() {
+        return remediationScanPreferenceType;
+    }
+
+    public String getInProgressScanActionType() {
+        return inProgressScanActionType;
+    }
+
     /**
      * Build model used to pass values around
      *
@@ -64,18 +89,34 @@ public class JobModel {
      * @param purchaseEntitlements  purchaseEntitlements
      * @param entitlementPreference entitlementPreference
      * @param isRemediationPreferred isRemediationPreferred
+     * @param srcLocation           srcLocation
+     * @param inProgressScanActionOption inProgressScanActionOption
+     * @param entitlementPreferenceType entitlementPreferenceType
+     * @param purchaseEntitlement purchaseEntitlement
+     * @param remediationScanPreferenceType remediationScanPreferenceType
+     * @param inProgressScanActionType inProgressScanActionType
      */
     public JobModel(String bsiToken,
                     boolean purchaseEntitlements,
                     int entitlementPreference,
                     boolean isRemediationPreferred,
-                    String srcLocation) {
+                    String srcLocation,
+                    int inProgressScanActionOption,
+                    String entitlementPreferenceType,
+                    boolean purchaseEntitlement,
+                    String remediationScanPreferenceType,
+                    String inProgressScanActionType) {
 
         this.bsiTokenOriginal = bsiToken;
         this.entitlementPreference = entitlementPreference;
         this.purchaseEntitlements = purchaseEntitlements;
         this.isRemediationPreferred = isRemediationPreferred;
         this.srcLocation = srcLocation;
+        this.inProgressScanActionOption = inProgressScanActionOption;
+        this.entitlementPreferenceType = entitlementPreferenceType;
+        this.purchaseEntitlement = purchaseEntitlement;
+        this.remediationScanPreferenceType = remediationScanPreferenceType;
+        this.inProgressScanActionType = inProgressScanActionType;
     }
 
     private Object readResolve() throws URISyntaxException, UnsupportedEncodingException {
@@ -90,16 +131,24 @@ public class JobModel {
                         "Assessment Type Id:                %s%n" +
                         "Technology Stack:                  %s%n" +
                         "Language Level:                    %s%n" +
-                        "Include All Files:                 %s%n" +
                         "Purchase Entitlements:             %s%n" +
-                        "Entitlement Preference             %s%n" +
-                        "Bundled Assessment:                %s%n",
+                        "Entitlement Preference:            %s%n" +
+                        "In Progress Scan Option:           %s%n" +
+                        "Entytlement Preference Type:       %s%n" +
+                        "Purchase EntitlementType:          %s%n" +
+                        "Remediation Scan Preference:       %s%n" +
+                        "In Progress Scan Action:           %s%n",
                 bsiTokenCache.getProjectVersionId(),
                 bsiTokenCache.getAssessmentTypeId(),
                 bsiTokenCache.getTechnologyStack(),
                 bsiTokenCache.getLanguageLevel(),
                 purchaseEntitlements,
-                entitlementPreference);
+                entitlementPreference,
+                inProgressScanActionOption,
+                entitlementPreferenceType,
+                purchaseEntitlement,
+                remediationScanPreferenceType,
+                inProgressScanActionType);
     }
 
     public boolean initializeBuildModel()

@@ -38,13 +38,15 @@ public class SharedUploadBuildStep {
                                  boolean purchaseEntitlements,
                                  int entitlementPreference,
                                  boolean isRemediationPreferred,
-                                 String srcLocation){
+                                 String srcLocation,
+                                 int inProgressScanActionOption){
 
         model = new JobModel(bsiToken,
                 purchaseEntitlements,
                 entitlementPreference,
                 isRemediationPreferred,
-                srcLocation);
+                srcLocation,
+                inProgressScanActionOption);
 
         authModel = new AuthenticationModel(overrideGlobalConfig,
                 username,

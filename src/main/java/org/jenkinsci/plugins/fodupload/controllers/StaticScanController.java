@@ -93,7 +93,23 @@ public class StaticScanController extends ControllerBase {
                     .addQueryParameter("isRemediationScan", Boolean.toString(isRemediationScan))
                     .addQueryParameter("scanMethodType", "CICD")
                     .addQueryParameter("scanTool", "Jenkins")
-                    .addQueryParameter("scanToolVersion", projectVersion != null ? projectVersion : "NotFound"); // TODO Remove test code
+                    .addQueryParameter("scanToolVersion", projectVersion != null ? projectVersion : "NotFound"); 
+
+            // TODO Testcode: the options are different in the new API.
+            //      Need to consort with Eric to figure out how different he wants to make it.
+            //      Should there be defaults for all of the new options?
+            // HttpUrl.Builder builder2 = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+            //         .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan-advanced", token.getProjectVersionId()))
+            //         .addQueryParameter("bsiToken", model.getBsiTokenOriginal)
+            //         .addQueryParameter("technologyStack", token.getTechnologyType())
+            //         .addQueryParameter("entitlementPreferenceType", Integer.toString(model.PurchaseEntitlement))
+            //         .addQueryParameter("purchaseEntitlement", Integer.toString(model.PurchaseEntitlement()))
+            //         .addQueryParameter("remdiationScanPreferenceType", Boolean.toString(model.remediationScanType))
+            //         .addQueryParameter("inProgressScanActionType", model.getInprogressScanActionType)
+            //         .addQueryParameter("scanMethodType", "CICD")
+            //         .addQueryParameter("scanTool", "Jenkins")
+            //         .addQueryParameter("scanToolVersion", projectVersion != null ? projectVersion : "NotFound"); 
+
 
             if (!Utils.isNullOrEmpty(notes)) {
                 String truncatedNotes = StringUtils.left(notes, MAX_NOTES_LENGTH);
