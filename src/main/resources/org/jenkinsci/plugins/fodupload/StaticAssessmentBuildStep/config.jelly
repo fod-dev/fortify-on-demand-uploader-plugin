@@ -27,66 +27,33 @@
     </f:section>
 
     <f:section title="Scan Options">
-        <f:entry title="Cancel Scan in Progress" field="inProgressScanActionOption">
-            <f:checkbox/>
-        </f:entry>
-        <f:entry title="Skip scanning and mark build unstable" field="scanOptions2">
-            <f:checkbox/>
-        </f:entry>
-        <f:entry title="entitlementPreferenceType" field="entitlementPreferenceType">
-            <select name="NameValue">
+        <f:entry title="Entitlement Preference" field="entitlementPreferenceType">
+            <select name="entitlementPreferenceType">
                 <option value="SingleScanOnly"></option>
                 <option value="SubscriptionOnly"></option>
                 <option value="SingleScanFirstThenSubscription"></option>
                 <option value="SubscriptionFirstThenSingleScan"></option>
             </select>
         </f:entry>
-        <f:entry title="" field="puchaseEntitlement">
-            <select name="NameValue">
-                <option value=""></option>
-                <option value=""></option>
+        <f:entry title="Purchase Entitlements When Needed" field="puchaseEntitlement">
+            <select name="puchaseEntitlement">
+                <option value="">select</option>
+                <option value="true">true</option>
+                <option value="false">false</option>
             </select>
         </f:entry>
         <f:entry title="" field="remediationScanPreferenceType">
-            <select name="NameValue">
-                <option value="RemediationScanIfAvailable"></option>
-                <option value="RemediationScanOnly"></option>
-                <option value="NonRemediationScanOnly"></option>
+            <select name="remediationScanPreferenceType">
+                <option value="RemediationScanIfAvailable">Remediate Scan If Available</option>
+                <option value="RemediationScanOnly">Remediation Scan Only</option>
+                <option value="NonRemediationScanOnly">Non-Remediation Scan Only</option>
             </select>
         </f:entry>
         <f:entry title="" field="inProgressScanActionType">
-            <select name="NameValue">
-                <option value=""></option>
-                <option value=""></option>
+            <select name="inProgressScanActionType">
+                <option value="DoNotStartScan">Do Not Start Scan</option>
+                <option value="CancelInProgressScan">Cancel Scan Then Start</option>
             </select>
         </f:entry>
     </f:section>
-
-    <f:section title="Entitlement Options">
-        <f:entry title="Entitlement Preference" field="entitlementPreference">
-            <f:select style="width: 160px;"/>
-        </f:entry>
-        <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
-            <f:checkbox/>
-        </f:entry>
-        <f:entry title="Prefer Remediation if Available" field="isRemediationPreferred" help="/plugin/fortify-on-demand-uploader/help-isRemediationPreferred.html">
-            <f:checkbox/>
-        </f:entry>
-    </f:section>
-
 </j:jelly>
-
-SingleScanOnly
-SubscriptionOnly
-SingleScanFirstThenSubscription
-SubscriptionFirstThenSingleScan
-
-RemediationScanIfAvailable
-RemediationScanOnly
-NonRemediationScanOnly
-
-<select name="NameValue">
-    <option value=""></option>
-    <option value=""></option>
-</select>
-
