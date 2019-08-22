@@ -82,6 +82,10 @@ public class JobModel {
         return inProgressScanActionType;
     }
 
+    public int getInProgressScanActionOption() {
+        return inProgressScanActionOption;
+    }
+
     /**
      * Build model used to pass values around
      *
