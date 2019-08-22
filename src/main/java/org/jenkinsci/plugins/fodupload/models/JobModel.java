@@ -82,10 +82,6 @@ public class JobModel {
         return inProgressScanActionType;
     }
 
-    public int getInProgressScanActionOption() {
-        return inProgressScanActionOption;
-    }
-
     /**
      * Build model used to pass values around
      *
@@ -94,7 +90,6 @@ public class JobModel {
      * @param entitlementPreference entitlementPreference
      * @param isRemediationPreferred isRemediationPreferred
      * @param srcLocation           srcLocation
-     * @param inProgressScanActionOption inProgressScanActionOption
      * @param entitlementPreferenceType entitlementPreferenceType
      * @param purchaseEntitlement purchaseEntitlement
      * @param remediationScanPreferenceType remediationScanPreferenceType
@@ -105,7 +100,6 @@ public class JobModel {
                     int entitlementPreference,
                     boolean isRemediationPreferred,
                     String srcLocation,
-                    int inProgressScanActionOption,
                     String entitlementPreferenceType,
                     boolean purchaseEntitlement,
                     String remediationScanPreferenceType,
@@ -116,7 +110,6 @@ public class JobModel {
         this.purchaseEntitlements = purchaseEntitlements;
         this.isRemediationPreferred = isRemediationPreferred;
         this.srcLocation = srcLocation;
-        this.inProgressScanActionOption = inProgressScanActionOption;
         this.entitlementPreferenceType = entitlementPreferenceType;
         this.purchaseEntitlement = purchaseEntitlement;
         this.remediationScanPreferenceType = remediationScanPreferenceType;
@@ -138,7 +131,7 @@ public class JobModel {
                         "Purchase Entitlements:             %s%n" +
                         "Entitlement Preference:            %s%n" +
                         "In Progress Scan Option:           %s%n" +
-                        "Entytlement Preference Type:       %s%n" +
+                        "Entitlement Preference Type:       %s%n" +
                         "Purchase EntitlementType:          %s%n" +
                         "Remediation Scan Preference:       %s%n" +
                         "In Progress Scan Action:           %s%n",

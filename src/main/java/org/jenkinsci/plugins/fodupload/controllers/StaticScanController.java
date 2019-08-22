@@ -34,6 +34,7 @@ public class StaticScanController extends ControllerBase {
      * Constructor
      *
      * @param apiConnection apiConnection object with client info
+     * @param logger logger object to display to console
      */
     public StaticScanController(final FodApiConnection apiConnection, final PrintStream logger) {
         super(apiConnection);
@@ -42,9 +43,9 @@ public class StaticScanController extends ControllerBase {
 
     /**
      * Begin a static scan on FoD
-     * <p>
-     * // * @param uploadRequest zip file to upload
      *
+     * @param uploadRequest zip file to upload
+     * @param notes notes
      * @return true if the scan succeeded
      */
     @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "The intent of the catch-all is to make sure that the Jenkins user and logs show the plugin's problem in the build log.")
@@ -65,15 +66,15 @@ public class StaticScanController extends ControllerBase {
 
             logger.println("Getting Assessment");
             // Get entitlement info
-            ReleaseAssessmentTypeDTO assessmentType = new ReleaseController(apiConnection).getAssessmentType(uploadRequest);
+            // ReleaseAssessmentTypeDTO assessmentType = new ReleaseController(apiConnection).getAssessmentType(uploadRequest);
 
-            if (assessmentType == null) {
-                logger.println("Entitlement not found.  Please make sure that your entitlements are good for the selected preference.");
-                return false;
-            }
+            // if (assessmentType == null) {
+            //     logger.println("Entitlement not found.  Please make sure that your entitlements are good for the selected preference.");
+            //     return false;
+            // }
 
             BsiToken token = uploadRequest.getBsiToken();
-            boolean isRemediationScan = uploadRequest.isRemediationPreferred() && assessmentType.isRemediation();
+            // boolean isRemediationScan = uploadRequest.isRemediationPreferred() && assessmentType.isRemediation();
 
 
             String projectVersion;

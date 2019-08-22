@@ -49,7 +49,10 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      int entitlementPreference,
                                      boolean isRemediationPreferred,
                                      String srcLocation,
-                                     int inProgressScanActionOption) {
+                                     String entitlementPreferenceType,
+                                     boolean purchaseEntitlement,
+                                     String remediationScanPreferenceType,
+                                     String inProgressScanActionType) {
 
         sharedBuildStep = new SharedUploadBuildStep(bsiToken,
                 overrideGlobalConfig,
@@ -60,7 +63,10 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 entitlementPreference,
                 isRemediationPreferred,
                 srcLocation,
-                inProgressScanActionOption);
+                entitlementPreferenceType,
+                purchaseEntitlement,
+                remediationScanPreferenceType,
+                inProgressScanActionType);
 
     }
 
@@ -198,4 +204,23 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return sharedBuildStep.getModel().getInProgressScanActionOption();
     }
 
+    @SuppressWarnings("unused")
+    public String getEntitlementPreferenceType() {
+        return sharedBuildStep.getModel().getEntitlementPreferenceType();
+    }
+
+    @SuppressWarnings("unused")
+    public boolean getPurchaseEntitlement(){
+        return sharedBuildStep.getModel().getPurchaseEntitlement();
+    }
+
+    @SuppressWarnings("unused")
+    public String getRemediationScanPreferenceType() {
+        return sharedBuildStep.getModel().getRemediationScanPreferenceType();
+    }
+
+    @SuppressWarnings("unused")
+    public String getInProgressScanActionType() {
+        return sharedBuildStep.getModel().getInProgressScanActionType();
+    }
 }

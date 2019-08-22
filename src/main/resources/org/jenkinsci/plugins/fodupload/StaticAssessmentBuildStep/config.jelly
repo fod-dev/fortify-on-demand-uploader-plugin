@@ -26,29 +26,23 @@
         </f:block>
     </f:section>
 
-    <f:section title="Scan Options">
-        <f:entry title="Entitlement Preference" field="entitlementPreferenceType">
-            <select name="entitlementPreferenceType">
-                <option value="SingleScanOnly"></option>
-                <option value="SubscriptionOnly"></option>
-                <option value="SingleScanFirstThenSubscription"></option>
-                <option value="SubscriptionFirstThenSingleScan"></option>
-            </select>
+    <f:section title="Entitlement Options">
+        <f:entry title="Entitlement Preference" field="entitlementPreference">
+            <f:select style="width: 160px;"/>
         </f:entry>
-        <f:entry title="Purchase Entitlements When Needed" field="puchaseEntitlement">
-            <select name="puchaseEntitlement">
-                <option value="">select</option>
-                <option value="true">true</option>
-                <option value="false">false</option>
-            </select>
+        <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
+            <f:checkbox/>
         </f:entry>
-        <f:entry title="" field="remediationScanPreferenceType">
+        <f:entry title="Remediation Preference" field="remediationScanPreferenceType">
             <select name="remediationScanPreferenceType">
                 <option value="RemediationScanIfAvailable">Remediate Scan If Available</option>
                 <option value="RemediationScanOnly">Remediation Scan Only</option>
                 <option value="NonRemediationScanOnly">Non-Remediation Scan Only</option>
             </select>
         </f:entry>
+    </f:section>
+
+    <f:section title="Scan Options">
         <f:entry title="" field="inProgressScanActionType">
             <select name="inProgressScanActionType">
                 <option value="DoNotStartScan">Do Not Start Scan</option>
