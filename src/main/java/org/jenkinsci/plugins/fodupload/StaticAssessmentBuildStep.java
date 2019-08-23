@@ -194,11 +194,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     }
 
     @SuppressWarnings("unused")
-    public boolean getPurchaseEntitlement(){
-        return sharedBuildStep.getModel().getPurchaseEntitlement();
-    }
-
-    @SuppressWarnings("unused")
     public String getRemediationScanPreferenceType() {
         return sharedBuildStep.getModel().getRemediationScanPreferenceType();
     }
