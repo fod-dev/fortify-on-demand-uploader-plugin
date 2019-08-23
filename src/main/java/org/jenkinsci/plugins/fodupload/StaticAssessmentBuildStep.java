@@ -47,10 +47,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String tenantId,
                                      boolean purchaseEntitlements,
                                      String entitlementPreference,
-                                     boolean isRemediationPreferred,
                                      String srcLocation,
-                                     String entitlementPreferenceType,
-                                     boolean purchaseEntitlement,
                                      String remediationScanPreferenceType,
                                      String inProgressScanActionType) {
 
@@ -61,10 +58,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 tenantId,
                 purchaseEntitlements,
                 entitlementPreference,
-                isRemediationPreferred,
                 srcLocation,
-                entitlementPreferenceType,
-                purchaseEntitlement,
                 remediationScanPreferenceType,
                 inProgressScanActionType);
 
@@ -190,11 +184,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     }
 
     @SuppressWarnings("unused")
-    public boolean getIsRemediationPreferred() {
-        return sharedBuildStep.getModel().isRemediationPreferred();
-    }
-
-    @SuppressWarnings("unused")
     public String getSrcLocation() {
         return sharedBuildStep.getModel().getSrcLocation();
     }
@@ -202,11 +191,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     @SuppressWarnings("unused")
     public int getInProgressScanActionOption() {
         return sharedBuildStep.getModel().getInProgressScanActionOption();
-    }
-
-    @SuppressWarnings("unused")
-    public String getEntitlementPreferenceType() {
-        return sharedBuildStep.getModel().getEntitlementPreferenceType();
     }
 
     @SuppressWarnings("unused")

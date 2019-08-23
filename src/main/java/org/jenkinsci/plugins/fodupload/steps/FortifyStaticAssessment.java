@@ -36,10 +36,7 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String tenantId;
     private boolean purchaseEntitlements;
     private String entitlementPreference;
-    private boolean isRemediationPreferred;
     private String srcLocation;
-    private String entitlementPreferenceType;
-    private boolean purchaseEntitlement;
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
 
@@ -108,38 +105,12 @@ public class FortifyStaticAssessment extends FortifyStep {
     }
 
     @DataBoundSetter
-    public void setIsRemediationPreferred(boolean isRemediationPreferred) {
-        this.isRemediationPreferred = isRemediationPreferred;
-    }
-    public boolean getIsRemediationPreferred() {
-        return isRemediationPreferred;
-    }
-
-    @DataBoundSetter
     public void setSrcLocation(String srcLocation) {
         this.srcLocation = srcLocation != null ? srcLocation.trim() : "";
     }
 
     public String getSrcLocation() {
         return srcLocation;
-    }
-
-    @DataBoundSetter
-    public void setEntitlementPreferenceType(String entitlementPreferenceType) {
-        this.entitlementPreferenceType = entitlementPreferenceType;
-    }
-    
-    public String getEntitlementPreferenceType() {
-        return entitlementPreferenceType;
-    }
-
-    @DataBoundSetter
-    public void setPurchaseEntitlement(boolean purchaseEntitlement) {
-        this.purchaseEntitlement = purchaseEntitlement;
-    }
-    
-    public boolean getPurchaseEntitlement() {
-        return purchaseEntitlement;
     }
 
     @DataBoundSetter
@@ -171,10 +142,7 @@ public class FortifyStaticAssessment extends FortifyStep {
                 tenantId,
                 purchaseEntitlements,
                 entitlementPreference,
-                isRemediationPreferred,
                 srcLocation,
-                entitlementPreferenceType,
-                purchaseEntitlement,
                 remediationScanPreferenceType,
                 inProgressScanActionType);
 
@@ -197,10 +165,7 @@ public class FortifyStaticAssessment extends FortifyStep {
                 tenantId,
                 purchaseEntitlements,
                 entitlementPreference,
-                isRemediationPreferred,
                 srcLocation,
-                entitlementPreferenceType,
-                purchaseEntitlement,
                 remediationScanPreferenceType,
                 inProgressScanActionType);
 

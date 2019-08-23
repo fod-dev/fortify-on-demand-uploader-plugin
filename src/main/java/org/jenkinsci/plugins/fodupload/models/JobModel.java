@@ -20,11 +20,8 @@ public class JobModel {
     private transient BsiToken bsiTokenCache;
     private boolean purchaseEntitlements;
     private String entitlementPreference;
-    private boolean isRemediationPreferred;
     private String srcLocation;
     private int inProgressScanActionOption;
-    private String entitlementPreferenceType;
-    private boolean purchaseEntitlement;
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
 
@@ -53,10 +50,6 @@ public class JobModel {
     public String getBsiTokenOriginal() {
         return bsiTokenOriginal;
     }
-
-    public boolean isRemediationPreferred() {
-        return isRemediationPreferred;
-    }
     
     public String getSrcLocation() {
         return srcLocation;
@@ -64,14 +57,6 @@ public class JobModel {
 
     public int getInProgressScanActionOption() {
         return inProgressScanActionOption;
-    }
-
-    public String getEntitlementPreferenceType() {
-        return entitlementPreferenceType;
-    }
-
-    public boolean getPurchaseEntitlement() {
-        return purchaseEntitlement;
     }
 
     public String getRemediationScanPreferenceType() {
@@ -88,30 +73,21 @@ public class JobModel {
      * @param bsiToken              BSI Token
      * @param purchaseEntitlements  purchaseEntitlements
      * @param entitlementPreference entitlementPreference
-     * @param isRemediationPreferred isRemediationPreferred
      * @param srcLocation           srcLocation
-     * @param entitlementPreferenceType entitlementPreferenceType
-     * @param purchaseEntitlement purchaseEntitlement
      * @param remediationScanPreferenceType remediationScanPreferenceType
      * @param inProgressScanActionType inProgressScanActionType
      */
     public JobModel(String bsiToken,
                     boolean purchaseEntitlements,
                     String entitlementPreference,
-                    boolean isRemediationPreferred,
                     String srcLocation,
-                    String entitlementPreferenceType,
-                    boolean purchaseEntitlement,
                     String remediationScanPreferenceType,
                     String inProgressScanActionType) {
 
         this.bsiTokenOriginal = bsiToken;
         this.entitlementPreference = entitlementPreference;
         this.purchaseEntitlements = purchaseEntitlements;
-        this.isRemediationPreferred = isRemediationPreferred;
         this.srcLocation = srcLocation;
-        this.entitlementPreferenceType = entitlementPreferenceType;
-        this.purchaseEntitlement = purchaseEntitlement;
         this.remediationScanPreferenceType = remediationScanPreferenceType;
         this.inProgressScanActionType = inProgressScanActionType;
     }
@@ -130,10 +106,6 @@ public class JobModel {
                         "Language Level:                    %s%n" +
                         "Purchase Entitlements:             %s%n" +
                         "Entitlement Preference:            %s%n" +
-                        "In Progress Scan Option:           %s%n" +
-                        "Entitlement Preference Type:       %s%n" +
-                        "Purchase EntitlementType:          %s%n" +
-                        "Remediation Scan Preference:       %s%n" +
                         "In Progress Scan Action:           %s%n",
                 bsiTokenCache.getProjectVersionId(),
                 bsiTokenCache.getAssessmentTypeId(),
@@ -141,10 +113,6 @@ public class JobModel {
                 bsiTokenCache.getLanguageLevel(),
                 purchaseEntitlements,
                 entitlementPreference,
-                inProgressScanActionOption,
-                entitlementPreferenceType,
-                purchaseEntitlement,
-                remediationScanPreferenceType,
                 inProgressScanActionType);
     }
 
