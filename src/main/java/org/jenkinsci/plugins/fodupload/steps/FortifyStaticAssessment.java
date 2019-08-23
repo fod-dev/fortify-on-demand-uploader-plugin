@@ -35,7 +35,7 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String personalAccessToken;
     private String tenantId;
     private boolean purchaseEntitlements;
-    private int entitlementPreference;
+    private String entitlementPreference;
     private boolean isRemediationPreferred;
     private String srcLocation;
     private String entitlementPreferenceType;
@@ -100,10 +100,10 @@ public class FortifyStaticAssessment extends FortifyStep {
     }
 
     @DataBoundSetter
-    public void setEntitlementPreference(int entitlementPreference) {
+    public void setEntitlementPreference(String entitlementPreference) {
         this.entitlementPreference = entitlementPreference;
     }
-    public int getEntitlementPreference() {
+    public String getEntitlementPreference() {
         return entitlementPreference;
     }
 

@@ -61,10 +61,10 @@ public class FodEnums {
                 case 3:
                     return "SingleScanFirstThenSubscription";
                 case 2:
-                    return "Subscription";
+                    return "SubscriptionOnly";
                 case 1:
                 default:
-                    return "Single Scan";
+                    return "SingleScanOnly";
             }
         }
 

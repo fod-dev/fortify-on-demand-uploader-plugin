@@ -19,7 +19,7 @@ public class JobModel {
     private String bsiTokenOriginal;
     private transient BsiToken bsiTokenCache;
     private boolean purchaseEntitlements;
-    private int entitlementPreference;
+    private String entitlementPreference;
     private boolean isRemediationPreferred;
     private String srcLocation;
     private int inProgressScanActionOption;
@@ -46,7 +46,7 @@ public class JobModel {
         return purchaseEntitlements;
     }
 
-    public int getEntitlementPreference() {
+    public String getEntitlementPreference() {
         return entitlementPreference;
     }
 
@@ -97,7 +97,7 @@ public class JobModel {
      */
     public JobModel(String bsiToken,
                     boolean purchaseEntitlements,
-                    int entitlementPreference,
+                    String entitlementPreference,
                     boolean isRemediationPreferred,
                     String srcLocation,
                     String entitlementPreferenceType,

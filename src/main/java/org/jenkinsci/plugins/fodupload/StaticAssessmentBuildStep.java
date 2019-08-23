@@ -46,7 +46,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String personalAccessToken,
                                      String tenantId,
                                      boolean purchaseEntitlements,
-                                     int entitlementPreference,
+                                     String entitlementPreference,
                                      boolean isRemediationPreferred,
                                      String srcLocation,
                                      String entitlementPreferenceType,
@@ -180,7 +180,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     }
 
     @SuppressWarnings("unused")
-    public int getEntitlementPreference() {
+    public String getEntitlementPreference() {
         return sharedBuildStep.getModel().getEntitlementPreference();
     }
 

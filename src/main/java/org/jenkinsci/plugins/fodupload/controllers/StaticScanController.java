@@ -65,17 +65,8 @@ public class StaticScanController extends ControllerBase {
                 apiConnection.authenticate();
 
             logger.println("Getting Assessment");
-            // Get entitlement info
-            // ReleaseAssessmentTypeDTO assessmentType = new ReleaseController(apiConnection).getAssessmentType(uploadRequest);
-
-            // if (assessmentType == null) {
-            //     logger.println("Entitlement not found.  Please make sure that your entitlements are good for the selected preference.");
-            //     return false;
-            // }
-
+            
             BsiToken token = uploadRequest.getBsiToken();
-            // boolean isRemediationScan = uploadRequest.isRemediationPreferred() && assessmentType.isRemediation();
-
 
             String projectVersion;
             try (InputStream inputStream = this.getClass().getResourceAsStream("/application.properties")) {
@@ -83,28 +74,13 @@ public class StaticScanController extends ControllerBase {
                 props.load(inputStream);
                 projectVersion = props.getProperty("application.version", "Not Found");
             }
-
-            //inputStream.close();
-            // HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
-            //         .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan", token.getProjectVersionId()))
-            //         .addQueryParameter("assessmentTypeId", Integer.toString(token.getAssessmentTypeId()))
-            //         .addQueryParameter("technologyStack", token.getTechnologyType())
-            //         .addQueryParameter("entitlementId", Integer.toString(assessmentType.getEntitlementId()))
-            //         .addQueryParameter("entitlementFrequencyType", Integer.toString(assessmentType.getFrequencyTypeId()))
-            //         .addQueryParameter("isRemediationScan", Boolean.toString(isRemediationScan))
-            //         .addQueryParameter("scanMethodType", "CICD")
-            //         .addQueryParameter("scanTool", "Jenkins")
-            //         .addQueryParameter("scanToolVersion", projectVersion != null ? projectVersion : "NotFound"); 
-
-            // TODO Testcode: the options are different in the new API.
-            //      Need to consort with Eric to figure out how different he wants to make it.
-            //      Should there be defaults for all of the new options?
+            
             HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                     .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan-advanced", token.getProjectVersionId()))
                     .addQueryParameter("bsiToken", uploadRequest.getBsiTokenOriginal())
                     .addQueryParameter("technologyStack", token.getTechnologyType())
-                    .addQueryParameter("entitlementPreferenceType", uploadRequest.getEntitlementPreferenceType())
-                    .addQueryParameter("purchaseEntitlement", Boolean.toString(uploadRequest.getPurchaseEntitlement()))
+                    .addQueryParameter("entitlementPreferenceType", uploadRequest.getEntitlementPreference())
+                    .addQueryParameter("purchaseEntitlement", Boolean.toString(uploadRequest.isPurchaseEntitlements()))
                     .addQueryParameter("remdiationScanPreferenceType", uploadRequest.getRemediationScanPreferenceType())
                     .addQueryParameter("inProgressScanActionType", uploadRequest.getInProgressScanActionType())
                     .addQueryParameter("scanMethodType", "CICD")

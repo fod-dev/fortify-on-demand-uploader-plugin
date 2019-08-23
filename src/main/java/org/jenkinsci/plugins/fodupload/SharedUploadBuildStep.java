@@ -36,7 +36,7 @@ public class SharedUploadBuildStep {
                                  String personalAccessToken,
                                  String tenantId,
                                  boolean purchaseEntitlements,
-                                 int entitlementPreference,
+                                 String entitlementPreference,
                                  boolean isRemediationPreferred,
                                  String srcLocation,
                                  String entitlementPreferenceType,
@@ -212,7 +212,7 @@ public class SharedUploadBuildStep {
     public static ListBoxModel doFillEntitlementPreferenceItems() {
         ListBoxModel items = new ListBoxModel();
         for (FodEnums.EntitlementPreferenceType preferenceType : FodEnums.EntitlementPreferenceType.values()) {
-            items.add(new ListBoxModel.Option(preferenceType.toString(), String.valueOf(preferenceType.getValue())));
+            items.add(new ListBoxModel.Option(preferenceType.toString(), String.valueOf(preferenceType.toString())));
         }
 
         return items;
