@@ -65,7 +65,7 @@ public class StaticScanSummaryController extends ControllerBase {
         
         // TODO test code
         logger.println("-------Json content dump-------");
-        logger.println(gson.toString());
+        logger.println(content.toString());
         logger.println("-------End Json content dump------");
 
         if (results != null) {
