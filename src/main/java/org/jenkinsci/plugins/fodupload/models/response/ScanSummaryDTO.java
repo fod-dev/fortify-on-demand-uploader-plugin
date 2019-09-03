@@ -140,11 +140,11 @@ public class ScanSummaryDTO {
     }
 
     public String getCancelReason() {
-        return cancelReason;
+        return cancelReason != null ? cancelReason : "";
     }
 
     public String getAnalysisStatusReasonNotes() {
-        return analysisStatusReasonNotes;
+        return analysisStatusReasonNotes != null ? analysisStatusReasonNotes : "";
     }
 
     public int getScanMethodTypeId() {
@@ -152,15 +152,15 @@ public class ScanSummaryDTO {
     }
 
     public String getScanMethodTypeName() {
-        return scanMethodTypeName;
+        return scanMethodTypeName != null ? scanMethodTypeName : "";
     }
 
     public String getScanTool() {
-        return scanTool;
+        return scanTool != null ? scanTool : "";
     }
 
     public String getScanToolVersion() {
-        return scanToolVersion;
+        return scanToolVersion != null ? scanToolVersion : "";
     }
 }
 

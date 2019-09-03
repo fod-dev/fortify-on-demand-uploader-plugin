@@ -62,10 +62,16 @@ public class StaticScanSummaryController extends ControllerBase {
         }.getType();
 
         ScanSummaryDTO results = gson.fromJson(content, t);
+        
+        // TODO test code
+        logger.println("-------Json content dump-------");
+        logger.println(gson.toString());
+        logger.println("-------End Json content dump------");
 
         if (results != null) {
             return results;
         } else {
+            logger.println("Error retrieving scan summary data. Please log into online website to view summary information.");
             return null;
         }
     }
