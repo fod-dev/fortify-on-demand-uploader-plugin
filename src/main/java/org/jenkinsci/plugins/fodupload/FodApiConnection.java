@@ -120,7 +120,7 @@ public class FodApiConnection {
             response.body().close();
             token = null;
         } else {
-            throw new IOException("Unexpected code " + response);
+            throw new IOException(response.toString());
         }
         
     }
