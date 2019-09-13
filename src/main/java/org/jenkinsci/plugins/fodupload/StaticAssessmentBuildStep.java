@@ -142,7 +142,15 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return SharedUploadBuildStep.doFillEntitlementPreferenceItems();
         }
 
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillRemediationScanPreferenceTypeItems() {
+            return SharedUploadBuildStep.doFillRemediationScanPreferenceTypeItems();
+        }
 
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillInprogressScanActionTypeItems() {
+            return SharedUploadBuildStep.doFillInprogressScanActionTypeItems();
+        }
     }
 
     // NOTE: The following Getters are used to return saved values in the config.jelly. Intellij
@@ -186,11 +194,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     @SuppressWarnings("unused")
     public String getSrcLocation() {
         return sharedBuildStep.getModel().getSrcLocation();
-    }
-
-    @SuppressWarnings("unused")
-    public int getInProgressScanActionOption() {
-        return sharedBuildStep.getModel().getInProgressScanActionOption();
     }
 
     @SuppressWarnings("unused")

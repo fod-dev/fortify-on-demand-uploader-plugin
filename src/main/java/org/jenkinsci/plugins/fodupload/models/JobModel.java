@@ -21,7 +21,6 @@ public class JobModel {
     private boolean purchaseEntitlements;
     private String entitlementPreference;
     private String srcLocation;
-    private int inProgressScanActionOption;
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
 
@@ -53,10 +52,6 @@ public class JobModel {
     
     public String getSrcLocation() {
         return srcLocation;
-    }
-
-    public int getInProgressScanActionOption() {
-        return inProgressScanActionOption;
     }
 
     public String getRemediationScanPreferenceType() {

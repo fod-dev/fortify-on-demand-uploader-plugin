@@ -217,16 +217,17 @@ public class SharedUploadBuildStep {
         for (FodEnums.RemediationScanPreferenceType remediationType : FodEnums.RemediationScanPreferenceType.values()) {
             items.add(new ListBoxModel.Option(remediationType.toString(), String.valueOf(remediationType.toString())));
         }
+        
         return items;
     }
 
     @SuppressWarnings("unused")
     public static ListBoxModel doFillInprogressScanActionTypeItems() {
         ListBoxModel items = new ListBoxModel();
+        items.add(new ListBoxModel.Option("Test", "Test"));
         for (FodEnums.InProgressScanActionType scanActionType : FodEnums.InProgressScanActionType.values()) {
             items.add(new ListBoxModel.Option(scanActionType.toString(), String.valueOf(scanActionType.toString())));
         }
-
         return items;
     }
 

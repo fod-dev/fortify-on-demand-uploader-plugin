@@ -118,8 +118,9 @@ public class FodEnums {
                 case 2:
                     return RemediationScanOnly;
                 case 1:
-                default:
                     return RemediationScanIfAvailable;
+                default:
+                    return null;
             }
         }
     }
@@ -153,8 +154,9 @@ public class FodEnums {
                 case 2:
                     return DoNotStartScan;
                 case 1:
-                default:
                     return CancelInProgressScan;
+                default:
+                    return null;
             }
         }
     }
