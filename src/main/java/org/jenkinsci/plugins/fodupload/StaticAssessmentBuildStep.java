@@ -146,11 +146,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public ListBoxModel doFillRemediationScanPreferenceTypeItems() {
             return SharedUploadBuildStep.doFillRemediationScanPreferenceTypeItems();
         }
-
-        @SuppressWarnings("unused")
-        public ListBoxModel doFillInprogressScanActionTypeItems() {
-            return SharedUploadBuildStep.doFillInprogressScanActionTypeItems();
-        }
     }
 
     // NOTE: The following Getters are used to return saved values in the config.jelly. Intellij

@@ -221,16 +221,6 @@ public class SharedUploadBuildStep {
         return items;
     }
 
-    @SuppressWarnings("unused")
-    public static ListBoxModel doFillInprogressScanActionTypeItems() {
-        ListBoxModel items = new ListBoxModel();
-        items.add(new ListBoxModel.Option("Test", "Test"));
-        for (FodEnums.InProgressScanActionType scanActionType : FodEnums.InProgressScanActionType.values()) {
-            items.add(new ListBoxModel.Option(scanActionType.toString(), String.valueOf(scanActionType.toString())));
-        }
-        return items;
-    }
-
     public AuthenticationModel getAuthModel() {
         return authModel;
     }
