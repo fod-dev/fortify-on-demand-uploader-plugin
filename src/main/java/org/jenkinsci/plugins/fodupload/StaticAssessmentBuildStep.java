@@ -197,6 +197,14 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return SharedUploadBuildStep.doFillEntitlementPreferenceItems();
         }
 
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillRemediationScanPreferenceTypeItems() {
+            return SharedUploadBuildStep.doFillRemediationScanPreferenceTypeItems();
+        }
 
+        // @SuppressWarnings("unused")
+        // public ListBoxModel doFillInprogressScanActionTypeItems() {
+        //     return SharedUploadBuildStep.doFillInprogressScanActionTypeItems();
+        // }
     }
 }

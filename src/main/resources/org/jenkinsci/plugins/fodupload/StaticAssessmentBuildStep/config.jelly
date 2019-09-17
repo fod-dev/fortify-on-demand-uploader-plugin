@@ -34,11 +34,7 @@
             <f:checkbox/>
         </f:entry>
         <f:entry title="Remediation Preference" field="remediationScanPreferenceType">
-            <select name="remediationScanPreferenceType">
-                <option value="RemediationScanIfAvailable">Remediate Scan If Available</option>
-                <option value="RemediationScanOnly">Remediation Scan Only</option>
-                <option value="NonRemediationScanOnly">Non-Remediation Scan Only</option>
-            </select>
+            <f:select style="width: 160px;"/>
         </f:entry>
     </f:section>
 
