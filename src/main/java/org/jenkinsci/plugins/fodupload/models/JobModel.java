@@ -80,10 +80,6 @@ public class JobModel {
         return srcLocation;
     }
 
-    public int getInProgressScanActionOption() {
-        return inProgressScanActionOption;
-    }
-
     public String getRemediationScanPreferenceType() {
         return remediationScanPreferenceType;
     }
