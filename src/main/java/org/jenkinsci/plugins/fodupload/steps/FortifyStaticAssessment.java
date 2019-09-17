@@ -205,7 +205,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public ListBoxModel doFillEntitlementPreferenceItems() {
             return SharedUploadBuildStep.doFillEntitlementPreferenceItems();
         }
-        
+
         @SuppressWarnings("unused")
         public ListBoxModel doFillRemediationScanPreferenceTypeItems() {
             return SharedUploadBuildStep.doFillRemediationScanPreferenceTypeItems();

@@ -97,6 +97,19 @@ public class FodEnums {
             this._val = val;
         }
 
+        public static RemediationScanPreferenceType fromInt(int val) {
+            switch (val) {
+                case 3:
+                    return NonRemediationScanOnly;
+                case 2:
+                    return RemediationScanOnly;
+                case 1:
+                    return RemediationScanIfAvailable;
+                default:
+                    return null;
+            }
+        }
+
         public int getValue() {
             return this._val;
         }
@@ -110,19 +123,6 @@ public class FodEnums {
                 case 1:
                 default:
                     return "RemediationScanIfAvailable";
-            }
-        }
-
-        public static RemediationScanPreferenceType fromInt(int val) {
-            switch (val) {
-                case 3:
-                    return NonRemediationScanOnly;
-                case 2:
-                    return RemediationScanOnly;
-                case 1:
-                    return RemediationScanIfAvailable;
-                default:
-                    return null;
             }
         }
     }
