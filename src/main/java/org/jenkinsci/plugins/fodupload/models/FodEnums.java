@@ -104,9 +104,8 @@ public class FodEnums {
                 case 2:
                     return RemediationScanOnly;
                 case 1:
-                    return RemediationScanIfAvailable;
                 default:
-                    return null;
+                    return RemediationScanIfAvailable;
             }
         }
 

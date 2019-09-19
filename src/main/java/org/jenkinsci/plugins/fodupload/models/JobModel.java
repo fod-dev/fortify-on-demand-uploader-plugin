@@ -21,7 +21,6 @@ public class JobModel {
     private boolean purchaseEntitlements;
     private String entitlementPreference;
     private String srcLocation;
-    private int inProgressScanActionOption;
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
 
