@@ -52,16 +52,28 @@ public class ScanStatusPoller {
      */
     public PollReleaseStatusResult pollReleaseStatus(final int releaseId) throws IOException, InterruptedException {
 
-        LookupItemsController lookupItemsController = new LookupItemsController(this.apiConnection);
-        ReleaseController releaseController = new ReleaseController(this.apiConnection);
-        StaticScanSummaryController scanSummaryController = new StaticScanSummaryController(this.apiConnection, logger);
-        PollReleaseStatusResult result = new PollReleaseStatusResult();
-        List<LookupItemsModel> analysisStatusTypes = null;
+        
 
         logger.println("Begin polling Fortify on Demand for results.");
 
         boolean finished = false;
         int counter = 0;
+        PollReleaseStatusResult result = new PollReleaseStatusResult();
+        LookupItemsController lookupItemsController = new LookupItemsController(this.apiConnection);
+        List<LookupItemsModel> analysisStatusTypes = null;
+
+
+        if (analysisStatusTypes == null)
+                analysisStatusTypes = lookupItemsController.getLookupItems(APILookupItemTypes.AnalysisStatusTypes);
+
+        // Create a list of values that will be used to break the loop if found
+        // This way if any of this changes we don't need to redo the keys or something
+        List<String> complete = new ArrayList<>();
+
+        for (LookupItemsModel item : analysisStatusTypes) {
+            if (item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Completed.name()) || item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Canceled.name()))
+                complete.add(item.getValue());
+        }
 
         while (!finished) {
 
@@ -84,33 +96,23 @@ public class ScanStatusPoller {
             int status = release.getCurrentAnalysisStatusTypeId();
 
             // Get the possible statuses only once
-            if (analysisStatusTypes == null)
-                analysisStatusTypes = lookupItemsController.getLookupItems(APILookupItemTypes.AnalysisStatusTypes);
-
+            
             if (failCount < MAX_FAILS) {
                 String statusString = "";
 
-                // Create a list of values that will be used to break the loop if found
-                // This way if any of this changes we don't need to redo the keys or something
-                List<String> complete = new ArrayList<>();
 
-                for (LookupItemsModel item : analysisStatusTypes) {
-                    if (item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Completed.name()) || item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Canceled.name()))
-                        complete.add(item.getValue());
-                }
-
-                // Look for and print the status OR break the loop.
-                for (LookupItemsModel o : analysisStatusTypes) {
-                    if (o != null) {
-                        int analysisStatus = Integer.parseInt(o.getValue());
-                        if (analysisStatus == status) {
-                            statusString = o.getText().replace("_", " ");
-                        }
-                        if (complete.contains(Integer.toString(status))) {
-                            finished = true;
-                        }
-                    }
-                }
+                // // Look for and print the status OR break the loop.
+                // for (LookupItemsModel o : analysisStatusTypes) {
+                //     if (o != null) {
+                //         int analysisStatus = Integer.parseInt(o.getValue());
+                //         if (analysisStatus == status) {
+                //             statusString = o.getText().replace("_", " ");
+                //         }
+                //         if (complete.contains(Integer.toString(status))) {
+                //             finished = true;
+                //         }
+                //     }
+                // }
 
                 logger.println(counter + ") Poll Status: " + statusString);
 
@@ -197,6 +199,70 @@ public class ScanStatusPoller {
                 logger.println(String.format("Pause reason:         %s", spd.getReason()));
                 logger.println(String.format("Pause reason notes:   %s", spd.getNotes()));
                 logger.println();
+            }
+        }
+    }
+}
+
+class StatusPollerThread extends Thread
+{
+    private FodApiConnection apiConnection;
+    public Boolean fail = true;
+    private int releaseId;
+    public Boolean finished;
+    public String statusString;
+
+    ReleaseController releaseController = null;
+    StaticScanSummaryController scanSummaryController;
+    PollReleaseStatusResult result = new PollReleaseStatusResult();
+    List<LookupItemsModel> analysisStatusTypes = null;
+
+    StatusPollerThread(String name, final int releaseId, List<LookupItemsModel> analysisStatusTypes,
+                    ReleaseController releaseController, FodApiConnection apiConnection, StaticScanSummaryController scanSummaryController)
+    {
+        super (name);
+        this.releaseId = releaseId;
+        this.analysisStatusTypes = analysisStatusTypes;
+        this.releaseController = releaseController;
+        this.apiConnection = apiConnection;
+        this.scanSummaryController = scanSummaryController;
+    }
+
+    public void run()
+    {
+        try
+        {
+            processScanRelease();
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+
+    private void processScanRelease()
+    {
+        ReleaseDTO release = releaseController.getRelease(releaseId,
+                    "currentAnalysisStatusTypeId,isPassed,passFailReasonTypeId,passFailReasonType,critical,high,medium,low,releaseId,rating,currentStaticScanId,releaseName");
+        
+        if(release == null) {
+            break;
+        }
+
+        int status = release.getCurrentAnalysisStatusTypeId();
+
+        //String statusString = "";
+
+        // Look for and print the status OR break the loop.
+        for (LookupItemsModel o : analysisStatusTypes) {
+            if (o != null) {
+                int analysisStatus = Integer.parseInt(o.getValue());
+                if (analysisStatus == status) {
+                    this.statusString = o.getText().replace("_", " ");
+                }
+                if (complete.contains(Integer.toString(status))) {
+                    finished = true;
+                }
             }
         }
     }
