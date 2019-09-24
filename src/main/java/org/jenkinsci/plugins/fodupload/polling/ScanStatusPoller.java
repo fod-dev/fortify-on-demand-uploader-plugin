@@ -200,7 +200,7 @@ class StatusPollerThread extends Thread {
 
     public void run() {
         try {
-            Thread.sleep(1000 * 60 * this.pollingInterval);
+            Thread.sleep(1000L * 60 * this.pollingInterval);
             processScanRelease();
         } catch (Exception e) {
 
@@ -208,9 +208,12 @@ class StatusPollerThread extends Thread {
     }
 
     private void processScanRelease() {
+        int status = -1;
         try {
             releaseDTO = releaseController.getRelease(releaseId,
                     "currentAnalysisStatusTypeId,isPassed,passFailReasonTypeId,passFailReasonType,critical,high,medium,low,releaseId,rating,currentStaticScanId,releaseName");
+
+            status = releaseDTO.getCurrentAnalysisStatusTypeId();
         } catch (IOException e) {
             logger.println("Unable to retreive release data");
         }
@@ -220,7 +223,6 @@ class StatusPollerThread extends Thread {
             logger.println("Release data is not retrieved");
         }
 
-        int status = releaseDTO.getCurrentAnalysisStatusTypeId();
 
         // Look for and print the status OR break the loop.
         for (LookupItemsModel o : analysisStatusTypes) {
