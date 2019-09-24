@@ -173,19 +173,17 @@ public class ScanStatusPoller {
 class StatusPollerThread extends Thread {
     public Boolean fail = false;
     public Boolean finished = false;
-    public Boolean cancelled = false;
-    public Boolean waiting = false;
     public String statusString;
     public PollReleaseStatusResult result = new PollReleaseStatusResult();
     public ScanSummaryDTO scanSummaryDTO = null;
     public ReleaseDTO releaseDTO = null;
-    public PrintStream logger;
+    private PrintStream logger;
     private int releaseId;
     private int pollingInterval;
-    private ReleaseController releaseController = null;
+    private ReleaseController releaseController;
     private StaticScanSummaryController scanSummaryController;
-    private List<LookupItemsModel> analysisStatusTypes = null;
-    private List<String> completeStatusList = null;
+    private List<LookupItemsModel> analysisStatusTypes;
+    private List<String> completeStatusList;
 
 
     StatusPollerThread(String name, final int releaseId, List<LookupItemsModel> analysisStatusTypes,
