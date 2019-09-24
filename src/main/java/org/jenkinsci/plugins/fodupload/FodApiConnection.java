@@ -20,7 +20,6 @@ public class FodApiConnection {
     private final static int CONNECTION_TIMEOUT = 30; // seconds
     private final static int WRITE_TIMEOUT = 30; // seconds
     private final static int READ_TIMEOUT = 90; // seconds
-    public final static int MAX_SIZE = 50;
     
 
     private String baseUrl;
