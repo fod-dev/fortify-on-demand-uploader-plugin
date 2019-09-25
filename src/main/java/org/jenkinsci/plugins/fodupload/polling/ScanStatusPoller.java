@@ -73,44 +73,46 @@ public class ScanStatusPoller {
             if (item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Completed.name()) || item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Canceled.name()))
                 complete.add(item.getValue());
         }
-
-        while (!finished) {
-            // if(pollerThread == null || !pollerThread.isAlive()) { 
-
-            if (counter == 1) {
-                //No Thread.sleep() on first round
-                pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, 0);
-            } else {
-                pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, pollingInterval);
-            }
-
-            pollerThread.start();
-            pollerThread.join();
-            if (pollerThread.fail) {
-                failCount++;
-                continue;
-            }
-
-            if (failCount < MAX_FAILS) {
-                //IMPORTANT
-                logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
-
-                if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.scanSummaryDTO.getPauseDetails() != null)
-                    printPauseMessages(pollerThread.scanSummaryDTO);
-                if (pollerThread.finished) {
-                    finished = pollerThread.finished;
-                    if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Canceled.name())) {
-                        printCancelMessages(pollerThread.scanSummaryDTO);
-                    } else {
-                        printPassFail(pollerThread.releaseDTO);
-                    }
+        try{
+            while (!finished) {
+                if (counter == 1) {
+                    //No Thread.sleep() on first round
+                    pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, 0);
+                } else {
+                    pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, pollingInterval);
                 }
-            } else {
-                logger.println(String.format("Polling Failed %d times.  Terminating", MAX_FAILS));
-                finished = true;
+
+                pollerThread.start();
+                pollerThread.join();
+                if (pollerThread.fail) {
+                    failCount++;
+                    continue;
+                }
+
+                if (failCount < MAX_FAILS) {
+                    //IMPORTANT
+                    logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
+
+                    if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.scanSummaryDTO.getPauseDetails() != null)
+                        printPauseMessages(pollerThread.scanSummaryDTO);
+                    if (pollerThread.finished) {
+                        finished = pollerThread.finished;
+                        if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Canceled.name())) {
+                            printCancelMessages(pollerThread.scanSummaryDTO);
+                        } else {
+                            printPassFail(pollerThread.releaseDTO);
+                        }
+                    }
+                } else {
+                    logger.println(String.format("Polling Failed %d times.  Terminating", MAX_FAILS));
+                    finished = true;
+                }
+                counter++;
             }
-            counter++;
+        } catch (InterruptedException e) {
+            logger.println("Polling was interrupted. Please contact your administrator if the interruption was not intentional.");
         }
+        
 
         return pollerThread.result;
     }
@@ -202,8 +204,8 @@ class StatusPollerThread extends Thread {
         try {
             Thread.sleep(1000L * 60 * this.pollingInterval);
             processScanRelease();
-        } catch (Exception e) {
-
+        } catch (InterruptedException e) {
+            logger.println("API call to retrieve scan status was terminated. Please contact your system adminstrator if termination was not intentional");
         }
     }
 
