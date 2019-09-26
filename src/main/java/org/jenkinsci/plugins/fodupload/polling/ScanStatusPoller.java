@@ -111,6 +111,9 @@ public class ScanStatusPoller {
             }
         } catch (InterruptedException e) {
             logger.println("Polling was interrupted. Please contact your administrator if the interruption was not intentional.");
+            if(pollerThread.isAlive()){
+                pollerThread.interrupt();
+            }
         }
         
 
@@ -206,6 +209,7 @@ class StatusPollerThread extends Thread {
             processScanRelease();
         } catch (InterruptedException e) {
             logger.println("API call to retrieve scan status was terminated. Please contact your system adminstrator if termination was not intentional");
+            Thread.currentThread().interrupt();
         }
     }
 
