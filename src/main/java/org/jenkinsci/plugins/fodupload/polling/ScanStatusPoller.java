@@ -106,8 +106,6 @@ public class ScanStatusPoller {
                             }
                         }
                         counter++;
-                    } else {
-                        logger.println("Unable to retrieve polling information. Will retry at next interval");
                     }
                 } else {
                     logger.println(String.format("Polling Failed %d times.  Terminating", MAX_FAILS));
