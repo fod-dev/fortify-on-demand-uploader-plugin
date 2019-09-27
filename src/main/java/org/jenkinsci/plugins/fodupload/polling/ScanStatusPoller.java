@@ -90,7 +90,7 @@ public class ScanStatusPoller {
                 }
 
                 if (failCount < MAX_FAILS) {
-                    if(!pollerThread.fail && pollerThread.result.isPollingSuccessful())
+                    if(!pollerThread.fail)
                     {
                         failCount = 0;
                         logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
