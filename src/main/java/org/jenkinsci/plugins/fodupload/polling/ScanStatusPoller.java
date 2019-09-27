@@ -92,6 +92,7 @@ public class ScanStatusPoller {
                 if (failCount < MAX_FAILS) {
                     if(!pollerThread.fail && pollerThread.result.isPollingSuccessful())
                     {
+                        failCount = 0;
                         logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
 
                         if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.scanSummaryDTO.getPauseDetails() != null)
@@ -105,7 +106,9 @@ public class ScanStatusPoller {
                             }
                         }
                         counter++;
-                    } 
+                    } else {
+                        logger.println("Unable to retrieve polling information. Will retry at next interval");
+                    }
                 } else {
                     logger.println(String.format("Polling Failed %d times.  Terminating", MAX_FAILS));
                     finished = true;
@@ -241,7 +244,6 @@ class StatusPollerThread extends Thread {
                     finished = true;
                 }
             } else {
-                //logger.println("Unable to retrieve scan status. Will try again during next interval.");
                 fail = true;
             }
         }
