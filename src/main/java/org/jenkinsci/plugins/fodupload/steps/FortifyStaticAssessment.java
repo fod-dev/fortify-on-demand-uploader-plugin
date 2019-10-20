@@ -33,9 +33,9 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String bsiToken;
 
     private boolean overrideGlobalConfig;
-    private String username;
+    private Secret username;
     private Secret personalAccessToken;
-    private String tenantId;
+    private Secret tenantId;
     private boolean purchaseEntitlements;
     private String entitlementPreference;
     private String srcLocation;
@@ -63,12 +63,12 @@ public class FortifyStaticAssessment extends FortifyStep {
         this.overrideGlobalConfig = overrideGlobalConfig;
     }
 
-    public String getUsername() {
+    public Secret getUsername() {
         return username;
     }
 
     @DataBoundSetter
-    public void setUsername(String username) {
+    public void setUsername(Secret username) {
         this.username = username;
     }
 
@@ -81,12 +81,12 @@ public class FortifyStaticAssessment extends FortifyStep {
         this.personalAccessToken = personalAccessToken;
     }
 
-    public String getTenantId() {
+    public Secret getTenantId() {
         return tenantId;
     }
 
     @DataBoundSetter
-    public void setTenantId(String tenantId) {
+    public void setTenantId(Secret tenantId) {
         this.tenantId = tenantId;
     }
 
@@ -196,9 +196,9 @@ public class FortifyStaticAssessment extends FortifyStep {
         // Form validation
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unused"})
         @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(SharedUploadBuildStep.USERNAME) final String username,
+        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(SharedUploadBuildStep.USERNAME) final Secret username,
                                                                   @QueryParameter(SharedUploadBuildStep.PERSONAL_ACCESS_TOKEN) final Secret personalAccessToken,
-                                                                  @QueryParameter(SharedUploadBuildStep.TENANT_ID) final String tenantId) {
+                                                                  @QueryParameter(SharedUploadBuildStep.TENANT_ID) final Secret tenantId) {
             return SharedUploadBuildStep.doTestPersonalAccessTokenConnection(username, personalAccessToken, tenantId);
 
         }

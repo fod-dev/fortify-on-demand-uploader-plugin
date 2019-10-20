@@ -30,7 +30,7 @@ public class FodApiConnection {
     private GrantType grantType;
     private String scope;
 
-    private String id;
+    private Secret id;
     private Secret secret;
 
     private ProxyConfiguration proxy = null;
@@ -42,7 +42,7 @@ public class FodApiConnection {
      * @param secret  apiConnection secret
      * @param baseUrl apiConnection baseUrl
      */
-    FodApiConnection(final String id, final Secret secret, final String baseUrl, final String apiUrl, final GrantType grantType, final String scope) {
+    FodApiConnection(final Secret id, final Secret secret, final String baseUrl, final String apiUrl, final GrantType grantType, final String scope) {
         this.id = id;
         this.secret = secret;
         this.baseUrl = baseUrl;
@@ -69,14 +69,14 @@ public class FodApiConnection {
             formBody = new FormBody.Builder()
                     .add("scope", scope)
                     .add("grant_type", "client_credentials")
-                    .add("client_id", id)
+                    .add("client_id", Secret.toString(id))
                     .add("client_secret", Secret.toString(secret))
                     .build();
         } else if (grantType == GrantType.PASSWORD) {
             formBody = new FormBody.Builder()
                     .add("scope", scope)
                     .add("grant_type", "password")
-                    .add("username", id)
+                    .add("username", Secret.toString(id))
                     .add("password", Secret.toString(secret))
                     .build();
         } else {
@@ -155,7 +155,7 @@ public class FodApiConnection {
         return token;
     }
 
-    public String getId() {
+    public Secret getId() {
         return id;
     }
 

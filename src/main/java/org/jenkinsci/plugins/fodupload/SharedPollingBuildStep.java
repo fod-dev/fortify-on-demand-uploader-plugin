@@ -41,11 +41,11 @@ public class SharedPollingBuildStep {
                                   boolean overrideGlobalConfig,
                                   int pollingInterval,
                                   int policyFailureBuildResultPreference,
-                                  String clientId,
+                                  Secret clientId,
                                   Secret clientSecret,
-                                  String username,
+                                  Secret username,
                                   Secret personalAccessToken,
-                                  String tenantId) {
+                                  Secret tenantId) {
 
         this.bsiToken = bsiToken;
         this.pollingInterval = pollingInterval;
@@ -87,9 +87,9 @@ public class SharedPollingBuildStep {
 
     // Form validation
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    public static FormValidation doTestPersonalAccessTokenConnection(final String username,
+    public static FormValidation doTestPersonalAccessTokenConnection(final Secret username,
                                                                      final Secret personalAccessToken,
-                                                                     final String tenantId) {
+                                                                     final Secret tenantId) {
         FodApiConnection testApi;
         String baseUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getBaseUrl();
         String apiUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getApiUrl();
@@ -97,13 +97,13 @@ public class SharedPollingBuildStep {
             return FormValidation.error("Fortify on Demand URL is empty!");
         if (Utils.isNullOrEmpty(apiUrl))
             return FormValidation.error("Fortify on Demand API URL is empty!");
-        if (Utils.isNullOrEmpty(username))
+        if (Utils.isNullOrEmpty(Secret.toString(username)))
             return FormValidation.error("Username is empty!");
         if (Utils.isNullOrEmpty(Secret.toString(personalAccessToken)))
             return FormValidation.error("Personal Access Token is empty!");
-        if (Utils.isNullOrEmpty(tenantId))
+        if (Utils.isNullOrEmpty(Secret.toString(tenantId)))
             return FormValidation.error("Tenant ID is null.");
-        testApi = new FodApiConnection(tenantId + "\\" + username, personalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant");
+        testApi = new FodApiConnection(Secret.fromString(Secret.toString(tenantId) + "\\" + Secret.toString(username)), personalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant");
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
 
     }

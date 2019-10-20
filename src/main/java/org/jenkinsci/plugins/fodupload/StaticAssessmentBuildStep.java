@@ -44,9 +44,9 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     @DataBoundConstructor
     public StaticAssessmentBuildStep(String bsiToken,
                                      boolean overrideGlobalConfig,
-                                     String username,
+                                     Secret username,
                                      Secret personalAccessToken,
-                                     String tenantId,
+                                     Secret tenantId,
                                      boolean purchaseEntitlements,
                                      String entitlementPreference,
                                      String srcLocation,
@@ -103,7 +103,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     }
 
     @SuppressWarnings("unused")
-    public String getUsername() {
+    public Secret getUsername() {
         return sharedBuildStep.getAuthModel().getUsername();
     }
 
@@ -113,7 +113,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     }
 
     @SuppressWarnings("unused")
-    public String getTenantId() {
+    public Secret getTenantId() {
         return sharedBuildStep.getAuthModel().getTenantId();
     }
 
@@ -181,9 +181,9 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unused"})
         @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
         @POST
-        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(SharedUploadBuildStep.USERNAME) final String username,
+        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(SharedUploadBuildStep.USERNAME) final Secret username,
                                                                   @QueryParameter(SharedUploadBuildStep.PERSONAL_ACCESS_TOKEN) final Secret personalAccessToken,
-                                                                  @QueryParameter(SharedUploadBuildStep.TENANT_ID) final String tenantId) {
+                                                                  @QueryParameter(SharedUploadBuildStep.TENANT_ID) final Secret tenantId) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             return SharedUploadBuildStep.doTestPersonalAccessTokenConnection(username, personalAccessToken, tenantId);
         }

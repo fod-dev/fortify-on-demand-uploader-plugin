@@ -33,11 +33,11 @@ public class FortifyPollResults extends FortifyStep {
 
     private boolean overrideGlobalConfig;
     private int policyFailureBuildResultPreference;
-    private String clientId;
+    private Secret clientId;
     private Secret clientSecret;
-    private String username;
+    private Secret username;
     private Secret personalAccessToken;
-    private String tenantId;
+    private Secret tenantId;
 
     private SharedPollingBuildStep commonBuildStep;
 
@@ -74,12 +74,12 @@ public class FortifyPollResults extends FortifyStep {
         this.policyFailureBuildResultPreference = policyFailureBuildResultPreference;
     }
 
-    public String getClientId() {
+    public Secret getClientId() {
         return clientId;
     }
 
     @DataBoundSetter
-    public void setClientId(String clientId) {
+    public void setClientId(Secret clientId) {
         this.clientId = clientId;
     }
 
@@ -92,12 +92,12 @@ public class FortifyPollResults extends FortifyStep {
         this.clientSecret = clientSecret;
     }
 
-    public String getUsername() {
+    public Secret getUsername() {
         return username;
     }
 
     @DataBoundSetter
-    public void setUsername(String username) {
+    public void setUsername(Secret username) {
         this.username = username;
     }
 
@@ -110,12 +110,12 @@ public class FortifyPollResults extends FortifyStep {
         this.personalAccessToken = personalAccessToken;
     }
 
-    public String getTenantId() {
+    public Secret getTenantId() {
         return tenantId;
     }
 
     @DataBoundSetter
-    public void setTenantId(String tenantId) {
+    public void setTenantId(Secret tenantId) {
         this.tenantId = tenantId;
     }
 
@@ -178,9 +178,9 @@ public class FortifyPollResults extends FortifyStep {
         // Form validation
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unused"})
         @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(SharedPollingBuildStep.USERNAME) final String username,
+        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(SharedPollingBuildStep.USERNAME) final Secret username,
                                                                   @QueryParameter(SharedPollingBuildStep.PERSONAL_ACCESS_TOKEN) final Secret personalAccessToken,
-                                                                  @QueryParameter(SharedPollingBuildStep.TENANT_ID) final String tenantId) {
+                                                                  @QueryParameter(SharedPollingBuildStep.TENANT_ID) final Secret tenantId) {
             return SharedPollingBuildStep.doTestPersonalAccessTokenConnection(username, personalAccessToken, tenantId);
 
         }

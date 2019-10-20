@@ -29,6 +29,7 @@ import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.util.Secret;
 
 /**
  * @author tsotack
@@ -47,7 +48,7 @@ public class ApiConnectionFactory {
                     throw new IllegalArgumentException("Base URL is null.");
                 if (Utils.isNullOrEmpty(apiUrl))
                     throw new IllegalArgumentException("Api URL is null.");
-                apiConnection = new FodApiConnection(model.getTenantId() + "\\" + model.getUsername(),
+                apiConnection = new FodApiConnection(Secret.fromString(Secret.toString(model.getTenantId()) + "\\" + Secret.toString(model.getUsername())),
                         model.getPersonalAccessToken(),
                         baseUrl,
                         apiUrl,

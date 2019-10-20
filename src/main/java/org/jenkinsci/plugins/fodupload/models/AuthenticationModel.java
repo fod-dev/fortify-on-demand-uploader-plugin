@@ -4,14 +4,14 @@ import hudson.util.Secret;
 
 public class AuthenticationModel {
     private boolean overrideGlobalConfig;
-    private String username;
+    private Secret username;
     private Secret personalAccessToken;
-    private String tenantId;
+    private Secret tenantId;
 
     public AuthenticationModel(boolean overrideGlobalConfig,
-                               String username,
+                               Secret username,
                                Secret personalAccessToken,
-                               String tenantId) {
+                               Secret tenantId) {
         this.overrideGlobalConfig = overrideGlobalConfig;
         this.username = username;
         this.personalAccessToken = personalAccessToken;
@@ -22,7 +22,7 @@ public class AuthenticationModel {
         return overrideGlobalConfig;
     }
 
-    public String getUsername() {
+    public Secret getUsername() {
         return username;
     }
 
@@ -30,7 +30,7 @@ public class AuthenticationModel {
         return personalAccessToken;
     }
 
-    public String getTenantId() {
+    public Secret getTenantId() {
         return tenantId;
     }
 }

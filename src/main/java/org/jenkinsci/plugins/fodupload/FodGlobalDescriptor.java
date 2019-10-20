@@ -26,11 +26,11 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
     private static final String API_URL = "apiUrl";
 
     private String globalAuthType;
-    private String clientId;
+    private Secret clientId;
     private Secret clientSecret;
-    private String username;
+    private Secret username;
     private Secret personalAccessToken;
-    private String tenantId;
+    private Secret tenantId;
     private String baseUrl;
     private String apiUrl;
 
@@ -45,12 +45,12 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
         if (globalAuthTypeObject.size() > 0) {
             globalAuthType = globalAuthTypeObject.getString("value");
             if (globalAuthType.equals("apiKeyType")) {
-                clientId = globalAuthTypeObject.getString(CLIENT_ID);
+                clientId = Secret.fromString(globalAuthTypeObject.getString(CLIENT_ID));
                 clientSecret = Secret.fromString(globalAuthTypeObject.getString(CLIENT_SECRET));
             } else if (globalAuthType.equals("personalAccessTokenType")) {
-                username = globalAuthTypeObject.getString(USERNAME);
+                username = Secret.fromString(globalAuthTypeObject.getString(USERNAME));
                 personalAccessToken = Secret.fromString(globalAuthTypeObject.getString(PERSONAL_ACCESS_TOKEN));
-                tenantId = globalAuthTypeObject.getString(TENANT_ID);
+                tenantId = Secret.fromString(globalAuthTypeObject.getString(TENANT_ID));
             }
         }
         baseUrl = formData.getString(BASE_URL);
@@ -74,7 +74,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
     }
 
     @SuppressWarnings("unused")
-    public String getClientId() {
+    public Secret getClientId() {
         return clientId;
     }
 
@@ -84,7 +84,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
     }
 
     @SuppressWarnings("unused")
-    public String getUsername() {
+    public Secret getUsername() {
         return username;
     }
 
@@ -94,7 +94,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
     }
 
     @SuppressWarnings("unused")
-    public String getTenantId() {
+    public Secret getTenantId() {
         return tenantId;
     }
 
@@ -118,7 +118,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unused"})
     @POST
-    public FormValidation doTestApiKeyConnection(@QueryParameter(CLIENT_ID) final String clientId,
+    public FormValidation doTestApiKeyConnection(@QueryParameter(CLIENT_ID) final Secret clientId,
                                                  @QueryParameter(CLIENT_SECRET) final Secret clientSecret,
                                                  @QueryParameter(BASE_URL) final String baseUrl,
                                                  @QueryParameter(API_URL) final String apiUrl) {
@@ -128,7 +128,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
             return FormValidation.error("Fortify on Demand URL is empty!");
         if (Utils.isNullOrEmpty(apiUrl))
             return FormValidation.error("Fortify on Demand API URL is empty!");
-        if (Utils.isNullOrEmpty(clientId))
+        if (Utils.isNullOrEmpty(Secret.toString(clientId)))
             return FormValidation.error("API Key is empty!");
         if (Utils.isNullOrEmpty(Secret.toString(clientSecret)))
             return FormValidation.error("Secret Key is empty!");
@@ -139,9 +139,9 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
     // Form validation
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unused"})
     @POST
-    public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(USERNAME) final String username,
+    public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(USERNAME) final Secret username,
                                                               @QueryParameter(PERSONAL_ACCESS_TOKEN) final Secret personalAccessToken,
-                                                              @QueryParameter(TENANT_ID) final String tenantId,
+                                                              @QueryParameter(TENANT_ID) final Secret tenantId,
                                                               @QueryParameter(BASE_URL) final String baseUrl,
                                                               @QueryParameter(API_URL) final String apiUrl) {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
@@ -150,13 +150,13 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
             return FormValidation.error("Fortify on Demand URL is empty!");
         if (Utils.isNullOrEmpty(apiUrl))
             return FormValidation.error("Fortify on Demand API URL is empty!");
-        if (Utils.isNullOrEmpty(username))
+        if (Utils.isNullOrEmpty(Secret.toString(username)))
             return FormValidation.error("Username is empty!");
         if (Utils.isNullOrEmpty(Secret.toString(personalAccessToken)))
             return FormValidation.error("Personal Access Token is empty!");
-        if (Utils.isNullOrEmpty(tenantId))
+        if (Utils.isNullOrEmpty(Secret.toString(tenantId)))
             return FormValidation.error("Tenant ID is null.");
-        testApi = new FodApiConnection(tenantId + "\\" + username, personalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
+        testApi = new FodApiConnection(Secret.fromString(Secret.toString(tenantId) + "\\" + Secret.toString(username)), personalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
         return testConnection(testApi);
 
     }
@@ -171,19 +171,19 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
                 throw new IllegalArgumentException("Api URL is null.");
 
             if (globalAuthType.equals("apiKeyType")) {
-                if (Utils.isNullOrEmpty(clientId))
+                if (Utils.isNullOrEmpty(Secret.toString(clientId)))
                     throw new IllegalArgumentException("Client ID is null.");
                 if (Utils.isNullOrEmpty(Secret.toString(clientSecret)))
                     throw new IllegalArgumentException("Client Secret is null.");
                 return new FodApiConnection(clientId, clientSecret, baseUrl, apiUrl, GrantType.CLIENT_CREDENTIALS, "api-tenant");
             } else if (globalAuthType.equals("personalAccessTokenType")) {
-                if (Utils.isNullOrEmpty(username))
+                if (Utils.isNullOrEmpty(Secret.toString(username)))
                     throw new IllegalArgumentException("Username is null.");
                 if (Utils.isNullOrEmpty(Secret.toString(personalAccessToken)))
                     throw new IllegalArgumentException("Personal Access Token is null.");
-                if (Utils.isNullOrEmpty(tenantId))
+                if (Utils.isNullOrEmpty(Secret.toString(tenantId)))
                     throw new IllegalArgumentException("Tenant ID is null.");
-                return new FodApiConnection(tenantId + "\\" + username, personalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
+                return new FodApiConnection(Secret.fromString(Secret.toString(tenantId) + "\\" + Secret.toString(username)), personalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
             } else {
                 throw new IllegalArgumentException("Invalid authentication type");
             }

@@ -46,11 +46,11 @@ public class PollingBuildStep extends Recorder implements SimpleBuildStep {
                             boolean overrideGlobalConfig,
                             int pollingInterval,
                             int policyFailureBuildResultPreference,
-                            String clientId,
+                            Secret clientId,
                             Secret clientSecret,
-                            String username,
+                            Secret username,
                             Secret personalAccessToken,
-                            String tenantId) {
+                            Secret tenantId) {
 
         sharedBuildStep = new SharedPollingBuildStep(bsiToken,
                 overrideGlobalConfig, pollingInterval,
@@ -89,7 +89,7 @@ public class PollingBuildStep extends Recorder implements SimpleBuildStep {
     }
 
     @SuppressWarnings("unused")
-    public String getUsername() {
+    public Secret getUsername() {
         return sharedBuildStep.getAuthModel().getUsername();
     }
 
@@ -99,7 +99,7 @@ public class PollingBuildStep extends Recorder implements SimpleBuildStep {
     }
 
     @SuppressWarnings("unused")
-    public String getTenantId() {
+    public Secret getTenantId() {
         return sharedBuildStep.getAuthModel().getTenantId();
     }
 
@@ -149,9 +149,9 @@ public class PollingBuildStep extends Recorder implements SimpleBuildStep {
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unused"})
         @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
         @POST
-        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(USERNAME) final String username,
+        public FormValidation doTestPersonalAccessTokenConnection(@QueryParameter(USERNAME) final Secret username,
                                                                   @QueryParameter(PERSONAL_ACCESS_TOKEN) final Secret personalAccessToken,
-                                                                  @QueryParameter(TENANT_ID) final String tenantId) {
+                                                                  @QueryParameter(TENANT_ID) final Secret tenantId) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             return SharedPollingBuildStep.doTestPersonalAccessTokenConnection(username, personalAccessToken, tenantId);
         }
