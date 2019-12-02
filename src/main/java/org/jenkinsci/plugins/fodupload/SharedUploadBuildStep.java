@@ -92,6 +92,40 @@ public class SharedUploadBuildStep {
         try {
             taskListener.set(listener);
 
+            // check to see if sensitive fields are encrypte. If not halt scan and recommend encryption.
+            if(authModel != null)
+            {
+                if(authModel.getOverrideGlobalConfig() == true){
+                    if(!Utils.isCredential(authModel.getPersonalAccessToken()))
+                    {
+                        build.setResult(Result.UNSTABLE);
+                        logger.println("Credentials must be re-entered for security purposes. Please update on the global configuration and/or post-build actions and then save your updates.");
+                        return ;
+                    }
+                }
+                else
+                {
+                    if(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getAuthTypeIsApiKey())
+                    {
+                        if(!Utils.isCredential(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getClientSecret()))
+                        {
+                            build.setResult(Result.UNSTABLE);
+                            logger.println("Credentials must be re-entered for security purposes. Please update on the global configuration and/or post-build actions and then save your updates.");
+                            return ;
+                        }
+                    }
+                    else
+                    {
+                         if(!Utils.isCredential(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getClientSecret()) )
+                        {
+                            build.setResult(Result.UNSTABLE);
+                            logger.println("Credentials must be re-entered for security purposes. Please update on the global configuration and/or post-build actions and then save your updates.");
+                            return ;
+                        }      
+                    }
+                }
+            }
+
             Result currentResult = build.getResult();
             if (Result.FAILURE.equals(currentResult)
                     || Result.ABORTED.equals(currentResult)
@@ -194,17 +228,18 @@ public class SharedUploadBuildStep {
         FodApiConnection testApi;
         String baseUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getBaseUrl();
         String apiUrl =  GlobalConfiguration.all().get(FodGlobalDescriptor.class).getApiUrl();
+        String plainTextPersonalAccessToken = Utils.retrieveSecretDecryptedValue(personalAccessToken);
         if (Utils.isNullOrEmpty(baseUrl))
             return FormValidation.error("Fortify on Demand URL is empty!");
         if (Utils.isNullOrEmpty(apiUrl))
             return FormValidation.error("Fortify on Demand API URL is empty!");
         if (Utils.isNullOrEmpty(username))
             return FormValidation.error("Username is empty!");
-        if (Utils.isNullOrEmpty(personalAccessToken))
+        if (!Utils.isCredential(personalAccessToken))
             return FormValidation.error("Personal Access Token is empty!");
         if (Utils.isNullOrEmpty(tenantId))
             return FormValidation.error("Tenant ID is null.");
-        testApi = new FodApiConnection(tenantId + "\\" + username, personalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant");
+        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant");
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
 
     }
