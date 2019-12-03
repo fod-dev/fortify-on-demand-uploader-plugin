@@ -161,5 +161,10 @@ public class PollingBuildStep extends Recorder implements SimpleBuildStep {
         public ListBoxModel doFillPolicyFailureBuildResultPreferenceItems() {
             return SharedPollingBuildStep.doFillPolicyFailureBuildResultPreferenceItems();
         }
+
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillPersonalAccessTokenItems() {
+            return SharedPollingBuildStep.doFillStringCredentialsItems();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.fodupload;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.fortify.fod.parser.BsiToken;
 import com.fortify.fod.parser.BsiTokenParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -8,13 +9,17 @@ import hudson.Launcher;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
+
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.polling.PollReleaseStatusResult;
 import org.jenkinsci.plugins.fodupload.polling.ScanStatusPoller;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -245,6 +250,18 @@ public class SharedPollingBuildStep {
             items.add(new ListBoxModel.Option(preferenceType.toString(), String.valueOf(preferenceType.getValue())));
         }
 
+        return items;
+    }
+
+    @SuppressWarnings("unused")
+    public static ListBoxModel doFillStringCredentialsItems() {
+        ListBoxModel items = CredentialsProvider.listCredentials(
+                StringCredentials.class,
+                Jenkins.get(),
+                ACL.SYSTEM,
+                null,
+                null
+                );
         return items;
     }
 

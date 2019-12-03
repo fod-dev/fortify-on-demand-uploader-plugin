@@ -189,6 +189,11 @@ public class FortifyPollResults extends FortifyStep {
             return SharedPollingBuildStep.doFillPolicyFailureBuildResultPreferenceItems();
         }
 
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillPersonalAccessTokenItems() {
+            return SharedPollingBuildStep.doFillStringCredentialsItems();
+        }
+
     }
 
     private static class Execution extends SynchronousNonBlockingStepExecution<Void> {

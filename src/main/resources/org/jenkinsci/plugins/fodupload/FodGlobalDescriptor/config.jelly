@@ -18,7 +18,7 @@
                     <f:textbox/>
                 </f:entry>
                 <f:entry title="Secret" field="clientSecret">
-                    <f:password/>
+                    <c:select style="width: 160px;"/>
                 </f:entry>
                 <f:validateButton title="${%Test Connection}" progress="${%Testing connection to Fortify on Demand...}"
                           method="testApiKeyConnection" with="clientId,clientSecret,baseUrl,apiUrl"/>

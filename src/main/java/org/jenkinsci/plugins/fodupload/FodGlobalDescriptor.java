@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.fodupload;
 
 import hudson.Extension;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
@@ -167,6 +168,16 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
         testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
         return testConnection(testApi);
         
+    }
+
+    @SuppressWarnings("unused")
+    public ListBoxModel doFillPersonalAccessTokenItems() {
+        return SharedUploadBuildStep.doFillStringCredentialsItems();
+    }
+
+    @SuppressWarnings("unused")
+    public ListBoxModel doFillClientSecretItems() {
+        return SharedUploadBuildStep.doFillStringCredentialsItems();
     }
 
     FodApiConnection createFodApiConnection() {

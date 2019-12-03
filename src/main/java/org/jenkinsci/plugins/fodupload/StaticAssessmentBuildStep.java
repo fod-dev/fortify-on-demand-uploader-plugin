@@ -150,6 +150,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return SharedUploadBuildStep.doFillEntitlementPreferenceItems();
         }
 
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillPersonalAccessTokenItems() {
+            return SharedUploadBuildStep.doFillStringCredentialsItems();
+        }
+
 
     }
 

@@ -1,18 +1,23 @@
 package org.jenkinsci.plugins.fodupload;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.fortify.fod.parser.BsiToken;
 import com.fortify.fod.parser.BsiTokenParser;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.*;
+import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
+
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 import java.io.File;
 import java.io.IOException;
@@ -251,6 +256,18 @@ public class SharedUploadBuildStep {
             items.add(new ListBoxModel.Option(preferenceType.toString(), String.valueOf(preferenceType.getValue())));
         }
 
+        return items;
+    }
+
+    @SuppressWarnings("unused")
+    public static ListBoxModel doFillStringCredentialsItems() {
+        ListBoxModel items = CredentialsProvider.listCredentials(
+                StringCredentials.class,
+                Jenkins.get(),
+                ACL.SYSTEM,
+                null,
+                null
+                );
         return items;
     }
 
