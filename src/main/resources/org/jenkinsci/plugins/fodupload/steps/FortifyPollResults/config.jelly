@@ -11,7 +11,7 @@
                     <f:textbox style="width: 160px;" />
                 </f:entry>
                 <f:entry title="Personal Access Token" field="personalAccessToken" help="/plugin/fortify-on-demand-uploader/help-personalAccessToken.html">
-                    <f:password style="width: 160px;" />
+                    <c:select style="width: 160px;" />
                 </f:entry>
                  <f:entry title="Tenant ID" field="tenantId">
                     <f:textbox style="width: 160px;" />
