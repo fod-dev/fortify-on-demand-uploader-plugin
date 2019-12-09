@@ -89,6 +89,7 @@ public class SharedUploadBuildStep {
         return true;
     }
 
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public void perform(Run<?, ?> build, FilePath workspace,
                         Launcher launcher, TaskListener listener) {
 
