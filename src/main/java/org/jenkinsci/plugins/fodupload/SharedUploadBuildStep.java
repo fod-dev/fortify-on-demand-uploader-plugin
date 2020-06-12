@@ -53,7 +53,8 @@ public class SharedUploadBuildStep {
                                  String entitlementPreference,
                                  String srcLocation,
                                  String remediationScanPreferenceType,
-                                 String inProgressScanActionType) {
+                                 String inProgressScanActionType,
+                                 String inProgressBuildResultType) {
 
         model = new JobModel(releaseId,
                 bsiToken,
@@ -61,7 +62,8 @@ public class SharedUploadBuildStep {
                 entitlementPreference,
                 srcLocation,
                 remediationScanPreferenceType,
-                inProgressScanActionType);
+                inProgressScanActionType,
+                inProgressBuildResultType);
 
         authModel = new AuthenticationModel(overrideGlobalConfig,
                 username,
@@ -171,6 +173,15 @@ public class SharedUploadBuildStep {
         ListBoxModel items = new ListBoxModel();
         for (FodEnums.InProgressScanActionType scanActionType : FodEnums.InProgressScanActionType.values()) {
             items.add(new ListBoxModel.Option(scanActionType.toString(), scanActionType.getValue()));
+        }
+        return items;
+    }
+    
+    @SuppressWarnings("unused")
+    public static ListBoxModel doFillInProgressBuildResultTypeItems() {
+        ListBoxModel items = new ListBoxModel();
+        for (FodEnums.InProgressBuildResultType buildResultType : FodEnums.InProgressBuildResultType.values()) {
+            items.add(new ListBoxModel.Option(buildResultType.toString(), buildResultType.getValue()));
         }
         return items;
     }

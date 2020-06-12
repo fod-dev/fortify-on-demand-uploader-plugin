@@ -53,7 +53,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String entitlementPreference,
                                      String srcLocation,
                                      String remediationScanPreferenceType,
-                                     String inProgressScanActionType) {
+                                     String inProgressScanActionType,
+                                     String inProgressBuildResultType) {
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
                 bsiToken,
@@ -65,7 +66,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 entitlementPreference,
                 srcLocation,
                 remediationScanPreferenceType,
-                inProgressScanActionType);
+                inProgressScanActionType,
+                inProgressBuildResultType);
 
     }
 
@@ -155,6 +157,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return sharedBuildStep.getModel().getInProgressScanActionType();
     }
 
+    @SuppressWarnings("unused")
+    public String getInProgresBuildResultType() {
+        return sharedBuildStep.getModel().getInProgressBuildResultType();
+    }
+
     @Extension
 
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
@@ -230,6 +237,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         @SuppressWarnings("unused")
         public ListBoxModel doFillInProgressScanActionTypeItems() {
             return SharedUploadBuildStep.doFillInProgressScanActionTypeItems();
+        }
+
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillInProgresBuildResultTypeItems() {
+            return SharedUploadBuildStep.doFillInProgressBuildResultTypeItems();
         }
     }
 }

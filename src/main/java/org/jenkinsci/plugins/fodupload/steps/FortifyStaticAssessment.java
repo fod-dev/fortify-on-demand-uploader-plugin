@@ -46,6 +46,7 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String srcLocation;
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
+    private String inProgressBuildResultType;
 
     private SharedUploadBuildStep commonBuildStep;
 
@@ -143,6 +144,15 @@ public class FortifyStaticAssessment extends FortifyStep {
         this.inProgressScanActionType = inProgressScanActionType;
     }
 
+    public String getInProgressBuildResultType() {
+        return inProgressBuildResultType;
+    }
+
+    @DataBoundSetter
+    public void setInProgressBuildResultType(String inProgressBuildResultType) {
+        this.inProgressBuildResultType = inProgressBuildResultType;
+    }
+
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
@@ -158,7 +168,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 entitlementPreference,
                 srcLocation,
                 remediationScanPreferenceType,
-                inProgressScanActionType);
+                inProgressScanActionType,
+                inProgressBuildResultType);
 
         return true;
     }
@@ -183,7 +194,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 entitlementPreference,
                 srcLocation,
                 remediationScanPreferenceType,
-                inProgressScanActionType);
+                inProgressScanActionType,
+                inProgressBuildResultType);
 
         commonBuildStep.perform(build, workspace, launcher, listener);
     }
@@ -245,6 +257,11 @@ public class FortifyStaticAssessment extends FortifyStep {
         @SuppressWarnings("unused")
         public ListBoxModel doFillInProgressScanActionTypeItems() {
             return SharedUploadBuildStep.doFillInProgressScanActionTypeItems();
+        }
+
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillInProgressBuildResultTypeItems() {
+            return SharedUploadBuildStep.doFillInProgressBuildResultTypeItems();
         }
     }
 
