@@ -240,7 +240,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         }
 
         @SuppressWarnings("unused")
-        public ListBoxModel doFillInProgresBuildResultTypeItems() {
+        public ListBoxModel doFillInProgressBuildResultTypeItems() {
             return SharedUploadBuildStep.doFillInProgressBuildResultTypeItems();
         }
     }

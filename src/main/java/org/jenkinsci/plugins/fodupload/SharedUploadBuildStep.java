@@ -13,6 +13,8 @@ import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
+import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressBuildResultType;
+import org.jenkinsci.plugins.fodupload.models.response.StartScanResponse;
 import org.jenkinsci.plugins.fodupload.models.response.StaticScanSetupResponse;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
@@ -323,13 +325,22 @@ public class SharedUploadBuildStep {
                         build.getNumber(),
                         build.getDisplayName());
 
-                boolean success = staticScanController.startStaticScan(releaseId, staticScanSetup, model, notes);
+                StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, staticScanSetup, model, notes);
                 boolean deleted = payload.delete();
 
-                if (success && deleted) {
-                    logger.println("Scan Uploaded Successfully.");
+                if (scanResponse.isSuccessful() && deleted && !scanResponse.isScanInProgress()) {
+                    if(!scanResponse.isScanInProgress()){
+                        logger.println("Scan Uploaded Successfully.");
+                        build.setResult(Result.SUCCESS);
+                    } else if (model.getInProgressBuildResultType() == InProgressBuildResultType.WarnBuild.toString()) {
+                        logger.println("Scan aborted because scan in progress.");
+                        build.setResult(Result.SUCCESS);
+                    } else {
+                        build.setResult(Result.UNSTABLE);
+                    }
+                } else {
+                    build.setResult(Result.UNSTABLE);
                 }
-                build.setResult(success && deleted ? Result.SUCCESS : Result.UNSTABLE);
             } else {
                 logger.println("Failed to authenticate");
                 build.setResult(Result.FAILURE);
