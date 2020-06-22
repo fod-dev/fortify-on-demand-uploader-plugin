@@ -42,7 +42,8 @@ public class StaticScanController extends ControllerBase {
 
     /**
      * Begin a static scan on FoD
-     *
+     * @param releaseId     id of release being targeted
+     * @param staticScanSettings config information for scan
      * @param uploadRequest zip file to upload
      * @param notes         notes
      * @return true if the scan succeeded
@@ -156,7 +157,7 @@ public class StaticScanController extends ControllerBase {
 
                         scanStartedResponse = gson.fromJson(responseJsonStr, PostStartScanResponse.class);
                         logger.println("Scan " + scanStartedResponse.getScanId() + " uploaded successfully. Total bytes sent: " + offset);
-                        scanResults.uploadNotSuccessful();
+                        scanResults.uploadSuccessfulScanStarting();
                         return scanResults;
 
                     } else if (!response.isSuccessful()) { // There was an error along the lines of 'another scan in progress' or something
@@ -165,11 +166,15 @@ public class StaticScanController extends ControllerBase {
                         GenericErrorResponse errors = gson.fromJson(responseJsonStr, GenericErrorResponse.class);
                         if (errors != null)
                             logger.println("Package upload failed for the following reasons: " + errors.toString());
-                            if(errors.toString().contains("Can not start scan another scan is in progress"))
-                                logger.println("~~~ Contains statement successful");
-                            else 
-                                logger.println("~~~ Contains Statement unsuccessful");
-                            return false; // if there is an error, get out of loop and mark build unstable
+
+                        if(errors.toString().contains("Can not start scan another scan is in progress")) {
+                            scanResults.uploadSuccessfulScanNotStarted();
+                        }
+                        else {
+                            scanResults.uploadNotSuccessful();
+                        }
+                        
+                        return scanResults; // if there is an error, get out of loop and mark build unstable
                     }
                 }
                 response.body().close();
@@ -178,10 +183,12 @@ public class StaticScanController extends ControllerBase {
 
         } catch (Exception e) {
             e.printStackTrace(logger);
-            return false;
+            scanResults.uploadNotSuccessful();
+            return scanResults;
         }
 
-        return false;
+        scanResults.uploadNotSuccessful();
+        return scanResults;
     }
 
     public StaticScanSetupResponse getStaticScanSettings(final Integer releaseId) throws IOException {
