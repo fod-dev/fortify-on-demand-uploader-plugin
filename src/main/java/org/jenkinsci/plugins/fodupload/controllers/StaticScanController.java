@@ -10,15 +10,21 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.Utils;
+import org.jenkinsci.plugins.fodupload.models.AnalysisStatusTypeEnum;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
+import org.jenkinsci.plugins.fodupload.models.FodEnums.APILookupItemTypes;
 import org.jenkinsci.plugins.fodupload.models.response.GenericErrorResponse;
+import org.jenkinsci.plugins.fodupload.models.response.LookupItemsModel;
 import org.jenkinsci.plugins.fodupload.models.response.PostStartScanResponse;
+import org.jenkinsci.plugins.fodupload.models.response.ReleaseDTO;
 import org.jenkinsci.plugins.fodupload.models.response.StartScanResponse;
 import org.jenkinsci.plugins.fodupload.models.response.StaticScanSetupResponse;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public class StaticScanController extends ControllerBase {
@@ -129,7 +135,7 @@ public class StaticScanController extends ControllerBase {
                         .url(fragUrl + "&fragNo=" + fragmentNumber++ + "&offset=" + offset)
                         .post(RequestBody.create(byteArray, sendByteArray))
                         .build();
-
+                
                 // Get the response
                 Response response = apiConnection.getClient().newCall(request).execute();
 
@@ -160,6 +166,95 @@ public class StaticScanController extends ControllerBase {
                         scanResults.uploadSuccessfulScanStarting();
                         return scanResults;
 
+                    } else if(response.code() == 504) {
+
+                        // Current flow
+                        // Get analysis status types
+                        // Create an activeStatus and failedStatus status list.
+                        // Get most recent release scan and release scan status.
+                        // Make sure release isn't null if null, exit
+                        // Process release information
+
+                        logger.println("Gateway timeout error received.");
+
+                        if(uploadFile.length() == offset) {
+                            logger.println("Enough information to attempt recovery.");
+                            Thread.sleep(1000L * 10);
+                            
+                            ReleaseController releaseController = new ReleaseController(apiConnection);
+                            ReleaseDTO releaseDTO = null;
+                            int status = -1;
+                            List<String> activeStatuses = new ArrayList<>();
+                            
+                            // Get analysis status types
+                            LookupItemsController lookupItemsController = new LookupItemsController(this.apiConnection);
+                            List<LookupItemsModel> analysisStatusTypes =  lookupItemsController.getLookupItems(APILookupItemTypes.AnalysisStatusTypes);
+        
+                            // Create an activeStatus and failedStatus status list.
+                            if (analysisStatusTypes != null) {
+                                for (LookupItemsModel item : analysisStatusTypes) {
+                                    if (item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.Waiting.name()) || item.getText().equalsIgnoreCase(AnalysisStatusTypeEnum.InProgress.name()))
+                                        activeStatuses.add(item.getValue());
+                                }
+                            } else {
+                                logger.println("Unable to retrieve scan statuses.");
+                            }
+
+                            // Get most recent release scan and release scan status.
+                            try {
+                                releaseDTO = releaseController.getRelease(releaseId != 0 ? releaseId : token.getProjectVersionId(),
+                                        "currentAnalysisStatusTypeId,isPassed,passFailReasonTypeId,passFailReasonType,critical,high,medium,low,releaseId,rating,currentStaticScanId,releaseName");
+                    
+                                // Make sure release isn't null if null, exit
+                                if (releaseDTO == null) {
+                                    logger.println("Release data was not retrieved");
+                                    scanResults.uploadNotSuccessful();
+                                    return scanResults;
+                                }
+                            
+                                status = releaseDTO.getCurrentAnalysisStatusTypeId();
+                            } catch (IOException e) {
+                                logger.println("Upload failed. Unable to retreive release data for active FOD scan.");
+                                scanResults.uploadNotSuccessful();
+                                return scanResults;
+                            }
+
+                            // Process release information
+                            if (activeStatuses != null && activeStatuses.contains(Integer.toString(status))) {
+                                scanResults.uploadSuccessfulScanStarting();
+                                return scanResults;
+                            } else  {
+                                logger.println("Scan does not have active scan status. Failing build");
+                                GenericErrorResponse errors = gson.fromJson(responseJsonStr, GenericErrorResponse.class);
+                                if (errors != null)
+                                    logger.println("Package upload failed for the following reasons: " + errors.toString());
+
+                                if(errors.toString().contains("Can not start scan another scan is in progress")) {
+                                    scanResults.uploadSuccessfulScanNotStarted();
+                                }
+                                else {
+                                    scanResults.uploadNotSuccessful();
+                                }
+                                
+                                return scanResults; // if there is an error, get out of loop and mark build unstable
+                            }
+                            
+                        }
+                        else {
+                            logger.println("An error occurred during the upload. Unable to recover from error.");
+                                GenericErrorResponse errors = gson.fromJson(responseJsonStr, GenericErrorResponse.class);
+                                if (errors != null)
+                                    logger.println("Package upload failed for the following reasons: " + errors.toString());
+
+                                if(errors.toString().contains("Can not start scan another scan is in progress")) {
+                                    scanResults.uploadSuccessfulScanNotStarted();
+                                }
+                                else {
+                                    scanResults.uploadNotSuccessful();
+                                }
+                                
+                                return scanResults; // if there is an error, get out of loop and mark build unstable
+                        }
                     } else if (!response.isSuccessful()) { // There was an error along the lines of 'another scan in progress' or something
 
                         logger.println("An error occurred during the upload.");
