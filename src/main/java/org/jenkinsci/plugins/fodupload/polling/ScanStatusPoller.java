@@ -50,7 +50,7 @@ public class ScanStatusPoller {
      * @throws java.io.IOException  in certain cases
      * @throws InterruptedException in certain cases
      */
-    public PollReleaseStatusResult pollReleaseStatus(final int releaseId) throws IOException, InterruptedException {
+    public PollReleaseStatusResult pollReleaseStatus(final int releaseId, final int scanId) throws IOException, InterruptedException {
 
 
         logger.println("Begin polling Fortify on Demand for results.");
@@ -85,9 +85,9 @@ public class ScanStatusPoller {
                 }
                 if (counter == 1) {
                     //No Thread.sleep() on first round
-                    pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, 0);
+                    pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, 0, scanId);
                 } else {
-                    pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, pollingInterval);
+                    pollerThread = new StatusPollerThread(String.valueOf(counter), releaseId, analysisStatusTypes, apiConnection, complete, logger, pollingInterval, scanId);
                 }
 
                 pollerThread.start();
@@ -98,7 +98,7 @@ public class ScanStatusPoller {
                 }
 
                 if (failCount < MAX_FAILS) {
-                    if(!pollerThread.fail)
+                    if(!pollerThread.fail && pollerThread.statusString != null)
                     {
                         failCount = 0;
                         logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
@@ -198,10 +198,11 @@ class StatusPollerThread extends Thread {
     private StaticScanSummaryController scanSummaryController;
     private List<LookupItemsModel> analysisStatusTypes;
     private List<String> completeStatusList;
+    private int scanId;
 
 
     StatusPollerThread(String name, final int releaseId, List<LookupItemsModel> analysisStatusTypes,
-                       FodApiConnection apiConnection, List<String> completeStatusList, PrintStream logger, int pollingInterval) {
+                       FodApiConnection apiConnection, List<String> completeStatusList, PrintStream logger, int pollingInterval, final int scanId) {
         super(name);
         this.releaseId = releaseId;
         this.analysisStatusTypes = analysisStatusTypes;
@@ -210,6 +211,7 @@ class StatusPollerThread extends Thread {
         this.scanSummaryController = new StaticScanSummaryController(apiConnection, logger);
         this.completeStatusList = completeStatusList;
         this.pollingInterval = pollingInterval;
+        this.scanId = scanId;
     }
 
     public void run() {
@@ -225,21 +227,18 @@ class StatusPollerThread extends Thread {
     private void processScanRelease() {
         int status = -1;
         try {
-            releaseDTO = releaseController.getRelease(releaseId,
-                    "currentAnalysisStatusTypeId,isPassed,passFailReasonTypeId,passFailReasonType,critical,high,medium,low,releaseId,rating,currentStaticScanId,releaseName");
+            scanSummaryDTO = releaseController.getRelease(releaseId, scanId);
 
-            status = releaseDTO.getCurrentAnalysisStatusTypeId();
+            status = scanSummaryDTO.getAnalysisStatusTypeId();
         } catch (IOException e) {
             logger.println("Unable to retreive release data");
         }
 
-        if (releaseDTO == null) {
+        if (scanSummaryDTO == null) {
             fail = true;
             logger.println("Release data is not retrieved");
         }
 
-
-        // Look for and print the status OR break the loop.
         for (LookupItemsModel o : analysisStatusTypes) {
             if (o != null) {
                 int analysisStatusInt = Integer.parseInt(o.getValue());
@@ -256,15 +255,16 @@ class StatusPollerThread extends Thread {
         if (this.statusString == null || this.statusString == "")
         {
             fail = true;
+            logger.println("Poll status is null.");
         } else {
-            if(statusString.equals(AnalysisStatusTypeEnum.InProgress.name())) {
+            if(statusString.equals(AnalysisStatusTypeEnum.InProgress.name()) || statusString.equals(AnalysisStatusTypeEnum.Queued.name()) || statusString.equals(AnalysisStatusTypeEnum.Scheduled.name())) {
                 result.setScanInProgress(true);
-                result.setPassing(releaseDTO.isPassed());
+                result.setPassing(true);
                 finished = true;
             }
             if (statusString.equals(AnalysisStatusTypeEnum.Waiting.name())) {
                 try {
-                    scanSummaryDTO = scanSummaryController.getReleaseScanSummary(releaseDTO.getReleaseId(), releaseDTO.getCurrentStaticScanId());
+                    scanSummaryDTO = scanSummaryController.getReleaseScanSummary(scanSummaryDTO.getReleaseId(), scanId);
                     finished = true;
                 } catch (IOException e) {
                     logger.println("Unable to retrieve scan summary data. Error: " + e.toString());
@@ -272,15 +272,15 @@ class StatusPollerThread extends Thread {
                 }
             }
             if (finished) {
-                result.setPassing(releaseDTO.isPassed());
+                result.setPassing(true);
                 result.setPollingSuccessful(true);
 
-                if (!Utils.isNullOrEmpty(releaseDTO.getPassFailReasonType()))
-                    result.setFailReason(releaseDTO.getPassFailReasonType());
+                // if (!Utils.isNullOrEmpty(releaseDTO.getPassFailReasonType()))
+                //     result.setFailReason(releaseDTO.getPassFailReasonType());
 
                 if (statusString.equals(AnalysisStatusTypeEnum.Canceled.name())) {
                     try {
-                        scanSummaryDTO = scanSummaryController.getReleaseScanSummary(releaseDTO.getReleaseId(), releaseDTO.getCurrentStaticScanId());
+                        scanSummaryDTO = scanSummaryController.getReleaseScanSummary(scanSummaryDTO.getReleaseId(), scanId);
                     } catch (IOException e) {
                         logger.println("Unable to retrieve scan summary data. Error: " + e.toString());
                         fail = true;

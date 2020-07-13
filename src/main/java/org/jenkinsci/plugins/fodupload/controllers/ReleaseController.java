@@ -2,6 +2,8 @@ package org.jenkinsci.plugins.fodupload.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.kenai.jnr.x86asm.Logger;
+
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -13,6 +15,7 @@ import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.jenkinsci.plugins.fodupload.models.response.GenericListResponse;
 import org.jenkinsci.plugins.fodupload.models.response.ReleaseAssessmentTypeDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ReleaseDTO;
+import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -85,6 +88,62 @@ public class ReleaseController extends ControllerBase {
         else
             return null;
     }
+
+    /**
+     * Get an individual release
+     *
+     * @param releaseId release to get
+     * @param scanId    scanId to find specific scan result
+     * @return ScanSummaryDTO object
+     * @throws java.io.IOException in some circumstances
+     */
+    public ScanSummaryDTO getRelease(final int releaseId, final int scanId) throws IOException {
+
+        // TODO: Remove every method authenticating the connection, leave that to the user
+        if (apiConnection.getToken() == null)
+            apiConnection.authenticate();
+
+        // TODO: Investigate why the endpoint for a release wasn't used
+        HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+                .addPathSegments(String.format("/api/v3/releases/%d/scans", releaseId))
+                .addQueryParameter("limit", "5")
+                .addQueryParameter("orderBy", "scanId")
+                .addQueryParameter("orderByDirection", "DESC");
+
+        String url = builder.build().toString();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+        Response response = apiConnection.getClient().newCall(request).execute();
+
+        if (response.code() == HttpStatus.SC_FORBIDDEN) { 
+            // Re-authenticate
+            apiConnection.authenticate();
+            response = apiConnection.getClient().newCall(request).execute();
+        }
+        // Read the results and close the response
+        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
+        response.body().close();
+
+        Gson gson = new Gson();
+        // Create a type of GenericList<ReleaseDTO> to play nice with gson.
+        Type t = new TypeToken<GenericListResponse<ReleaseDTO>>() {
+        }.getType();
+        GenericListResponse<ScanSummaryDTO> results = gson.fromJson(content, t);
+        if (results.getItems().size() > 0) {
+           for (ScanSummaryDTO sdto : results.getItems())
+            {
+                if(sdto.getScanId() == scanId)
+                    return sdto;
+            }
+        }
+        return null;
+    }
+
 
     //TODO DELETE ALL OF THIS! I don't think it's used after ticket US-318012
 

@@ -70,8 +70,10 @@ public class PollingBuildStep extends Recorder implements SimpleBuildStep {
                         @Nonnull FilePath filePath,
                         @Nonnull Launcher launcher,
                         @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
-        if(run.getAction(CrossBuildAction.class) == null || run.getAction(CrossBuildAction.class).allowPolling())
+        if(run.getAction(CrossBuildAction.class) == null || run.getAction(CrossBuildAction.class).allowPolling()) {
+            sharedBuildStep.setUploadScanId(run.getAction(CrossBuildAction.class).currentScanId());
             sharedBuildStep.perform(run, filePath, launcher, taskListener);
+        }
     }
 
     @Override
