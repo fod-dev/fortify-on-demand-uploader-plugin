@@ -64,6 +64,7 @@ public class SharedPollingBuildStep {
         this.bsiToken = bsiToken;
         this.pollingInterval = pollingInterval;
         this.policyFailureBuildResultPreference = policyFailureBuildResultPreference;
+        this.scanId = -1;
         authModel = new AuthenticationModel(overrideGlobalConfig,
                 username,
                 personalAccessToken,
@@ -222,6 +223,12 @@ public class SharedPollingBuildStep {
                 || Result.UNSTABLE.equals(currentResult)) {
 
             logger.println("Error: Build Failed or Unstable.  No reason to poll Fortify on Demand for results.");
+            return;
+        }
+
+        if(scanId == -1) {
+            logger.println("Error: Unable to retrieve scan ID. Exiting FOD scan.");
+            run.setResult(Result.UNSTABLE);
             return;
         }
 

@@ -18,6 +18,7 @@ import org.jenkinsci.plugins.fodupload.models.response.ReleaseDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 
@@ -130,18 +131,19 @@ public class ReleaseController extends ControllerBase {
         response.body().close();
 
         Gson gson = new Gson();
-        // Create a type of GenericList<ReleaseDTO> to play nice with gson.
-        Type t = new TypeToken<GenericListResponse<ReleaseDTO>>() {
+        // Create a type of GenericList<ScanSummary> to play nice with gson.
+        Type t = new TypeToken<GenericListResponse<ScanSummaryDTO>>() {
         }.getType();
         GenericListResponse<ScanSummaryDTO> results = gson.fromJson(content, t);
+        ScanSummaryDTO resultDto = null;
         if (results.getItems().size() > 0) {
            for (ScanSummaryDTO sdto : results.getItems())
             {
                 if(sdto.getScanId() == scanId)
-                    return sdto;
+                    resultDto = sdto;
             }
         }
-        return null;
+        return resultDto;
     }
 
 
