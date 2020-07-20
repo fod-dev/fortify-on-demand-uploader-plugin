@@ -226,6 +226,7 @@ public class SharedPollingBuildStep {
             return;
         }
 
+        // Magic numbers are awful but this eliminates most null errors.
         if(scanId == -1) {
             logger.println("Error: Unable to retrieve scan ID. Exiting FOD scan.");
             run.setResult(Result.UNSTABLE);
