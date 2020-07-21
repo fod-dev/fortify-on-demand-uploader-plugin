@@ -10,6 +10,7 @@ import org.jenkinsci.plugins.fodupload.controllers.ReleaseController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanSummaryController;
 import org.jenkinsci.plugins.fodupload.models.AnalysisStatusTypeEnum;
 import org.jenkinsci.plugins.fodupload.models.response.LookupItemsModel;
+import org.jenkinsci.plugins.fodupload.models.response.PollingSummaryDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ReleaseDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
 
@@ -18,8 +19,9 @@ class StatusPollerThread extends Thread {
     public Boolean finished = false;
     public String statusString;
     public PollReleaseStatusResult result = new PollReleaseStatusResult();
-    public ScanSummaryDTO scanSummaryDTO = null;
-    public ReleaseDTO releaseDTO = null;
+    //public ScanSummaryDTO scanSummaryDTO = null;
+    public PollingSummaryDTO pollingSummaryDTO = null;
+    //public ReleaseDTO releaseDTO = null;
     private PrintStream logger;
     private int releaseId;
     private int pollingInterval;
@@ -56,16 +58,17 @@ class StatusPollerThread extends Thread {
     private void processScanRelease() {
         int status = -1;
         try {
-            scanSummaryDTO = releaseController.getRelease(releaseId, scanId);
-            status = scanSummaryDTO.getAnalysisStatusTypeId();
+            pollingSummaryDTO = releaseController.getReleaseByScanId(releaseId, scanId);
+            
+            if (pollingSummaryDTO == null) {
+                fail = true;
+                logger.println("Release data is not retrieved");
+                return;
+            }
+    
+            status = pollingSummaryDTO.getAnalysisStatusId();
         } catch (IOException e) {
             logger.println("Unable to retreive release data");
-        }
-
-        if (scanSummaryDTO == null) {
-            fail = true;
-            logger.println("Release data is not retrieved");
-            return;
         }
 
         if (completeStatusList.contains(Integer.toString(status))) {
@@ -91,36 +94,14 @@ class StatusPollerThread extends Thread {
                 result.setPassing(true);
             }
             if (statusString.equals(AnalysisStatusTypeEnum.Waiting.name())) {
-                try {
-                    scanSummaryDTO = scanSummaryController.getReleaseScanSummary(scanSummaryDTO.getReleaseId(), scanId);
                     finished = true;
-                } catch (IOException e) {
-                    logger.println("Unable to retrieve scan summary data. Error: " + e.toString());
                     fail = true;
-                }
             }
             if (finished) {
                 result.setPassing(true);
                 result.setPollingSuccessful(true);
-                try{
-                    releaseDTO = releaseController.getRelease(releaseId, "currentAnalysisStatusTypeId,isPassed,passFailReasonTypeId,passFailReasonType,critical,high,medium,low,releaseId,rating,currentStaticScanId,releaseName");
-                    if (!Utils.isNullOrEmpty(releaseDTO.getPassFailReasonType()))
-                        result.setFailReason(releaseDTO.getPassFailReasonType());
-                } catch (IOException ex){
-                    logger.println("Unable to retrieve release summary data. Error: " + ex.toString());
-                    result.setFailReason("Unable to retrieve release summary data.");
-                }
+                result.setFailReason(pollingSummaryDTO.getPassFailReasonType());
                 
-                
-
-                if (statusString.equals(AnalysisStatusTypeEnum.Canceled.name())) {
-                    try {
-                        scanSummaryDTO = scanSummaryController.getReleaseScanSummary(scanSummaryDTO.getReleaseId(), scanId);
-                    } catch (IOException e) {
-                        logger.println("Unable to retrieve scan summary data. Error: " + e.toString());
-                        fail = true;
-                    }
-                }
             }
         }
     }

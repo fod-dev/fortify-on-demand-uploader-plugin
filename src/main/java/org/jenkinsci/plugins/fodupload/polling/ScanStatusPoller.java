@@ -6,6 +6,7 @@ import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.controllers.LookupItemsController;
 import org.jenkinsci.plugins.fodupload.models.AnalysisStatusTypeEnum;
 import org.jenkinsci.plugins.fodupload.models.response.LookupItemsModel;
+import org.jenkinsci.plugins.fodupload.models.response.PollingSummaryDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ReleaseDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ScanPauseDetail;
 import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
@@ -101,15 +102,15 @@ public class ScanStatusPoller {
                         failCount = 0;
                         logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
 
-                        if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.scanSummaryDTO.getPauseDetails() != null)
-                            printPauseMessages(pollerThread.scanSummaryDTO);
+                        if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.pollingSummaryDTO.getPauseDetails() != null)
+                            printPauseMessages(pollerThread.pollingSummaryDTO);
                         if (pollerThread.finished) {
                             finished = pollerThread.finished;
 
                             if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Canceled.name())) {
-                                printCancelMessages(pollerThread.scanSummaryDTO);
+                                printCancelMessages(pollerThread.pollingSummaryDTO, releaseId);
                             } else if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Completed.name())) {
-                                printPassFail(pollerThread.releaseDTO);
+                                printPassFail(pollerThread.pollingSummaryDTO, releaseId);
                             }
                         }
                         counter++;
@@ -151,22 +152,45 @@ public class ScanStatusPoller {
         }
     }
 
-    private void printCancelMessages(ScanSummaryDTO scanSummary) {
+    /**
+     * Prints some info about the release including an issue breakdown and pass/fail reason
+     *
+     * @param release release to print info for
+     */
+    private void printPassFail(PollingSummaryDTO release, int releaseId) {
+
+        boolean isPassed = release.getPassFailStatus();
+        logger.println(String.format("Critical: %d", release.getIssueCountCritical()));
+        logger.println(String.format("High:     %d", release.getIssueCountHigh()));
+        logger.println(String.format("Medium:   %d", release.getIssueCountMedium()));
+        logger.println(String.format("Low:      %d", release.getIssueCountLow()));
+        logger.println("For application status details see the customer portal: ");
+        logger.println(String.format("%s/Redirect/Releases/%d", apiConnection.getBaseUrl(), releaseId));
+        logger.println(String.format("Scan %s established policy check", isPassed ? "passed" : "failed"));
+        if (!isPassed) {
+            String passFailReason = release.getPassFailReasonType() == null ?
+                    "Pass/Fail Policy requirements not met " :
+                    release.getPassFailReasonType();
+            logger.println("Failure Reason:         " + passFailReason);
+        }
+    }
+
+    private void printCancelMessages(PollingSummaryDTO scanSummary, int releaseId) {
         if (scanSummary == null) {
             logger.println("Unable to retrieve scan summary data cancel reasons");
         } else {
             logger.println("-------Scan Cancelled------- ");
             logger.println();
-            logger.println(String.format("Cancel reason:        %s", scanSummary.getCancelReason()));
+            logger.println(String.format("Cancel reason:        %s", scanSummary.getAnalysisStatusTypeValue()));
             logger.println(String.format("Cancel reason notes:  %s", scanSummary.getAnalysisStatusReasonNotes()));
             logger.println();
             logger.println("For application status details see the customer portal: ");
-            logger.println(String.format("%s/Redirect/Releases/%d", apiConnection.getBaseUrl(), scanSummary.getReleaseId()));
+            logger.println(String.format("%s/Redirect/Releases/%d", apiConnection.getBaseUrl(), releaseId));
             logger.println();
         }
     }
 
-    private void printPauseMessages(ScanSummaryDTO scanSummary) {
+    private void printPauseMessages(PollingSummaryDTO scanSummary) {
         if (scanSummary == null) {
             logger.println("Unable to retrieve scan summary data pause reasons");
         } else {

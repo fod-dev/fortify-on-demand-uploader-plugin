@@ -13,6 +13,7 @@ import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.models.FodApiFilterList;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.jenkinsci.plugins.fodupload.models.response.GenericListResponse;
+import org.jenkinsci.plugins.fodupload.models.response.PollingSummaryDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ReleaseAssessmentTypeDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ReleaseDTO;
 import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
@@ -143,6 +144,51 @@ public class ReleaseController extends ControllerBase {
                     resultDto = sdto;
             }
         }
+        return resultDto;
+    }
+
+    /**
+     * Get an individual release
+     *
+     * @param releaseId release to get
+     * @param scanId    scanId to find specific scan result
+     * @return ScanSummaryDTO object
+     * @throws java.io.IOException in some circumstances
+     */
+    public PollingSummaryDTO getReleaseByScanId(final int releaseId, final int scanId) throws IOException {
+
+        // TODO: Remove every method authenticating the connection, leave that to the user
+        if (apiConnection.getToken() == null)
+            apiConnection.authenticate();
+
+        // TODO: Investigate why the endpoint for a release wasn't used
+        HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+                .addPathSegments(String.format("/api/v3/releases/%d/scans/%s/polling-summary", releaseId, scanId));
+
+        String url = builder.build().toString();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+        Response response = apiConnection.getClient().newCall(request).execute();
+
+        if (response.code() == HttpStatus.SC_FORBIDDEN) { 
+            // Re-authenticate
+            apiConnection.authenticate();
+            response = apiConnection.getClient().newCall(request).execute();
+        }
+        // Read the results and close the response
+        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
+        response.body().close();
+
+        Gson gson = new Gson();
+        // Create a type of GenericList<ScanSummary> to play nice with gson.
+        Type t = new TypeToken<PollingSummaryDTO>() {
+        }.getType();
+        PollingSummaryDTO resultDto = gson.fromJson(content, t);
         return resultDto;
     }
 
