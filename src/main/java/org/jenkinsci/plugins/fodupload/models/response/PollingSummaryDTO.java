@@ -1,71 +1,76 @@
 package org.jenkinsci.plugins.fodupload.models.response;
 
 public class PollingSummaryDTO {
-    private int scanId;
-    private int tenantId;
-    private int analysisStatusId;
-    private String analysisStatusTypeValue;
-    private int analysisStatusReasonId;
-    private String analysisStatusReasonNotes;
-    private int issueCountCritical;
-    private int issueCountHigh;
-    private int issueCountMedium;
-    private int issueCountLow;
-    private Boolean passFailStatus;
-    private String passFailReasonType;
-    private ScanPauseDetail[] pauseDetails;
+    private int ScanId;
+    private int TenantId;
+    private int AnalysisStatusId;
+    private String AnalysisStatusTypeValue;
+    private int AnalysisStatusReasonId;
+    private String AnalysisStatusReason;
+    private String AnalysisStatusReasonNotes;
+    private int IssueCountCritical;
+    private int IssueCountHigh;
+    private int IssueCountMedium;
+    private int IssueCountLow;
+    private Boolean PassFailStatus;
+    private String PassFailReasonType;
+    private ScanPauseDetail[] PauseDetails;
 
     
     public int getScanId() {
-        return scanId;
+        return ScanId;
     };
 
     public int getTenantId() {
-        return tenantId;
+        return TenantId;
     };
 
     public int getAnalysisStatusId() {
-        return analysisStatusId;
+        return AnalysisStatusId;
     };
 
     public String getAnalysisStatusTypeValue() {
-        return analysisStatusTypeValue;
+        return AnalysisStatusTypeValue;
     };
 
     public int getAnalysisStatusReasonId() {
-        return analysisStatusReasonId;
+        return AnalysisStatusReasonId;
+    };
+
+    public String getAnalysisStatusReason() {
+        return AnalysisStatusReason != null ? AnalysisStatusReason : "";
     };
 
     public String getAnalysisStatusReasonNotes() {
-        return analysisStatusReasonNotes != null ? analysisStatusReasonNotes : "";
+        return AnalysisStatusReasonNotes != null ? AnalysisStatusReasonNotes : "";
     };
 
     public int getIssueCountCritical() {
-        return issueCountCritical;
+        return IssueCountCritical;
     };
 
     public int getIssueCountHigh() {
-        return issueCountHigh;
+        return IssueCountHigh;
     };
 
     public int getIssueCountMedium() {
-        return issueCountMedium;
+        return IssueCountMedium;
     };
 
     public int getIssueCountLow() {
-        return issueCountLow;
+        return IssueCountLow;
     };
 
     public Boolean getPassFailStatus() {
-        return passFailStatus;
+        return PassFailStatus;
     };
 
     public String getPassFailReasonType() {
-        return passFailReasonType;
+        return PassFailReasonType;
     };
 
     public ScanPauseDetail[] getPauseDetails() {
-        ScanPauseDetail[] returnDetails = pauseDetails;
+        ScanPauseDetail[] returnDetails = PauseDetails;
         return returnDetails;
     };
 }
