@@ -181,7 +181,7 @@ public class ScanStatusPoller {
         } else {
             logger.println("-------Scan Cancelled------- ");
             logger.println();
-            logger.println(String.format("Cancel reason:        %s", scanSummary.getAnalysisStatusTypeValue()));
+            logger.println(String.format("Cancel reason:        %s", scanSummary.getAnalysisStatusReason()));
             logger.println(String.format("Cancel reason notes:  %s", scanSummary.getAnalysisStatusReasonNotes()));
             logger.println();
             logger.println("For application status details see the customer portal: ");
