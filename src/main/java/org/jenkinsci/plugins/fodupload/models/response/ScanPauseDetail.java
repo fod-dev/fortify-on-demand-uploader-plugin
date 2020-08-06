@@ -1,19 +1,19 @@
 package org.jenkinsci.plugins.fodupload.models.response;
 
 public class ScanPauseDetail {
-    private String pausedOn = "";
-    private String reason = "";
-    private String notes = "";
+    private String PausedOn = "";
+    private String Reason = "";
+    private String Notes = "";
 
     public String getPausedOn() {
-        return pausedOn;
+        return PausedOn;
     }
 
     public String getReason() {
-        return reason != null ? reason : "";
+        return Reason != null ? Reason : "";
     }
 
     public String getNotes() {
-        return notes != null ? notes : "";
+        return Notes != null ? Notes : "";
     }
 }

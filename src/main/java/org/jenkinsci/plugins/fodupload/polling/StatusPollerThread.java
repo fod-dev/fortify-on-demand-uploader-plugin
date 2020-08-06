@@ -95,7 +95,6 @@ class StatusPollerThread extends Thread {
             }
             if (statusString.equals(AnalysisStatusTypeEnum.Waiting.name())) {
                     finished = true;
-                    fail = true;
             }
             if (finished) {
                 result.setPassing(true);
