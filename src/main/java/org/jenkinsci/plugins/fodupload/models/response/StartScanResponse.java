@@ -31,12 +31,12 @@ public class StartScanResponse {
     //Scan in progress but no issues uploading files. Not intricately verified.
     public void uploadSuccessfulScanNotStarted() {
         success = true;
-        scanInProgress= true;
+        scanInProgress= false;
     }
     //Scan in progress but no issues uploading files. Not intricately verified.
     public void uploadSuccessfulScanNotStarted(int scanId) {
         this.success = true;
-        this.scanInProgress= true;
+        this.scanInProgress= false;
         this.scanId = scanId;
     }
     //Generic something went wrong
