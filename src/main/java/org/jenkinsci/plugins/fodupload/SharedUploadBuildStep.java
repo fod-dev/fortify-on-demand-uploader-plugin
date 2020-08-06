@@ -223,7 +223,6 @@ public class SharedUploadBuildStep {
 
         final PrintStream logger = listener.getLogger();
         FodApiConnection apiConnection = null;
-        boolean isScanInProgress = false;
 
         try {
             taskListener.set(listener);
@@ -341,14 +340,14 @@ public class SharedUploadBuildStep {
                 boolean isQueueEnabled = model.getInProgressScanActionType().equalsIgnoreCase(InProgressScanActionType.Queue.getValue());
                 /**
                  * If(able to contact api) {
-                 *      if(No scan in progress && the uploaded file deleted) {
+                 *      if(Scan is allowed to start && the uploaded file is deleted) {
                  *          All good
                  *      }
-                 *      else if (Scan in progress && user selected WarnBuild Build Action) {
+                 *      else if (Scan in not allowed to start && user selected WarnBuild Build Action) {
                  *          Say all good
                  *          Set flag that stops anny additional FOD stuff
                  *      }
-                 *      else (Scan is in progress && user selected FailBuild Build Action) {
+                 *      else (Scan is not allowed to start && user selected FailBuild Build Action) {
                  *          Fail Build
                  *      }
                  * } else (unable to contact api) {
@@ -356,16 +355,18 @@ public class SharedUploadBuildStep {
                  * }
                  */
                 if (scanResponse.isSuccessful()) {
-                    logger.println("Scan Uploaded Successfully.");
-                    if(isQueueEnabled || !scanResponse.isScanInProgress() && deleted){
+                    if(isQueueEnabled || scanResponse.isScanInProgress()){
+                        logger.println("Scan Uploaded Successfully.");
                         setScanId(scanResponse.getScanId());
                         build.setResult(Result.SUCCESS);
+                        if(!deleted) {
+                            logger.println("Unable to delete temporary zip file. Please manually delete file at location: " + payload.getAbsolutePath());
+                        }
                     } else if (isWarningSettingEnabled) {
                         logger.println("Fortify scan skipped because another scan is in progress.");
-                        isScanInProgress = true;
                         build.setResult(Result.UNSTABLE);
                     } else {
-                        logger.println("Build failed because another scan is in progress and queuing not selected as in progress scan action in settings.");
+                        logger.println("Build failed because another scan is in progress and queuing is not selected as the \"in progress scan\" action in settings.");
                         build.setResult(Result.FAILURE);
                     }
                 } else {
@@ -384,7 +385,7 @@ public class SharedUploadBuildStep {
             logger.println(iae.getMessage());
             build.setResult(Result.FAILURE);
         } finally {
-            if (apiConnection != null && !isScanInProgress) {
+            if (apiConnection != null) {
                 try {
                     apiConnection.retireToken();
                 } catch (IOException e) {
