@@ -5,7 +5,7 @@ public class StartScanResponse {
     private boolean scanInProgress;
     private int scanId;
 
-    public boolean isScanInProgress() {
+    public boolean isScanUploadAccepted() {
         return scanInProgress;
     }
     public boolean isSuccessful() {
