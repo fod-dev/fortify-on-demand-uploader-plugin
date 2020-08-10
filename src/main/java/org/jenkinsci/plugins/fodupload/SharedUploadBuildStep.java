@@ -337,7 +337,6 @@ public class SharedUploadBuildStep {
                 boolean deleted = payload.delete();
 
                 boolean isWarningSettingEnabled = model.getInProgressBuildResultType().equalsIgnoreCase(InProgressBuildResultType.WarnBuild.getValue());
-                boolean isQueueEnabled = model.getInProgressScanActionType().equalsIgnoreCase(InProgressScanActionType.Queue.getValue());
                 /**
                  * If(able to contact api) {
                  *      if(Scan is allowed to start && the uploaded file is deleted) {
@@ -355,7 +354,7 @@ public class SharedUploadBuildStep {
                  * }
                  */
                 if (scanResponse.isSuccessful()) {
-                    if(isQueueEnabled || scanResponse.isScanInProgress()){
+                    if(scanResponse.isScanUploadAccepted()) {
                         logger.println("Scan Uploaded Successfully.");
                         setScanId(scanResponse.getScanId());
                         build.setResult(Result.SUCCESS);
