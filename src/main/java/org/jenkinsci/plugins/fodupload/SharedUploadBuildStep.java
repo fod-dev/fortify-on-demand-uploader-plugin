@@ -15,6 +15,7 @@ import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressBuildResultType;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressScanActionType;
+import org.jenkinsci.plugins.fodupload.models.FodEnums.SelectedReleaseType;
 import org.jenkinsci.plugins.fodupload.models.response.StartScanResponse;
 import org.jenkinsci.plugins.fodupload.models.response.StaticScanSetupResponse;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
@@ -61,7 +62,8 @@ public class SharedUploadBuildStep {
                                  String srcLocation,
                                  String remediationScanPreferenceType,
                                  String inProgressScanActionType,
-                                 String inProgressBuildResultType) {
+                                 String inProgressBuildResultType,
+                                 String selectedReleaceType) {
 
         model = new JobModel(releaseId,
                 bsiToken,
@@ -70,7 +72,8 @@ public class SharedUploadBuildStep {
                 srcLocation,
                 remediationScanPreferenceType,
                 inProgressScanActionType,
-                inProgressBuildResultType);
+                inProgressBuildResultType,
+                selectedReleaceType);
 
         authModel = new AuthenticationModel(overrideGlobalConfig,
                 username,

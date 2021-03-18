@@ -25,6 +25,7 @@ public class JobModel {
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
     private String inProgressBuildResultType;
+    private String selectedReleaceType;
 
     private File payload;
 
@@ -46,7 +47,8 @@ public class JobModel {
                     String srcLocation,
                     String remediationScanPreferenceType,
                     String inProgressScanActionType,
-                    String inProgressBuildResultType) {
+                    String inProgressBuildResultType,
+                    String selectedReleaceType) {
 
         this.releaseId = releaseId;
         this.bsiTokenOriginal = bsiToken;
@@ -56,6 +58,7 @@ public class JobModel {
         this.remediationScanPreferenceType = remediationScanPreferenceType;
         this.inProgressScanActionType = inProgressScanActionType;
         this.inProgressBuildResultType = inProgressBuildResultType;
+        this.selectedReleaceType = selectedReleaceType;
     }
 
     public File getPayload() {
@@ -100,6 +103,10 @@ public class JobModel {
         return inProgressBuildResultType;
     }
 
+    public String getSelectedReleaceType() {
+        return selectedReleaceType;
+    }
+
     @Override
     public String toString() {
         if (bsiTokenCache != null) {
@@ -111,7 +118,8 @@ public class JobModel {
                             "Purchase Entitlements:             %s%n" +
                             "Entitlement Preference:            %s%n" +
                             "In Progress Scan Action:           %s%n" +
-                            "In Progress Build Action:          %s%n",
+                            "In Progress Build Action:          %s%n" +
+                            "Selected Release Type:             %s%n",
                     bsiTokenCache.getProjectVersionId(),
                     bsiTokenCache.getAssessmentTypeId(),
                     bsiTokenCache.getTechnologyStack(),
@@ -119,7 +127,8 @@ public class JobModel {
                     purchaseEntitlements,
                     entitlementPreference,
                     inProgressScanActionType,
-                    inProgressBuildResultType);
+                    inProgressBuildResultType,
+                    selectedReleaceType);
         } else {
             return String.format("Release Id: %s", releaseId);
         }

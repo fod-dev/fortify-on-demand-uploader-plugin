@@ -200,4 +200,56 @@ public class FodEnums {
     }
 
 
+    public enum SelectedReleaseType {
+        UseReleaseId("Release ID"),
+        UseBSIToken("BSI Token"),
+        UseAppAndReleaseName("Application and Release Options");
+
+        private final String _val;
+
+        SelectedReleaseType(String val) {
+            this._val = val;
+        }
+
+        public static SelectedReleaseType fromInt(int val) {
+            switch (val) {
+                case 3:
+                    return UseReleaseId;
+                case 2:
+                    return UseBSIToken;
+                case 1:
+                default:
+                    return UseAppAndReleaseName;
+            }
+        }
+
+        public String getValue() {
+            return this._val;
+        }
+
+        public int getInteger() {
+            switch (this._val) {
+                case "UseReleaseId":
+                    return 3;
+                case "UseBSIToken":
+                    return 2;
+                case "UseAppAndReleaseName":
+                default:
+                    return 1;
+            }
+        }
+
+        public String toString() {
+            switch (this._val) {
+                case "UseReleaseId":
+                    return "Release ID";
+                case "UseBSIToken":
+                    return "BSI Token";
+                case "UseAppAndReleaseName":
+                default:
+                    return "Application and Release Options";
+            }
+        }
+    }
+
 }

@@ -61,7 +61,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String srcLocation,
                                      String remediationScanPreferenceType,
                                      String inProgressScanActionType,
-                                     String inProgressBuildResultType) {
+                                     String inProgressBuildResultType,
+                                     String selectedReleaseType) {
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
                 bsiToken,
@@ -74,7 +75,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 srcLocation,
                 remediationScanPreferenceType,
                 inProgressScanActionType,
-                inProgressBuildResultType);
+                inProgressBuildResultType,
+                selectedReleaseType);
 
     }
 
