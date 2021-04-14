@@ -185,6 +185,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return sharedBuildStep.getModel().getInProgressBuildResultType();
     }
 
+    @SuppressWarnings("unused")
+    public String getSelectedReleaseType() {
+        return sharedBuildStep.getModel().getSelectedReleaceType();
+    }
+
     @Extension
 
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {

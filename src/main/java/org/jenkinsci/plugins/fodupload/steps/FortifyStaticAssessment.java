@@ -55,6 +55,7 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String remediationScanPreferenceType;
     private String inProgressScanActionType;
     private String inProgressBuildResultType;
+    private String selectedReleaseType;
 
     private SharedUploadBuildStep commonBuildStep;
 
@@ -161,6 +162,16 @@ public class FortifyStaticAssessment extends FortifyStep {
         this.inProgressBuildResultType = inProgressBuildResultType;
     }
 
+    @SuppressWarnings("unused")
+    public String getSelectedReleaseType() {
+        return selectedReleaseType;
+    }
+
+    @DataBoundSetter
+    public void setSelectedReleaseType(String selectedReleaseType) {
+        this.selectedReleaseType = selectedReleaseType;
+    }
+
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
@@ -177,7 +188,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 srcLocation,
                 remediationScanPreferenceType,
                 inProgressScanActionType,
-                inProgressBuildResultType);
+                inProgressBuildResultType,
+                selectedReleaseType);
 
         return true;
     }
@@ -213,7 +225,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 srcLocation,
                 remediationScanPreferenceType,
                 inProgressScanActionType,
-                inProgressBuildResultType);
+                inProgressBuildResultType,
+                selectedReleaseType);
 
         commonBuildStep.perform(build, workspace, launcher, listener, correlationId);
         CrossBuildAction crossBuildAction = build.getAction(CrossBuildAction.class);
