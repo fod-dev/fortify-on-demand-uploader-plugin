@@ -38,8 +38,6 @@ public class FodEnums {
 
     public enum GrantType {CLIENT_CREDENTIALS, PASSWORD}
 
-    ;
-
     public enum EntitlementPreferenceType {
         SubscriptionFirstThenSingleScan("SubscriptionFirstThenSingleScan"),
         SingleScanFirstThenSubscription("SingleScanFirstThenSubscription"),
