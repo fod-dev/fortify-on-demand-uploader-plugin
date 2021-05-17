@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.fodupload.controllers;
 
-import com.fortify.fod.parser.BsiToken;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -66,11 +65,6 @@ public class StaticScanController extends ControllerBase {
 
             logger.println("Getting Assessment");
 
-            BsiToken token = null;
-            if (releaseId == 0) {
-                token = uploadRequest.getBsiToken();
-            }
-
             String projectVersion;
             try (InputStream inputStream = this.getClass().getResourceAsStream("/application.properties")) {
                 Properties props = new Properties();
@@ -79,8 +73,8 @@ public class StaticScanController extends ControllerBase {
             }
 
             HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
-                    .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan-advanced", releaseId != 0 ? releaseId : token.getProjectVersionId()))
-                    .addQueryParameter("technologyStack", releaseId == 0 ? token.getTechnologyType() : staticScanSettings.getTechnologyStack())
+                    .addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan-advanced", releaseId))
+                    .addQueryParameter("technologyStack", staticScanSettings.getTechnologyStack())
                     .addQueryParameter("entitlementPreferenceType", uploadRequest.getEntitlementPreference())
                     .addQueryParameter("purchaseEntitlement", Boolean.toString(uploadRequest.isPurchaseEntitlements()))
                     .addQueryParameter("remdiationScanPreferenceType", uploadRequest.getRemediationScanPreferenceType())
@@ -89,17 +83,13 @@ public class StaticScanController extends ControllerBase {
                     .addQueryParameter("scanTool", "Jenkins")
                     .addQueryParameter("scanToolVersion", projectVersion != null ? projectVersion : "NotFound");
 
-            if (releaseId == 0) {
-                builder = builder.addQueryParameter("bsiToken", uploadRequest.getBsiTokenOriginal());
-            }
-
             if (!Utils.isNullOrEmpty(notes)) {
                 String truncatedNotes = StringUtils.left(notes, MAX_NOTES_LENGTH);
                 builder = builder.addQueryParameter("notes", truncatedNotes);
             }
 
-            if ((releaseId == 0 ? token.getTechnologyVersion() : staticScanSettings.getLanguageLevel()) != null) {
-                builder = builder.addQueryParameter("languageLevel", releaseId == 0 ? token.getTechnologyVersion() : staticScanSettings.getLanguageLevel());
+            if ((staticScanSettings.getLanguageLevel()) != null) {
+                builder = builder.addQueryParameter("languageLevel", staticScanSettings.getLanguageLevel());
             }
 
             // TODO: Come back and fix the request to set fragNo and offset query parameters

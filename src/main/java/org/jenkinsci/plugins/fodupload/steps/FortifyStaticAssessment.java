@@ -20,7 +20,6 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -43,7 +42,6 @@ public class FortifyStaticAssessment extends FortifyStep {
     private static final ThreadLocal<TaskListener> taskListener = new ThreadLocal<>();
 
     private String releaseId;
-    private String bsiToken;
 
     private boolean overrideGlobalConfig;
     private String username;
@@ -60,14 +58,9 @@ public class FortifyStaticAssessment extends FortifyStep {
     private SharedUploadBuildStep commonBuildStep;
 
     @DataBoundConstructor
-    public FortifyStaticAssessment(String releaseId, String bsiToken) {
+    public FortifyStaticAssessment(String releaseId) {
         super();
         this.releaseId = releaseId != null ? releaseId.trim() : "";
-        this.bsiToken = bsiToken != null ? bsiToken.trim() : "";
-    }
-
-    public String getBsiToken() {
-        return bsiToken;
     }
 
     public String getReleaseId() { return releaseId; }
@@ -178,7 +171,6 @@ public class FortifyStaticAssessment extends FortifyStep {
         PrintStream log = listener.getLogger();
         log.println("Fortify on Demand Upload PreBuild Running...");
         commonBuildStep = new SharedUploadBuildStep(releaseId,
-                bsiToken,
                 overrideGlobalConfig,
                 username,
                 personalAccessToken,
@@ -215,7 +207,6 @@ public class FortifyStaticAssessment extends FortifyStep {
         String correlationId = UUID.randomUUID().toString();
 
         commonBuildStep = new SharedUploadBuildStep(releaseId,
-                bsiToken,
                 overrideGlobalConfig,
                 username,
                 personalAccessToken,
@@ -238,7 +229,6 @@ public class FortifyStaticAssessment extends FortifyStep {
         try{build.save();} catch(IOException ex){log.println("Error saving settings. Error message: " + ex.toString());}
     }
 
-    @Extension
     public static class DescriptorImpl extends StepDescriptor {
         @Override
         public String getDisplayName() {

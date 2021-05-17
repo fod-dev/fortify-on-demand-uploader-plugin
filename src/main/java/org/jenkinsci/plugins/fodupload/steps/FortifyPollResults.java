@@ -16,7 +16,6 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -36,7 +35,6 @@ import org.kohsuke.stapler.verb.POST;
 public class FortifyPollResults extends FortifyStep {
 
     private String releaseId;
-    private String bsiToken;
     private int pollingInterval;
 
     private boolean overrideGlobalConfig;
@@ -50,18 +48,13 @@ public class FortifyPollResults extends FortifyStep {
     private SharedPollingBuildStep commonBuildStep;
 
     @DataBoundConstructor
-    public FortifyPollResults(String releaseId, String bsiToken, int pollingInterval) {
+    public FortifyPollResults(String releaseId, int pollingInterval) {
         super();
         this.releaseId = releaseId != null ? releaseId.trim() : "";
-        this.bsiToken = bsiToken != null ? bsiToken.trim() : "";
         this.pollingInterval = pollingInterval;
     }
 
     public String getReleaseId() { return this.releaseId; }
-
-    public String getBsiToken() {
-        return this.bsiToken;
-    }
 
     public int getPollingInterval() {
         return this.pollingInterval;
@@ -136,7 +129,6 @@ public class FortifyPollResults extends FortifyStep {
         PrintStream log = listener.getLogger();
         log.println("Fortify on Demand Poll Results PreBuild Running...");
         commonBuildStep = new SharedPollingBuildStep(releaseId,
-                bsiToken,
                 overrideGlobalConfig,
                 pollingInterval,
                 policyFailureBuildResultPreference,
@@ -160,7 +152,6 @@ public class FortifyPollResults extends FortifyStep {
         PrintStream log = listener.getLogger();
         log.println("Fortify on Demand Poll Results Running...");
         commonBuildStep = new SharedPollingBuildStep(releaseId,
-                bsiToken,
                 overrideGlobalConfig,
                 pollingInterval,
                 policyFailureBuildResultPreference,
@@ -176,8 +167,7 @@ public class FortifyPollResults extends FortifyStep {
             commonBuildStep.perform(build, workspace, launcher, listener);
         }
     }
-
-    @Extension
+    
     public static class DescriptorImpl extends StepDescriptor {
         @Override
         public String getDisplayName() {

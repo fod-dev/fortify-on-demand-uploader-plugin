@@ -21,6 +21,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import jenkins.tasks.SimpleBuildStep;
+import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -39,6 +40,7 @@ import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
 
 
@@ -51,7 +53,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     // Entry point when building
     @DataBoundConstructor
     public StaticAssessmentBuildStep(String releaseId,
-                                     String bsiToken,
                                      boolean overrideGlobalConfig,
                                      String username,
                                      String personalAccessToken,
@@ -65,7 +66,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String selectedReleaseType) {
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
-                bsiToken,
                 overrideGlobalConfig,
                 username,
                 personalAccessToken,
@@ -131,11 +131,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     // marks them unused, but they actually are used.
     // These getters are also named in the following format: Get<JellyField>.
     @SuppressWarnings("unused")
-    public String getBsiToken() {
-        return sharedBuildStep.getModel().getBsiTokenOriginal();
-    }
-
-    @SuppressWarnings("unused")
     public String getUsername() {
         return sharedBuildStep.getAuthModel().getUsername();
     }
@@ -187,11 +182,20 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
 
     @SuppressWarnings("unused")
     public String getSelectedReleaseType() {
-        return sharedBuildStep.getModel().getSelectedReleaceType();
+        return sharedBuildStep.getModel().getSelectedReleaseType();
+    }
+
+    @SuppressWarnings("unused")
+    public String setSelectedReleaseType() {
+        return sharedBuildStep.getModel().getSelectedReleaseType();
+    }
+
+    public String getShowReleaseIdOptions() {
+        return "Release Options";
+//        return getSelectedReleaseType() == FodEnums.SelectedReleaseType.UseReleaseId.toString();
     }
 
     @Extension
-
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
 
         /**
@@ -209,14 +213,9 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return true;
         }
 
-        public FormValidation doCheckReleaseId(@QueryParameter String releaseId, @QueryParameter String bsiToken) {
+        public FormValidation doCheckReleaseId(@QueryParameter String releaseId) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-            return SharedUploadBuildStep.doCheckReleaseId(releaseId, bsiToken);
-        }
-
-        public FormValidation doCheckBsiToken(@QueryParameter String bsiToken, @QueryParameter String releaseId) {
-            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-            return SharedUploadBuildStep.doCheckBsiToken(bsiToken, releaseId);
+            return SharedUploadBuildStep.doCheckReleaseId(releaseId);
         }
 
         @Override
@@ -272,5 +271,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public ListBoxModel doFillInProgressBuildResultTypeItems() {
             return SharedUploadBuildStep.doFillInProgressBuildResultTypeItems();
         }
+
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillSelectedReleaseTypeItems() {
+            return SharedUploadBuildStep.doFillSelectedReleaseTypeItems();
+        }
     }
+
 }

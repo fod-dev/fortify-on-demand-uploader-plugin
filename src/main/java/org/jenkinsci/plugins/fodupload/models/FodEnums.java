@@ -201,9 +201,8 @@ public class FodEnums {
 
 
     public enum SelectedReleaseType {
-        UseReleaseId("Release ID"),
-        UseBSIToken("BSI Token"),
-        UseAppAndReleaseName("Application and Release Options");
+        UseAppAndReleaseName("UseAppAndReleaseName"),
+        UseReleaseId("UseReleaseId");
 
         private final String _val;
 
@@ -213,10 +212,8 @@ public class FodEnums {
 
         public static SelectedReleaseType fromInt(int val) {
             switch (val) {
-                case 3:
-                    return UseReleaseId;
                 case 2:
-                    return UseBSIToken;
+                    return UseReleaseId;
                 case 1:
                 default:
                     return UseAppAndReleaseName;
@@ -230,8 +227,6 @@ public class FodEnums {
         public int getInteger() {
             switch (this._val) {
                 case "UseReleaseId":
-                    return 3;
-                case "UseBSIToken":
                     return 2;
                 case "UseAppAndReleaseName":
                 default:
@@ -243,8 +238,6 @@ public class FodEnums {
             switch (this._val) {
                 case "UseReleaseId":
                     return "Release ID";
-                case "UseBSIToken":
-                    return "BSI Token";
                 case "UseAppAndReleaseName":
                 default:
                     return "Application and Release Options";

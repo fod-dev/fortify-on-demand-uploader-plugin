@@ -5,16 +5,15 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.33</version>
+        <version>4.16</version>
         <relativePath />
     </parent>
-    <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>fortify-on-demand-uploader</artifactId>
     <version>6.1.0-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <properties>
-        <jenkins.version>2.138.4</jenkins.version>
+        <jenkins.version>2.277</jenkins.version>
         <java.level>8</java.level>
         <jenkins-test-harness.version>2.47</jenkins-test-harness.version>
         <disabledTestInjection>true</disabledTestInjection>
@@ -28,7 +27,7 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>http://opensource.org/licenses/MIT</url>
+            <url>https://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
 
@@ -62,21 +61,11 @@
             <id>repo.jenkins-ci.org</id>
             <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
-        <repository>
-            <id>fortify</id>
-            <name>fortify</name>
-            <url>https://dl.bintray.com/fortify/maven-public</url>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
             <url>https://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>fortify</id>
-            <name>fortify</name>
-            <url>https://dl.bintray.com/fortify/maven-public</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -122,12 +111,6 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
-        </dependency>
-        <!-- https://bintray.com/fortify/maven-public/bsi-token-parser -->
-        <dependency>
-            <groupId>com.fortify.fod</groupId>
-            <artifactId>BSITokenParser</artifactId>
-            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
