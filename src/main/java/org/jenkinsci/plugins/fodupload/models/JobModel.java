@@ -104,11 +104,14 @@ public class JobModel {
         if (releaseId != null && !releaseId.isEmpty()) {
             try {
                 releaseIdNum = Integer.parseInt(releaseId);
+                if(releaseIdNum != null && releaseIdNum > 0)
+                    return true;
             }
             catch (NumberFormatException ex) {
                 errors.add("Release Id");
+                logger.println(errors.toString());
             }
         }
-        return true;
+        return false;
     }
 }

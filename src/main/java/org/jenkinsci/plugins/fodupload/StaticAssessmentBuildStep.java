@@ -24,6 +24,9 @@ import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.kohsuke.stapler.DataBoundConstructor;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import javax.annotation.Nonnull;
 
@@ -40,6 +43,9 @@ import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
 
@@ -48,6 +54,9 @@ import org.kohsuke.stapler.verb.POST;
 public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildStep {
 
     SharedUploadBuildStep sharedBuildStep;
+    String selectedReleaseType;
+    String showReleaseIdOptions;
+
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     // Entry point when building
@@ -64,6 +73,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String inProgressScanActionType,
                                      String inProgressBuildResultType,
                                      String selectedReleaseType) {
+
+        showReleaseIdOptions = "Release Options 2";
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
                 overrideGlobalConfig,
@@ -182,22 +193,33 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
 
     @SuppressWarnings("unused")
     public String getSelectedReleaseType() {
-        return sharedBuildStep.getModel().getSelectedReleaseType();
+        if(selectedReleaseType == null || selectedReleaseType.length() < 1)
+            setSelectedReleaseType("Release Type 2");
+        return selectedReleaseType;
+//        return sharedBuildStep.getModel().getSelectedReleaseType();
     }
 
     @SuppressWarnings("unused")
-    public String setSelectedReleaseType() {
-        return sharedBuildStep.getModel().getSelectedReleaseType();
+    public void setSelectedReleaseType(String selectedReleaseType) {
+        this.selectedReleaseType = selectedReleaseType;
     }
 
     public String getShowReleaseIdOptions() {
-        return "Release Options";
+        return showReleaseIdOptions;
 //        return getSelectedReleaseType() == FodEnums.SelectedReleaseType.UseReleaseId.toString();
+    }
+
+    @SuppressWarnings("unused")
+    public void setShowReleaseIdOptions(String showReleaseIdOptions) {
+        this.showReleaseIdOptions = showReleaseIdOptions;
     }
 
     @Extension
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
 
+        private String showReleaseIdOptions;
+        String selectedReleaseType;
+        private static final String showReleaseIdOptionsField = "showReleaseIdOptionsField";
         /**
          * In order to load the persisted global configuration, you have to
          * call load() in the constructor.
@@ -275,6 +297,40 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         @SuppressWarnings("unused")
         public ListBoxModel doFillSelectedReleaseTypeItems() {
             return SharedUploadBuildStep.doFillSelectedReleaseTypeItems();
+        }
+
+        @Override
+        public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+            // To persist global configuration information,
+            // set that to properties and call save().
+            showReleaseIdOptions = formData.getString("showReleaseIdOptionsField");
+            // ^Can also use req.bindJSON(this, formData);
+            //(easier when there are many fields; need set* methods for this, like setUseFrench)
+            save();
+            return super.configure(req,formData);
+        }
+
+        @SuppressWarnings("unused")
+        public String getSelectedReleaseType() {
+            if(selectedReleaseType == null || selectedReleaseType.length() < 1)
+                setSelectedReleaseType("Release Type 2");
+            return selectedReleaseType;
+//        return sharedBuildStep.getModel().getSelectedReleaseType();
+        }
+
+        @SuppressWarnings("unused")
+        public void setSelectedReleaseType(String selectedReleaseType) {
+            this.selectedReleaseType = selectedReleaseType;
+        }
+
+        public String getShowReleaseIdOptions() {
+            return showReleaseIdOptions;
+//        return getSelectedReleaseType() == FodEnums.SelectedReleaseType.UseReleaseId.toString();
+        }
+
+        @SuppressWarnings("unused")
+        public void setShowReleaseIdOptions(String showReleaseIdOptions) {
+            this.showReleaseIdOptions = showReleaseIdOptions;
         }
     }
 

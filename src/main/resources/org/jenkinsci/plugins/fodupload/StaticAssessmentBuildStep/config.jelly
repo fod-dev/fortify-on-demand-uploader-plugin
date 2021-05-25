@@ -5,27 +5,27 @@
             <f:entry title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
                 <f:select style="width: 160px;"/>
             </f:entry>
-            <f:block>
-                <f:readOnlyTextbox value="Test text"/>
-                <f:readOnlyTextbox >${selectedReleaseType}</f:readOnlyTextbox>
-                <f:readOnlyTextbox field="selectedReleaseType"/>
-                <f:readOnlyTextbox field="${selectedReleaseType.toString()}"/>
-                <f:readOnlyTextbox field="${it.selectedReleaseType}"/>
-            </f:block>
-            <f:block>
-                <f:readOnlyTextbox value="3rd Tests"/>
-                <f:readOnlyTextbox >${it.showReleaseIdOptions}</f:readOnlyTextbox>
-                <f:readOnlyTextbox value="${showReleaseIdOptions.toString()}"/>
-                <f:readOnlyTextbox value="${it.showReleaseIdOptions}"/>
-            </f:block>
 
+            <f:optionalBlock name="staplerBindTestBlock" field ="overrideGlobalConfig" title="Stapler Binding Test" inline="true">
+                <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/StaplerBindTest.jelly" />
+            </f:optionalBlock>
 
             <f:optionalBlock field="${it.showReleaseIdOptions}">
                 <f:entry title="Release ID" field="releaseId" help="/plugin/fortify-on-demand-uploader/help-tbReleaseId.html">
                     <f:textbox />
                 </f:entry>
             </f:optionalBlock>
-
+            <div>
+                TODO
+            </div>
+<!--            <div id="msg" />-->
+<!--            <script>-->
+<!--                var foo = <st:bind value="${some.expression.thatEvaluatesTo().fooInstance}"/>-->
+<!--            -->
+<!--                foo.add(1,5, function(t) {-->
+<!--                document.getElementById('msg').innerHTML = t.responseObject();-->
+<!--                })-->
+<!--            </script>-->
         </f:block>
     </f:section>
 
@@ -35,7 +35,12 @@
     </f:entry>
 
     <f:section title="Authentication - Select to override global authentication settings">
-        <st:include page="AuthenticationOverride.jelly" optional="true" />
+        <f:optionalBlock name="overrideGlobalConfig" field ="overrideGlobalConfig" title="Configure Personal Access Token" inline="true">
+            <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AuthenticationOverride.jelly" />
+        </f:optionalBlock>
+        <f:optionalBlock name="additionalConfig" title="New Application Wizard" field ="overrideGlobalConfig" >
+            <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/WizardNewApplicationWindow.jelly" />
+        </f:optionalBlock>
     </f:section>
 
     <f:section title="Entitlement Options">
