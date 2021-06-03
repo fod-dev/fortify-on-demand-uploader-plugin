@@ -191,6 +191,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return sharedBuildStep.getModel().getInProgressBuildResultType();
     }
 
+    @JavaScriptMethod
     @SuppressWarnings("unused")
     public String getSelectedReleaseType() {
         if(selectedReleaseType == null || selectedReleaseType.length() < 1)
@@ -199,9 +200,32 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
 //        return sharedBuildStep.getModel().getSelectedReleaseType();
     }
 
-    @SuppressWarnings("unused")
-    public void setSelectedReleaseType(String selectedReleaseType) {
+    @JavaScriptMethod
+    public String setSelectedReleaseType(String selectedReleaseType) {
         this.selectedReleaseType = selectedReleaseType;
+        return this.selectedReleaseType;
+    }
+
+    @JavaScriptMethod
+    public String changeSelectedReleaseType(String selectedReleaseType) {
+        this.selectedReleaseType = "Roundtrip to StaticAssessmentBuildStep.java successful. Text from view via stapler post: " + selectedReleaseType;
+        return this.selectedReleaseType;
+    }
+
+    @JavaScriptMethod
+    public String changeSelectedReleaseTypeNoParam() {
+        return getSelectedReleaseType();
+    }
+
+    @JavaScriptMethod
+    public String resetSelectedReleaseTypeNoParam() {
+        setSelectedReleaseType("Release Type 2");
+        return getSelectedReleaseType();
+    }
+
+    @JavaScriptMethod
+    public int add(int x, int y) {
+        return x+y;
     }
 
     public String getShowReleaseIdOptions() {

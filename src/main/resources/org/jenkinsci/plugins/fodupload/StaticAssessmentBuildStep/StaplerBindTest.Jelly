@@ -4,12 +4,107 @@
         <div>
             Stapler Binding Test
         </div>
+        <script>
+            var backend = <st:bind value="${instance}"/>
+
+            backend.add(1,5, function(t) {
+                document.getElementById('msg').innerHTML = t.responseObject();
+            });              
+
+            
+
+            function changeSelectedReleaseType(selectedReleaseType) {
+                backend.changeSelectedReleaseType(selectedReleaseType, function(t) {
+                    document.getElementById('textMsg').innerHTML = t.responseObject();
+                });
+            }
+            
+
+            function changeSelectedReleaseTypeBasedOnOtherData() {
+                var xvar = backend.getSelectedReleaseType();
+                backend.changeSelectedReleaseType("vetoTest", function(t) {
+                    document.getElementById('textMsg').innerHTML = t.responseObject();
+                });
+            }
+            
+
+            function changeSelectedReleaseTypeBasedOnOtherDataNoParam() {
+                backend.changeSelectedReleaseTypeNoParam(function(t) {
+                    document.getElementById('textMsg').innerHTML = t.responseObject();
+                });
+            }
+
+            function resetSelectedReleaseType() {
+                backend.resetSelectedReleaseTypeNoParam(function(t) {
+                    document.getElementById('textMsg').innerHTML = t.responseObject();
+                });
+            }
+
+            function hideView() {
+                document.getElementById('wizardDiv').style.display = "none";
+            }
+
+            function showView() {
+                document.getElementById('wizardDiv').style.display = "block";
+            }
+
+            function hideWizView() {
+                document.getElementById('wizardMainWindow').style.display = "none";
+            }
+
+            function showWizView() {
+                document.getElementById('wizardMainWindow').style.display = "block";
+            }
+
+            function hideSubWizView() {
+                document.getElementById('wizardSubWindow').style.display = "none";
+            }
+
+            function showSubWizView() {
+                document.getElementById('wizardSubWindow').style.display = "block";
+            }
+        </script>
+        
+        <div id="msg" />
+        <div id="textMsg" />
+        
+        <f:block>
+            <div id="wizardDiv" style="display: none;">
+                <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/WizardNewApplicationWindow.jelly" />
+            </div>
+        </f:block>
+        
+        <f:block>
+            <div id="wizardView" style="display: none;">
+                Some Test Text for wizard View
+            </div>
+            <div id="wizardMainWindow" style="display: none;">
+                Some Test Text 2 for Wizard Main Window
+            </div>
+        </f:block>
         <div>
             <f:block>
+                <div>
+                    These don't work
+
+                    <button type="button" onClick="hideView()">Show Stuff</button>
+                    <button type="button" onClick="showView()">Hide Stuff</button>
+                </div>
+                <div>
+                    These do work
+
+                    <button type="button" onClick="changeSelectedReleaseType('test2')">Send test2 to StaticAssessmentBuildStep</button>
+                    <button type="button" onClick="changeSelectedReleaseTypeBasedOnOtherData()">changeSelectedReleaseTypeBasedOnOtherData</button>
+                    <button type="button" onClick="changeSelectedReleaseTypeBasedOnOtherDataNoParam()">changeSelectedReleaseTypeBasedOnOtherDataNoParam</button>
+                    <button type="button" onClick="resetSelectedReleaseType()">Reset Selected Release Type</button>
+                    <button type="button" onClick="showWizView()">Show Wiz View</button>
+                    <button type="button" onClick="hideWizView()">Hide Wiz View</button>
+                    <button type="button" onClick="showSubWizView()">Show Sub View</button>
+                    <button type="button" onClick="hideSubWizView()">Hide Sub View</button>
+                </div>
+
+
                 <f:readOnlyTextbox value="Test text"/>
-                <f:readOnlyTextbox >${StaticAssessmentBuildStep.selectedReleaseType}</f:readOnlyTextbox>
-                <f:textbox checkMethod="" field="selectedReleaseType"/>
-                <f:readOnlyTextbox field="selectedReleaseType"/>
                 <f:readOnlyTextbox field="${StaticAssessmentBuildStep.selectedReleaseType}"/>
             </f:block>
         </div>
