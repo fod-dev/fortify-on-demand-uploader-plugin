@@ -1,27 +1,10 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:section title="Application and Release Options">
-        <f:block>
-            <f:entry title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
-                <f:select style="width: 160px;"/>
-            </f:entry>
-
-            <f:optionalBlock name="staplerBindTestBlock" field ="overrideGlobalConfig" title="Stapler Binding Test" inline="true">
-                <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/StaplerBindTest.jelly" />
-            </f:optionalBlock>
-
-            <f:optionalBlock field="${it.showReleaseIdOptions}">
-                <f:entry title="Release ID" field="releaseId" help="/plugin/fortify-on-demand-uploader/help-tbReleaseId.html">
-                    <f:textbox />
-                </f:entry>
-            </f:optionalBlock>
-        </f:block>
-    </f:section>
-
-
-    <f:entry title="Source Location" help="/plugin/fortify-on-demand-uploader/help-srcLocation.html">
+     <f:entry title="Source Location" help="/plugin/fortify-on-demand-uploader/help-srcLocation.html">
         <f:textbox field="srcLocation"/>
     </f:entry>
+
+    <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/StaplerBindTest.jelly" />
 
     <f:section title="Authentication - Select to override global authentication settings">
         <f:optionalBlock name="overrideGlobalConfig" field ="overrideGlobalConfig" title="Configure Personal Access Token" inline="true">

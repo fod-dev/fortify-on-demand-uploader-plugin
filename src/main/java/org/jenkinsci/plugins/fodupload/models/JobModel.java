@@ -19,6 +19,9 @@ public class JobModel {
     private String inProgressScanActionType;
     private String inProgressBuildResultType;
     private String selectedReleaseType;
+    private String userSelectedApplication;
+    private String userSelectedMicroservice;
+    private String userSelectedRelease;
 
     private File payload;
 
@@ -40,7 +43,10 @@ public class JobModel {
                     String remediationScanPreferenceType,
                     String inProgressScanActionType,
                     String inProgressBuildResultType,
-                    String selectedReleaseType) {
+                    String selectedReleaseType,
+                    String userSelectedApplication,
+                    String userSelectedMicroservice,
+                    String userSelectedRelease) {
 
         this.releaseId = releaseId;
         this.entitlementPreference = entitlementPreference;
@@ -50,6 +56,9 @@ public class JobModel {
         this.inProgressScanActionType = inProgressScanActionType;
         this.inProgressBuildResultType = inProgressBuildResultType;
         this.selectedReleaseType = selectedReleaseType;
+        this.userSelectedApplication = userSelectedApplication;
+        this.userSelectedMicroservice = userSelectedMicroservice;
+        this.userSelectedRelease = userSelectedRelease;
     }
 
     public File getPayload() {
@@ -88,6 +97,18 @@ public class JobModel {
 
     public String getSelectedReleaseType() {
         return selectedReleaseType;
+    }
+
+    public String getUserSelectedApplication() {
+        return userSelectedApplication;
+    }
+
+    public String getUserSelectedMicroservice() {
+        return userSelectedMicroservice;
+    }
+
+    public String getUserSelectedRelease() {
+        return userSelectedRelease;
     }
 
     @Override

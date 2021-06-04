@@ -72,7 +72,10 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String remediationScanPreferenceType,
                                      String inProgressScanActionType,
                                      String inProgressBuildResultType,
-                                     String selectedReleaseType) {
+                                     String selectedReleaseType,
+                                     String userSelectedApplication,
+                                     String userSelectedMicroservice,
+                                     String userSelectedRelease) {
 
         showReleaseIdOptions = "Release Options 2";
 
@@ -87,7 +90,10 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 remediationScanPreferenceType,
                 inProgressScanActionType,
                 inProgressBuildResultType,
-                selectedReleaseType);
+                selectedReleaseType,
+                userSelectedApplication,
+                userSelectedMicroservice,
+                userSelectedRelease);
 
     }
 
@@ -189,6 +195,21 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     @SuppressWarnings("unused")
     public String getInProgressBuildResultType() {
         return sharedBuildStep.getModel().getInProgressBuildResultType();
+    }
+
+    @SuppressWarnings("unused")
+    public String getUserSelectedApplication() {
+        return sharedBuildStep.getModel().getUserSelectedApplication();
+    }
+
+    @SuppressWarnings("unused")
+    public String getUserSelectedMicroservice() {
+        return sharedBuildStep.getModel().getUserSelectedMicroservice();
+    }
+
+    @SuppressWarnings("unused")
+    public String getUserSelectedRelease() {
+        return sharedBuildStep.getModel().getUserSelectedRelease();
     }
 
     @JavaScriptMethod
@@ -323,15 +344,19 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return SharedUploadBuildStep.doFillSelectedReleaseTypeItems();
         }
 
-        @Override
-        public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-            // To persist global configuration information,
-            // set that to properties and call save().
-            showReleaseIdOptions = formData.getString("showReleaseIdOptionsField");
-            // ^Can also use req.bindJSON(this, formData);
-            //(easier when there are many fields; need set* methods for this, like setUseFrench)
-            save();
-            return super.configure(req,formData);
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillUserSelectedApplicationItems() {
+            return SharedUploadBuildStep.doFillUserSelectedApplicationItems();
+        }
+
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillUserSelectedMicroserviceItems() {
+            return SharedUploadBuildStep.doFillUserSelectedMicroserviceItems();
+        }
+
+        @SuppressWarnings("unused")
+        public ListBoxModel doFillUserSelectedReleaseItems() {
+            return SharedUploadBuildStep.doFillUserSelectedReleaseItems();
         }
 
         @SuppressWarnings("unused")

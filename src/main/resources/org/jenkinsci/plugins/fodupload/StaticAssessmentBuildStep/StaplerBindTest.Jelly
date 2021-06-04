@@ -1,112 +1,88 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <f:block>
-        <div>
-            Stapler Binding Test
-        </div>
         <script>
-            var backend = <st:bind value="${instance}"/>
+            var backend = <st:bind value="${instance}"/>   
 
-            backend.add(1,5, function(t) {
-                document.getElementById('msg').innerHTML = t.responseObject();
-            });              
-
-            
-
-            function changeSelectedReleaseType(selectedReleaseType) {
-                backend.changeSelectedReleaseType(selectedReleaseType, function(t) {
-                    document.getElementById('textMsg').innerHTML = t.responseObject();
-                });
-            }
-            
-
-            function changeSelectedReleaseTypeBasedOnOtherData() {
-                var xvar = backend.getSelectedReleaseType();
-                backend.changeSelectedReleaseType("vetoTest", function(t) {
-                    document.getElementById('textMsg').innerHTML = t.responseObject();
-                });
-            }
-            
-
-            function changeSelectedReleaseTypeBasedOnOtherDataNoParam() {
-                backend.changeSelectedReleaseTypeNoParam(function(t) {
-                    document.getElementById('textMsg').innerHTML = t.responseObject();
-                });
+            function reactToChangeListChange() {
+                var selectListSelection = document.getElementById("releaseTypeSelectList").value;
+                managePickReleaseView(selectListSelection);
             }
 
-            function resetSelectedReleaseType() {
-                backend.resetSelectedReleaseTypeNoParam(function(t) {
-                    document.getElementById('textMsg').innerHTML = t.responseObject();
-                });
+            function managePickReleaseView(viewName) {
+                document.getElementById('testMsg0').innerHTML = document.getElementById("releaseTypeSelectList").value;
+                document.getElementById('testMsg1').innerHTML = viewName;
+                hideAllPickReleaseViews();
+                if(viewName == "UseAppAndReleaseName") {
+                    showPickReleaseViewAppAndReleaseNameView();
+                } else if (viewName == "UseReleaseId") {
+                    showPickReleaseViewReleaseIdView();
+                }
             }
 
-            function hideView() {
-                document.getElementById('wizardDiv').style.display = "none";
+            function hideAllPickReleaseViews() {
+                document.getElementById('allPickReleaseViews').style.display = "none";
+                document.getElementsByName('allPickReleaseBlock').style.display = "none";
             }
 
-            function showView() {
-                document.getElementById('wizardDiv').style.display = "block";
+            function showPickReleaseViewAppAndReleaseNameView() {
+                document.getElementById('allPickReleaseViews').style.display = "block";
+                document.getElementsByName('allPickReleaseBlock').style.display = "block";
+                document.getElementById('appAndReleaseNameView').style.display = "block";
+                document.getElementsByName('appAndReleaseNameField').style.display = "block";
+                document.getElementById('releaseIdView').style.display = "none";
+                document.getElementsByName('releaseIdField').style.display = "none";
             }
 
-            function hideWizView() {
-                document.getElementById('wizardMainWindow').style.display = "none";
-            }
-
-            function showWizView() {
-                document.getElementById('wizardMainWindow').style.display = "block";
-            }
-
-            function hideSubWizView() {
-                document.getElementById('wizardSubWindow').style.display = "none";
-            }
-
-            function showSubWizView() {
-                document.getElementById('wizardSubWindow').style.display = "block";
+            function showPickReleaseViewReleaseIdView() {
+                document.getElementById('allPickReleaseViews').style.display = "block";
+                document.getElementsByName('allPickReleaseBlock').style.display = "block";
+                document.getElementById('releaseIdView').style.display = "block";
+                document.getElementsByName('releaseIdField').style.display = "block";
+                document.getElementById('appAndReleaseNameView').style.display = "none";
+                document.getElementsByName('appAndReleaseNameField').style.display = "none";
             }
         </script>
-        
-        <div id="msg" />
-        <div id="textMsg" />
-        
+        <div id="SomethingSpecial">
+            <f:section title="Application and Release Options">
+                <f:block>
+                    <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
+                        <f:select onChange="reactToChangeListChange()" id="releaseTypeSelectList" style="width: 160px;"/>
+                    </f:entry>
+                    <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB">
+                        <f:block>
+                            <div id="testMsg0" />
+                            <div id="testMsg1" />
+                            <div id="testMsg2" />
+                            <div id="allPickReleaseViews">
+                                <div id="releaseIdView">
+                                    <div>
+                                        <f:entry id="releaseIdMainWindow" name="releaseIdField" title="Release ID" field="releaseId" help="/plugin/fortify-on-demand-uploader/help-tbReleaseId.html">
+                                            <f:textbox />
+                                        </f:entry>
+                                    </div>
+                                </div>
+                                <div id="appAndReleaseNameView">
+                                        <f:entry name="appAndReleaseNameField" id="applicationSelectEntry" title="Application" field="userSelectedApplication" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
+                                            <f:select onChange="reactToApplicationListChange()" id="applicationSeletList" style="width: 160px;"/>
+                                        </f:entry>
+                                        <f:entry name="appAndReleaseNameField" id="microserviceSelectEntry" title="Microservice" field="userSelectedMicroservice" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
+                                            <f:select onChange="reactToMicroserviceListChange()" id="microserviceSeletList" style="width: 160px;"/>
+                                        </f:entry>
+                                        <f:entry name="appAndReleaseNameField" id="releaseSelectEntry" title="Release" field="userSelectedRelease" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
+                                            <f:select onChange="reactToReleaseListChange()" id="releaseSeletList" style="width: 160px;"/>
+                                        </f:entry>
+                                </div>
+                            </div>
+                        </f:block>
+                    </f:form>
+                </f:block>
+            </f:section>
+        </div>
         <f:block>
             <div id="wizardDiv" style="display: none;">
                 <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/WizardNewApplicationWindow.jelly" />
             </div>
         </f:block>
-        
-        <f:block>
-            <div id="wizardView" style="display: none;">
-                Some Test Text for wizard View
-            </div>
-            <div id="wizardMainWindow" style="display: none;">
-                Some Test Text 2 for Wizard Main Window
-            </div>
-        </f:block>
-        <div>
-            <f:block>
-                <div>
-                    These don't work
-
-                    <button type="button" onClick="hideView()">Show Stuff</button>
-                    <button type="button" onClick="showView()">Hide Stuff</button>
-                </div>
-                <div>
-                    These do work
-
-                    <button type="button" onClick="changeSelectedReleaseType('test2')">Send test2 to StaticAssessmentBuildStep</button>
-                    <button type="button" onClick="changeSelectedReleaseTypeBasedOnOtherData()">changeSelectedReleaseTypeBasedOnOtherData</button>
-                    <button type="button" onClick="changeSelectedReleaseTypeBasedOnOtherDataNoParam()">changeSelectedReleaseTypeBasedOnOtherDataNoParam</button>
-                    <button type="button" onClick="resetSelectedReleaseType()">Reset Selected Release Type</button>
-                    <button type="button" onClick="showWizView()">Show Wiz View</button>
-                    <button type="button" onClick="hideWizView()">Hide Wiz View</button>
-                    <button type="button" onClick="showSubWizView()">Show Sub View</button>
-                    <button type="button" onClick="hideSubWizView()">Hide Sub View</button>
-                </div>
-
-
-                <f:readOnlyTextbox value="Test text"/>
-                <f:readOnlyTextbox field="${StaticAssessmentBuildStep.selectedReleaseType}"/>
-            </f:block>
-        </div>
     </f:block>
 </j:jelly>

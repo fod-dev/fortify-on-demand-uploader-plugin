@@ -60,7 +60,10 @@ public class SharedUploadBuildStep {
                                  String remediationScanPreferenceType,
                                  String inProgressScanActionType,
                                  String inProgressBuildResultType,
-                                 String selectedReleaseType) {
+                                 String selectedReleaseType,
+                                 String userSelectedApplication,
+                                 String userSelectedMicroservice,
+                                 String userSelectedRelease) {
 
         model = new JobModel(releaseId,
                 purchaseEntitlements,
@@ -69,7 +72,10 @@ public class SharedUploadBuildStep {
                 remediationScanPreferenceType,
                 inProgressScanActionType,
                 inProgressBuildResultType,
-                selectedReleaseType);
+                selectedReleaseType,
+                userSelectedApplication,
+                userSelectedMicroservice,
+                userSelectedRelease);
 
         authModel = new AuthenticationModel(overrideGlobalConfig,
                 username,
@@ -175,6 +181,27 @@ public class SharedUploadBuildStep {
         for (FodEnums.SelectedReleaseType selectedReleaseType : FodEnums.SelectedReleaseType.values()) {
             items.add(new ListBoxModel.Option(selectedReleaseType.toString(), selectedReleaseType.getValue()));
         }
+        return items;
+    }
+
+    @SuppressWarnings("unused")
+    public static ListBoxModel doFillUserSelectedApplicationItems() {
+        ListBoxModel items = new ListBoxModel();
+        items.add(new ListBoxModel.Option("Please select an application", ""));
+        return items;
+    }
+
+    @SuppressWarnings("unused")
+    public static ListBoxModel doFillUserSelectedMicroserviceItems() {
+        ListBoxModel items = new ListBoxModel();
+        items.add(new ListBoxModel.Option("Please select a microservice", ""));
+        return items;
+    }
+
+    @SuppressWarnings("unused")
+    public static ListBoxModel doFillUserSelectedReleaseItems() {
+        ListBoxModel items = new ListBoxModel();
+        items.add(new ListBoxModel.Option("Please select a release", ""));
         return items;
     }
 
