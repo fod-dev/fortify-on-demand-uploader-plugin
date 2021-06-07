@@ -21,21 +21,25 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import jenkins.tasks.SimpleBuildStep;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 import net.sf.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import javax.annotation.Nonnull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.UUID;
+import java.util.HashMap;
 
 import jenkins.model.Jenkins;
 
@@ -244,11 +248,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return getSelectedReleaseType();
     }
 
-    @JavaScriptMethod
-    public int add(int x, int y) {
-        return x+y;
-    }
-
     public String getShowReleaseIdOptions() {
         return showReleaseIdOptions;
 //        return getSelectedReleaseType() == FodEnums.SelectedReleaseType.UseReleaseId.toString();
@@ -263,6 +262,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
 
         private String showReleaseIdOptions;
+        public HashMap<String, HashMap<String, String>> applicationList;
+        String respCode;
         String selectedReleaseType;
         private static final String showReleaseIdOptionsField = "showReleaseIdOptionsField";
         /**
@@ -380,6 +381,49 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         @SuppressWarnings("unused")
         public void setShowReleaseIdOptions(String showReleaseIdOptions) {
             this.showReleaseIdOptions = showReleaseIdOptions;
+        }
+
+        @JavaScriptMethod
+        public int add(int x, int y) {
+            return x+y;
+        }
+
+        @JavaScriptMethod
+        public void populateHashMap() {
+            try {
+                HttpClient client = HttpClientBuilder.create().build();
+                String url = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/index.json";
+                HttpGet request = new HttpGet(url);
+                System.out.println("\nSending 'GET' request to URL : " + url);
+                HttpResponse response = client.execute(request);
+                respCode = String.valueOf(response.getStatusLine().getStatusCode());
+                System.out.println("Response Code :" + response.getStatusLine().getStatusCode());
+                StringBuilder result;
+                try (BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+                    result = new StringBuilder();
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        result.append(line);
+                    }
+                    JSONParser parser = new JSONParser();
+                    Object resultObject = parser.parse(result.toString());
+                    org.json.simple.JSONObject received_data = (org.json.simple.JSONObject) resultObject;
+                    if (resultObject instanceof HashMap && respCode.equals("200")) {
+                        Object offersObj = received_data.get("offers");
+                        applicationList = (HashMap) offersObj;
+                    }
+                } catch (ParseException ex) {
+                    System.out.println("ParseException: " + ex.getMessage());
+                }
+            } catch (IOException ex) {
+                System.out.println("IOException:" + ex.getMessage());
+            }
+        }
+
+        @JavaScriptMethod
+        public HashMap<String, HashMap<String, String>> getApplicationList() {
+
+            return applicationList;
         }
     }
 

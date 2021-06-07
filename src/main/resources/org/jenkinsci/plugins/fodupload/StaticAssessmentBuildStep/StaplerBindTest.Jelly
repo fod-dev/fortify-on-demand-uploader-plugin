@@ -2,16 +2,25 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <f:block>
         <script>
-            var backend = <st:bind value="${instance}"/>   
+            var backend = <st:bind value="${descriptor}"/>
+        </script>
+        <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/StaplerBind.js"/>
+        <script>
+            function testSelectList() {
+                backend.populateHashMap(function(t) {
+                    var results = t.responseObject();
+                    document.getElementById('testMsg4').innerHTML = results;
+                });
+            }
 
-            function reactToChangeListChange() {
+            function reactToReleaseTypeSelectListChange() {
                 var selectListSelection = document.getElementById("releaseTypeSelectList").value;
                 managePickReleaseView(selectListSelection);
+                testSelectList();
             }
 
             function managePickReleaseView(viewName) {
-                document.getElementById('testMsg0').innerHTML = document.getElementById("releaseTypeSelectList").value;
-                document.getElementById('testMsg1').innerHTML = viewName;
+                document.getElementById('testMsg0').innerHTML = "Pick release ddl value: " + viewName;
                 hideAllPickReleaseViews();
                 if(viewName == "UseAppAndReleaseName") {
                     showPickReleaseViewAppAndReleaseNameView();
@@ -22,56 +31,97 @@
 
             function hideAllPickReleaseViews() {
                 document.getElementById('allPickReleaseViews').style.display = "none";
-                document.getElementsByName('allPickReleaseBlock').style.display = "none";
             }
 
             function showPickReleaseViewAppAndReleaseNameView() {
                 document.getElementById('allPickReleaseViews').style.display = "block";
-                document.getElementsByName('allPickReleaseBlock').style.display = "block";
                 document.getElementById('appAndReleaseNameView').style.display = "block";
-                document.getElementsByName('appAndReleaseNameField').style.display = "block";
                 document.getElementById('releaseIdView').style.display = "none";
-                document.getElementsByName('releaseIdField').style.display = "none";
             }
 
             function showPickReleaseViewReleaseIdView() {
                 document.getElementById('allPickReleaseViews').style.display = "block";
-                document.getElementsByName('allPickReleaseBlock').style.display = "block";
                 document.getElementById('releaseIdView').style.display = "block";
-                document.getElementsByName('releaseIdField').style.display = "block";
                 document.getElementById('appAndReleaseNameView').style.display = "none";
-                document.getElementsByName('appAndReleaseNameField').style.display = "none";
             }
+
+            function reactToApplicationListChange() {
+                
+                document.getElementById('testMsg1').innerHTML = "Application ddl value: " + document.getElementById("applicationSeletList").value;
+                updateSelectList("applicationSeletList");
+            }
+
+            function reactToMicroserviceListChange() {
+                
+                document.getElementById('testMsg2').innerHTML = "Microservice ddl value: " + document.getElementById("microserviceSeletList").value;
+            }
+
+            function reactToReleaseListChange() {
+                
+                document.getElementById('testMsg3').innerHTML = "Release ddl value: " + document.getElementById("releaseSeletList").value;
+            }
+
+            function updateSelectList(selectListName) {
+                var select = document.getElementById(selectListName); 
+                select.innerHTML = null;
+                var options = ["2", "4", "6", "8", "10"];
+                var currentIndex = 0;
+                var notFinished = isArrayIndexDefined(options, currentIndex);
+                options.forEach(function(item){
+                    select.innerHTML += '<option value="' + item + '">' + item + '</option>';
+                });
+                while(notFinished) {
+                    select.innerHTML += '<option value="' + options[currentIndex] + '">' + options[currentIndex] + '</option>';
+                    currentIndex += 1;
+                    notFinished = isArrayIndexDefined(options, currentIndex);
+                }  
+            }
+
+            
         </script>
+
         <div id="SomethingSpecial">
             <f:section title="Application and Release Options">
                 <f:block>
                     <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
-                        <f:select onChange="reactToChangeListChange()" id="releaseTypeSelectList" style="width: 160px;"/>
+                        <f:select onChange="reactToReleaseTypeSelectListChange()" id="releaseTypeSelectList" style="width: 160px;"/>
                     </f:entry>
                     <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB">
                         <f:block>
                             <div id="testMsg0" />
-                            <div id="testMsg1" />
-                            <div id="testMsg2" />
                             <div id="allPickReleaseViews">
                                 <div id="releaseIdView">
-                                    <div>
-                                        <f:entry id="releaseIdMainWindow" name="releaseIdField" title="Release ID" field="releaseId" help="/plugin/fortify-on-demand-uploader/help-tbReleaseId.html">
-                                            <f:textbox />
-                                        </f:entry>
-                                    </div>
+                                    <form>
+                                        <label for="releaseIdField">Release ID: </label>
+                                        <input type="text" id="releaseIdMainWindow" name="releaseIdField"></input>
+                                    </form>
                                 </div>
                                 <div id="appAndReleaseNameView">
-                                        <f:entry name="appAndReleaseNameField" id="applicationSelectEntry" title="Application" field="userSelectedApplication" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
-                                            <f:select onChange="reactToApplicationListChange()" id="applicationSeletList" style="width: 160px;"/>
-                                        </f:entry>
-                                        <f:entry name="appAndReleaseNameField" id="microserviceSelectEntry" title="Microservice" field="userSelectedMicroservice" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
-                                            <f:select onChange="reactToMicroserviceListChange()" id="microserviceSeletList" style="width: 160px;"/>
-                                        </f:entry>
-                                        <f:entry name="appAndReleaseNameField" id="releaseSelectEntry" title="Release" field="userSelectedRelease" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
-                                            <f:select onChange="reactToReleaseListChange()" id="releaseSeletList" style="width: 160px;"/>
-                                        </f:entry>
+                                    <form>
+                                        <label for="applicationSelectEntry">    Application:    </label>
+                                        <select name="applicationSelectEntry" onChange="reactToApplicationListChange()" id="applicationSeletList" style="width: 160px;">
+                                            <option value="">Select an application</option>
+                                            <option value="Test1">Test 1</option>
+                                        </select>
+                                        <div id="testMsg1" />
+                                        <div id="testMsg4" />
+                                    </form>
+                                    <form>
+                                        <label for="microserviceSelectEntry">    Microservice:    </label>
+                                        <select name="microserviceSelectEntry" onChange="reactToMicroserviceListChange()" id="microserviceSeletList" style="width: 160px;">
+                                            <option value="">Select a release</option>
+                                            <option value="Test1">Test 1</option>
+                                        </select>
+                                        <div id="testMsg2" />
+                                    </form>
+                                    <form>
+                                        <label for="releaseSeletList">    Release:    </label>
+                                        <select name="releaseSeletList" onChange="reactToReleaseListChange()" id="releaseSeletList" style="width: 160px;">
+                                            <option value="">Select a release</option>
+                                            <option value="Test1">Test 1</option>
+                                        </select>
+                                        <div id="testMsg3" />
+                                    </form>
                                 </div>
                             </div>
                         </f:block>
