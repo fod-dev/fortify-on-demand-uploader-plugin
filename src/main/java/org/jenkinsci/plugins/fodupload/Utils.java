@@ -182,4 +182,31 @@ public class Utils {
     public static Boolean isUnauthorizedResponse(Response response) {
         return response.code() == HttpStatus.SC_FORBIDDEN || response.code() == HttpStatus.SC_UNAUTHORIZED;
     }
+
+    public static String createApplicationResponseViewModel(List<ApplicationApiResponse> applicationResponseList) {
+        Gson gson = new Gson();
+        HashMap<int, String> viewObject = new HashMap<int, String>();
+        for (ApplicationApiResponse applicationResponse : applicationResponseList) {
+            viewObject.put(applicationResponse.getApplicationId(), applicationResponse.getApplicationName());
+        }
+        return gson.toJson(viewObject);
+    }
+
+    public static String createMicroserviceResponseViewModel(List<MicroserviceApiResponse> microserviceResponseList) {
+        Gson gson = new Gson();
+        HashMap<int, String> viewObject = new HashMap<int, String>();
+        for (MicroserviceApiResponse microserviceResponse : microserviceResponseList) {
+            viewObject.put(microserviceResponse.getMicroserviceId(), microserviceResponse.getMicroserviceName());
+        }
+        return gson.toJson(viewObject);
+    }
+
+    public static String createReleaseResponseViewModel(List<ReleaseApiResponse> releaseResponseList) {
+        Gson gson = new Gson();
+        HashMap<int, String> viewObject = new HashMap<int, String>();
+        for (ReleaseApiResponse releaseResponse : releaseResponseList) {
+            viewObject.put(releaseResponse.getReleaseId(), releaseResponse.getReleaseName());
+        }
+        return gson.toJson(viewObject);
+    }
 }

@@ -185,24 +185,31 @@ public class SharedUploadBuildStep {
     }
 
     @SuppressWarnings("unused")
-    public static ListBoxModel doFillUserSelectedApplicationItems() {
-        ListBoxModel items = new ListBoxModel();
-        items.add(new ListBoxModel.Option("Please select an application", ""));
-        return items;
+    public String customFillUserSelectedApplicationList() {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
+        final PrintStream logger = listener.getLogger();
+        String correlationId = "appListRequest";
+        ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+        List<ApplicationApiResponse> applicationList = applicationController.getApplicationList();
+        return Utils.createApplicationResponseViewModel(applicationList);
     }
 
-    @SuppressWarnings("unused")
-    public static ListBoxModel doFillUserSelectedMicroserviceItems() {
-        ListBoxModel items = new ListBoxModel();
-        items.add(new ListBoxModel.Option("Please select a microservice", ""));
-        return items;
+    public String customFillUserSelectedMicroserviceList(int applicationId) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
+        final PrintStream logger = listener.getLogger();
+        String correlationId = "microListRequest";
+        ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+        List<ApplicationApiResponse> microserviceList = applicationController.getMicroserviceListByApplication(applicationId);
+        return Utils.createMicroserviceResponseViewModel(microserviceList);
     }
 
-    @SuppressWarnings("unused")
-    public static ListBoxModel doFillUserSelectedReleaseItems() {
-        ListBoxModel items = new ListBoxModel();
-        items.add(new ListBoxModel.Option("Please select a release", ""));
-        return items;
+    public String customFillUserSelectedReleaseList(int applicationId) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
+        final PrintStream logger = listener.getLogger();
+        String correlationId = "releaseListRequest";
+        ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+        List<ApplicationApiResponse> releaseList = applicationController.getReleaseListByApplication(applicationId);
+        return Utils.createReleaseResponseViewModel(releaseList);
     }
 
     public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {

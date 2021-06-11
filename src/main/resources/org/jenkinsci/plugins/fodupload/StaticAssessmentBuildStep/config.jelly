@@ -10,9 +10,6 @@
         <f:optionalBlock name="overrideGlobalConfig" field ="overrideGlobalConfig" title="Configure Personal Access Token" inline="true">
             <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AuthenticationOverride.jelly" />
         </f:optionalBlock>
-        <f:optionalBlock name="additionalConfig" title="New Application Wizard" field ="overrideGlobalConfig" >
-            <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/WizardNewApplicationWindow.jelly" />
-        </f:optionalBlock>
     </f:section>
 
     <f:section title="Entitlement Options">

@@ -81,8 +81,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String userSelectedMicroservice,
                                      String userSelectedRelease) {
 
-        showReleaseIdOptions = "Release Options 2";
-
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
                 overrideGlobalConfig,
                 username,
@@ -216,54 +214,15 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return sharedBuildStep.getModel().getUserSelectedRelease();
     }
 
-    @JavaScriptMethod
     @SuppressWarnings("unused")
     public String getSelectedReleaseType() {
-        if(selectedReleaseType == null || selectedReleaseType.length() < 1)
-            setSelectedReleaseType("Release Type 2");
-        return selectedReleaseType;
-//        return sharedBuildStep.getModel().getSelectedReleaseType();
-    }
-
-    @JavaScriptMethod
-    public String setSelectedReleaseType(String selectedReleaseType) {
-        this.selectedReleaseType = selectedReleaseType;
-        return this.selectedReleaseType;
-    }
-
-    @JavaScriptMethod
-    public String changeSelectedReleaseType(String selectedReleaseType) {
-        this.selectedReleaseType = "Roundtrip to StaticAssessmentBuildStep.java successful. Text from view via stapler post: " + selectedReleaseType;
-        return this.selectedReleaseType;
-    }
-
-    @JavaScriptMethod
-    public String changeSelectedReleaseTypeNoParam() {
-        return getSelectedReleaseType();
-    }
-
-    @JavaScriptMethod
-    public String resetSelectedReleaseTypeNoParam() {
-        setSelectedReleaseType("Release Type 2");
-        return getSelectedReleaseType();
-    }
-
-    public String getShowReleaseIdOptions() {
-        return showReleaseIdOptions;
-//        return getSelectedReleaseType() == FodEnums.SelectedReleaseType.UseReleaseId.toString();
-    }
-
-    @SuppressWarnings("unused")
-    public void setShowReleaseIdOptions(String showReleaseIdOptions) {
-        this.showReleaseIdOptions = showReleaseIdOptions;
+        return sharedBuildStep.getModel().getSelectedReleaseType();
     }
 
     @Extension
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
 
         private String showReleaseIdOptions;
-        public HashMap<String, HashMap<String, String>> applicationList;
-        String respCode;
         String selectedReleaseType;
         private static final String showReleaseIdOptionsField = "showReleaseIdOptionsField";
         /**
@@ -360,70 +319,19 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return SharedUploadBuildStep.doFillUserSelectedReleaseItems();
         }
 
-        @SuppressWarnings("unused")
-        public String getSelectedReleaseType() {
-            if(selectedReleaseType == null || selectedReleaseType.length() < 1)
-                setSelectedReleaseType("Release Type 2");
-            return selectedReleaseType;
-//        return sharedBuildStep.getModel().getSelectedReleaseType();
-        }
-
-        @SuppressWarnings("unused")
-        public void setSelectedReleaseType(String selectedReleaseType) {
-            this.selectedReleaseType = selectedReleaseType;
-        }
-
-        public String getShowReleaseIdOptions() {
-            return showReleaseIdOptions;
-//        return getSelectedReleaseType() == FodEnums.SelectedReleaseType.UseReleaseId.toString();
-        }
-
-        @SuppressWarnings("unused")
-        public void setShowReleaseIdOptions(String showReleaseIdOptions) {
-            this.showReleaseIdOptions = showReleaseIdOptions;
+        @JavaScriptMethod
+        public String retrieveApplicationList() {
+            return sharedBuildStep.customFillUserSelectedApplicationList();
         }
 
         @JavaScriptMethod
-        public int add(int x, int y) {
-            return x+y;
+        public String retrieveMicroserviceList(int selectedApplicationId) {
+            return sharedBuildStep.customFillUserSelectedMicroserviceList(selectedApplicationId);
         }
 
         @JavaScriptMethod
-        public void populateHashMap() {
-            try {
-                HttpClient client = HttpClientBuilder.create().build();
-                String url = "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/index.json";
-                HttpGet request = new HttpGet(url);
-                System.out.println("\nSending 'GET' request to URL : " + url);
-                HttpResponse response = client.execute(request);
-                respCode = String.valueOf(response.getStatusLine().getStatusCode());
-                System.out.println("Response Code :" + response.getStatusLine().getStatusCode());
-                StringBuilder result;
-                try (BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
-                    result = new StringBuilder();
-                    String line;
-                    while ((line = rd.readLine()) != null) {
-                        result.append(line);
-                    }
-                    JSONParser parser = new JSONParser();
-                    Object resultObject = parser.parse(result.toString());
-                    org.json.simple.JSONObject received_data = (org.json.simple.JSONObject) resultObject;
-                    if (resultObject instanceof HashMap && respCode.equals("200")) {
-                        Object offersObj = received_data.get("offers");
-                        applicationList = (HashMap) offersObj;
-                    }
-                } catch (ParseException ex) {
-                    System.out.println("ParseException: " + ex.getMessage());
-                }
-            } catch (IOException ex) {
-                System.out.println("IOException:" + ex.getMessage());
-            }
-        }
-
-        @JavaScriptMethod
-        public HashMap<String, HashMap<String, String>> getApplicationList() {
-
-            return applicationList;
+        public String retriveReleaseList(int selectedApplicationId) {
+            return sharedBuildStep.customFillUserSelectedReleaseList(selectedApplicationId);
         }
     }
 
