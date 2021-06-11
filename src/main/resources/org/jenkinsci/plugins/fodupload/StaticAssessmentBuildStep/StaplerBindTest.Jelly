@@ -27,21 +27,16 @@
                                         <label for="applicationSelectEntry">    Application:    </label>
                                         <select name="applicationSelectEntry" id="applicationSeletList" style="width: 160px;">
                                             <option value="">Select an application</option>
-                                            <option value="Test1">Test 1</option>
                                         </select>
                                     </form>
                                     <form>
                                         <label for="microserviceSelectEntry">    Microservice:    </label>
                                         <select name="microserviceSelectEntry" id="microserviceSeletList" style="width: 160px;">
-                                            <option value="">Select a release</option>
-                                            <option value="Test1">Test 1</option>
                                         </select>
                                     </form>
                                     <form>
                                         <label for="releaseSeletList">    Release:    </label>
                                         <select name="releaseSeletList" id="releaseSeletList" style="width: 160px;">
-                                            <option value="">Select a release</option>
-                                            <option value="Test1">Test 1</option>
                                         </select>
                                     </form>
                                 </div>
