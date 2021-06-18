@@ -8,8 +8,7 @@ import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
-import org.jenkinsci.plugins.fodupload.models.response.LookupItemsModel;
-import org.jenkinsci.plugins.fodupload.models.response.GenericListResponse;
+import org.jenkinsci.plugins.fodupload.models.response.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -24,14 +23,13 @@ public class ApplicationsController extends ControllerBase {
      * @param logger logger object
      * @param correlationId correlation id
      */
-    public ScanSettingsController(final FodApiConnection apiConnection, final PrintStream logger, final String correlationId) {
+    public ApplicationsController(final FodApiConnection apiConnection, final PrintStream logger, final String correlationId) {
         super(apiConnection, logger, correlationId);
     }
 
     /**
      * GET given enum
      *
-     * @param type enum to look up
      * @return array of enum values and text or null
      * @throws java.io.IOException in some circumstances
      */
@@ -42,7 +40,6 @@ public class ApplicationsController extends ControllerBase {
 
         String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                 .addPathSegments("/api/v3/applications")
-                .addQueryParameter("type", type.toString())
                 .build().toString();
 
         Request request = new Request.Builder()
@@ -68,8 +65,8 @@ public class ApplicationsController extends ControllerBase {
     /**
      * GET given enum
      *
-     * @param type enum to look up
-     * @return array of enum values and text or null
+     * @param releaseListApplicationId ApplicationId for query
+     * @return list of Releases
      * @throws java.io.IOException in some circumstances
      */
     public List<ReleaseApiResponse> getReleaseListByApplication(int releaseListApplicationId) throws IOException {
@@ -79,7 +76,6 @@ public class ApplicationsController extends ControllerBase {
 
         String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                 .addPathSegments("/api/v3/applications" + releaseListApplicationId + "/releases")
-                .addQueryParameter("type", type.toString())
                 .build().toString();
 
         Request request = new Request.Builder()
@@ -105,7 +101,7 @@ public class ApplicationsController extends ControllerBase {
     /**
      * GET given enum
      *
-     * @param type enum to look up
+     * @param microserviceListApplicationId ApplicationId for query
      * @return array of enum values and text or null
      * @throws java.io.IOException in some circumstances
      */
@@ -116,7 +112,6 @@ public class ApplicationsController extends ControllerBase {
 
         String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                 .addPathSegments("/api/v3/applications" + microserviceListApplicationId + "/microservices")
-                .addQueryParameter("type", type.toString())
                 .build().toString();
 
         Request request = new Request.Builder()
@@ -133,9 +128,9 @@ public class ApplicationsController extends ControllerBase {
         response.body().close();
 
         Gson gson = new Gson();
-        Type t = new TypeToken<GenericListResponse<ApplicationApiResponse>>() {
+        Type t = new TypeToken<GenericListResponse<MicroserviceApiResponse>>() {
         }.getType();
-        GenericListResponse<ApplicationApiResponse> results = gson.fromJson(content, t);
+        GenericListResponse<MicroserviceApiResponse> results = gson.fromJson(content, t);
         return results.getItems();
     }
 }

@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.fodupload;
 
+import com.google.gson.Gson;
 import hudson.FilePath;
 import hudson.security.ACL;
 import hudson.util.Secret;
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -17,6 +19,9 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import okhttp3.Response;
 import org.apache.http.HttpStatus;
+import org.jenkinsci.plugins.fodupload.models.response.ApplicationApiResponse;
+import org.jenkinsci.plugins.fodupload.models.response.MicroserviceApiResponse;
+import org.jenkinsci.plugins.fodupload.models.response.ReleaseApiResponse;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 public class Utils {
@@ -185,7 +190,7 @@ public class Utils {
 
     public static String createApplicationResponseViewModel(List<ApplicationApiResponse> applicationResponseList) {
         Gson gson = new Gson();
-        HashMap<int, String> viewObject = new HashMap<int, String>();
+        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
         for (ApplicationApiResponse applicationResponse : applicationResponseList) {
             viewObject.put(applicationResponse.getApplicationId(), applicationResponse.getApplicationName());
         }
@@ -194,7 +199,7 @@ public class Utils {
 
     public static String createMicroserviceResponseViewModel(List<MicroserviceApiResponse> microserviceResponseList) {
         Gson gson = new Gson();
-        HashMap<int, String> viewObject = new HashMap<int, String>();
+        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
         for (MicroserviceApiResponse microserviceResponse : microserviceResponseList) {
             viewObject.put(microserviceResponse.getMicroserviceId(), microserviceResponse.getMicroserviceName());
         }
@@ -203,7 +208,7 @@ public class Utils {
 
     public static String createReleaseResponseViewModel(List<ReleaseApiResponse> releaseResponseList) {
         Gson gson = new Gson();
-        HashMap<int, String> viewObject = new HashMap<int, String>();
+        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
         for (ReleaseApiResponse releaseResponse : releaseResponseList) {
             viewObject.put(releaseResponse.getReleaseId(), releaseResponse.getReleaseName());
         }

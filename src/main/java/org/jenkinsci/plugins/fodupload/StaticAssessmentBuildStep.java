@@ -304,34 +304,27 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return SharedUploadBuildStep.doFillSelectedReleaseTypeItems();
         }
 
-        @SuppressWarnings("unused")
-        public ListBoxModel doFillUserSelectedApplicationItems() {
-            return SharedUploadBuildStep.doFillUserSelectedApplicationItems();
-        }
-
-        @SuppressWarnings("unused")
-        public ListBoxModel doFillUserSelectedMicroserviceItems() {
-            return SharedUploadBuildStep.doFillUserSelectedMicroserviceItems();
-        }
-
-        @SuppressWarnings("unused")
-        public ListBoxModel doFillUserSelectedReleaseItems() {
-            return SharedUploadBuildStep.doFillUserSelectedReleaseItems();
-        }
-
         @JavaScriptMethod
         public String retrieveApplicationList() {
-            return sharedBuildStep.customFillUserSelectedApplicationList();
+            return SharedUploadBuildStep.customFillUserSelectedApplicationList();
         }
 
         @JavaScriptMethod
         public String retrieveMicroserviceList(int selectedApplicationId) {
-            return sharedBuildStep.customFillUserSelectedMicroserviceList(selectedApplicationId);
+            return SharedUploadBuildStep.customFillUserSelectedMicroserviceList(selectedApplicationId);
         }
 
         @JavaScriptMethod
         public String retriveReleaseList(int selectedApplicationId) {
-            return sharedBuildStep.customFillUserSelectedReleaseList(selectedApplicationId);
+            return SharedUploadBuildStep.customFillUserSelectedReleaseList(selectedApplicationId);
+        }
+
+        @JavaScriptMethod
+        public String testBsiTokenParser(String testBsiTokenString) {
+            BsiTokenParser parser = new BsiTokenParser();
+            org.jenkinsci.plugins.fodupload.models.BsiToken token = parser.parseBsiToken(testBsiTokenString);
+            Gson gson = new Gson();
+            return gson.toJson(token);
         }
     }
 

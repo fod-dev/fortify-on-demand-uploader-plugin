@@ -46,14 +46,18 @@
                 </f:block>
             </f:section>
         </div>
-        <f:block>
-            <div id="wizardDiv" style="display: none;">
-                <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/WizardNewApplicationWindow.jelly" />
-            </div>
-        </f:block>
         
         <script>
             var backend = <st:bind value="${descriptor}"/>
+
+            testBsiTokenParser();
+
+            function testBsiTokenParser() {
+                const bsiToken = "eyJ0ZW5hbnRJZCI6NDcyNiwidGVuYW50Q29kZSI6ImNvbXB1dGVydG9vbHMiLCJyZWxlYXNlSWQiOjE5Nzc0LCJwYXlsb2FkVHlwZSI6IkFOQUxZU0lTX1BBWUxPQUQiLCJhc3Nlc3NtZW50VHlwZUlkIjo5LCJ0ZWNobm9sb2d5VHlwZSI6IkpBVkEvSjJFRSIsInRlY2hub2xvZ3lUeXBlSWQiOjcsInRlY2hub2xvZ3lWZXJzaW9uIjoiMS44IiwidGVjaG5vbG9neVZlcnNpb25JZCI6MTIsImF1ZGl0UHJlZmVyZW5jZSI6IkF1dG9tYXRlZCIsImF1ZGl0UHJlZmVyZW5jZUlkIjoyLCJpbmNsdWRlVGhpcmRQYXJ0eSI6ZmFsc2UsImluY2x1ZGVPcGVuU291cmNlQW5hbHlzaXMiOmZhbHNlLCJwb3J0YWxVcmkiOiJodHRwczovL2ZvZHRlbmFudC5xYTciLCJhcGlVcmkiOiJodHRwczovLzE2LjEwMy4yMzQuMTUxOjQ0NDMiLCJzY2FuUHJlZmVyZW5jZSI6IlN0YW5kYXJkIiwic2NhblByZWZlcmVuY2VJZCI6MX0=";
+                backend.testBsiTokenParser(bsiToken, function(t) {
+                    document.getElementById('testMsg0').innerHTML = t.responseObject();
+                });
+            }
             
         </script>
         

@@ -1,12 +1,15 @@
 package org.jenkinsci.plugins.fodupload;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.text.Normalizer;
+import java.util.List;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
+import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
@@ -14,8 +17,7 @@ import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressBuildResultType;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressScanActionType;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.SelectedReleaseType;
-import org.jenkinsci.plugins.fodupload.models.response.StartScanResponse;
-import org.jenkinsci.plugins.fodupload.models.response.StaticScanSetupResponse;
+import org.jenkinsci.plugins.fodupload.models.response.*;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -185,30 +187,51 @@ public class SharedUploadBuildStep {
     }
 
     @SuppressWarnings("unused")
-    public String customFillUserSelectedApplicationList() {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
-        final PrintStream logger = listener.getLogger();
+    public static String customFillUserSelectedApplicationList() {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final PrintStream logger = new PrintStream(os);
+        List<ApplicationApiResponse> applicationList = null;
         String correlationId = "appListRequest";
-        ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
-        List<ApplicationApiResponse> applicationList = applicationController.getApplicationList();
+        try {
+            ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+            applicationList = applicationController.getApplicationList();
+        } catch (IOException e) {
+            logger.println(e.getMessage());
+        }
+
         return Utils.createApplicationResponseViewModel(applicationList);
     }
 
-    public String customFillUserSelectedMicroserviceList(int applicationId) {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
-        final PrintStream logger = listener.getLogger();
+    public static String customFillUserSelectedMicroserviceList(int applicationId) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final PrintStream logger = new PrintStream(os);
+        List<MicroserviceApiResponse> microserviceList = null;
         String correlationId = "microListRequest";
-        ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
-        List<ApplicationApiResponse> microserviceList = applicationController.getMicroserviceListByApplication(applicationId);
+        try {
+            ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+            microserviceList = applicationController.getMicroserviceListByApplication(applicationId);
+        } catch (IOException e) {
+            logger.println(e.getMessage());
+        }
+
         return Utils.createMicroserviceResponseViewModel(microserviceList);
     }
 
-    public String customFillUserSelectedReleaseList(int applicationId) {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
-        final PrintStream logger = listener.getLogger();
+    public static String customFillUserSelectedReleaseList(int applicationId) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final PrintStream logger = new PrintStream(os);
         String correlationId = "releaseListRequest";
-        ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
-        List<ApplicationApiResponse> releaseList = applicationController.getReleaseListByApplication(applicationId);
+        List<ReleaseApiResponse> releaseList = null;
+        try {
+            ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+            releaseList = applicationController.getReleaseListByApplication(applicationId);
+        } catch (IOException e) {
+            logger.println(e.getMessage());
+        }
+
         return Utils.createReleaseResponseViewModel(releaseList);
     }
 
@@ -400,6 +423,18 @@ public class SharedUploadBuildStep {
                                                                    authModel.getTenantId() );
        
         return displayModel;
+    }
+
+    public static AuthenticationModel createStaticAuthModel() {
+        AuthenticationModel staticAuthModel = null;
+        String baseUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getBaseUrl();
+        String apiUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getApiUrl();
+        String userName = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getUsername();
+        String tenantId = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getTenantId();
+
+        String personalAccessToken = "";
+        String plainTextPersonalAccessToken = Utils.retrieveSecretDecryptedValue(personalAccessToken);
+        return staticAuthModel;
     }
 
     public JobModel setModel(JobModel newModel) { return model = newModel; }

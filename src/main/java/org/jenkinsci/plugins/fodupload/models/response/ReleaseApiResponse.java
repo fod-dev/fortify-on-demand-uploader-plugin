@@ -1,3 +1,7 @@
+package org.jenkinsci.plugins.fodupload.models.response;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 public class ReleaseApiResponse {
     private int ReleaseId;
     private String ReleaseName;

@@ -1,3 +1,9 @@
+package org.jenkinsci.plugins.fodupload.models.response;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import java.util.List;
+
 public class ApplicationApiResponse {
     private int ApplicationId;
     private String ApplicationName;
@@ -9,7 +15,7 @@ public class ApplicationApiResponse {
     private int ApplicationTypeId;
     private String ApplicationType;
     private Boolean HasMicroservices;
-    Private List<ApplicationAttributeExtended> Attributes;
+    private List<ApplicationAttributeExtended> Attributes;
 
     public int getApplicationId() {
         return ApplicationId;
@@ -46,7 +52,7 @@ public class ApplicationApiResponse {
     };
 }
 
-public class ApplicationAttributeExtended {
+class ApplicationAttributeExtended {
     private String Name;
     private int Id;
     private String Value;
