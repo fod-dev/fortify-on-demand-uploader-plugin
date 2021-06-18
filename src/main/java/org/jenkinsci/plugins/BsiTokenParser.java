@@ -7,10 +7,11 @@ import com.google.gson.Gson;
 public class BsiTokenParser {
     public org.jenkinsci.plugins.fodupload.models.BsiToken parseBsiToken(String encodedBsiString) {
         byte[] bsiBytes = Base64.getDecoder().decode(encodedBsiString);
-        String decodedBsiString = Base64.getEncoder().encodeToString(bsiBytes);
+        String decodedBsiString = new String(bsiBytes);
         Gson gson = new Gson();
-        String json = gson.toJson(decodedBsiString);
-        System.out.println(json);
-        return gson.fromJson(json, org.jenkinsci.plugins.fodupload.models.BsiToken.class);
+        System.out.println("Decoded BSI String: ");
+        System.out.println(decodedBsiString);
+        org.jenkinsci.plugins.fodupload.models.BsiToken token = gson.fromJson(decodedBsiString, org.jenkinsci.plugins.fodupload.models.BsiToken.class);
+        return token;
     }
 }

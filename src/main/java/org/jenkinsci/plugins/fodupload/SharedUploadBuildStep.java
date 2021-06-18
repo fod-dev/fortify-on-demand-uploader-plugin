@@ -427,13 +427,11 @@ public class SharedUploadBuildStep {
 
     public static AuthenticationModel createStaticAuthModel() {
         AuthenticationModel staticAuthModel = null;
-        String baseUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getBaseUrl();
-        String apiUrl = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getApiUrl();
+
         String userName = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getUsername();
         String tenantId = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getTenantId();
-
-        String personalAccessToken = "";
-        String plainTextPersonalAccessToken = Utils.retrieveSecretDecryptedValue(personalAccessToken);
+        String personalAccessToken = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getPersonalAccessToken();
+        staticAuthModel = new AuthenticationModel(false, userName, personalAccessToken, tenantId);
         return staticAuthModel;
     }
 

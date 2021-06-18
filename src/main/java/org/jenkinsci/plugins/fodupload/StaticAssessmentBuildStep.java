@@ -52,6 +52,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
+import com.google.gson.Gson;
 
 
 @SuppressWarnings("unused")
