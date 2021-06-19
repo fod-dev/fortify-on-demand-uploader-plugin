@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.fodupload;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.security.ACL;
@@ -20,6 +21,7 @@ import org.jenkinsci.plugins.fodupload.models.FodEnums.GrantType;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.verb.POST;
 
+@Extension
 public class FodGlobalDescriptor extends GlobalConfiguration {
     private static final String CLIENT_ID = "clientId";
     private static final String GLOBAL_AUTH_TYPE = "globalAuthType";
@@ -267,7 +269,9 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
             return FormValidation.error("Unable to retrieve authentication token.");
         }
 
-            return FormValidation.ok("Successfully authenticated to Fortify on Demand.");
+            return !token.isEmpty() ?
+                FormValidation.ok("Successfully authenticated to Fortify on Demand.") :
+                FormValidation.error("Invalid connection information. Please check your credentials and try again.");
     }
 
     private ListBoxModel doFillStringCredentialsItems(){

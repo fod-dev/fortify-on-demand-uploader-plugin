@@ -67,6 +67,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     // Entry point when building
     @DataBoundConstructor
     public StaticAssessmentBuildStep(String releaseId,
+                                     String bsiToken,
                                      boolean overrideGlobalConfig,
                                      String username,
                                      String personalAccessToken,
@@ -83,6 +84,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String userSelectedRelease) {
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
+                bsiToken,
                 overrideGlobalConfig,
                 username,
                 personalAccessToken,
@@ -150,6 +152,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     // NOTE: The following Getters are used to return saved values in the config.jelly. Intellij
     // marks them unused, but they actually are used.
     // These getters are also named in the following format: Get<JellyField>.
+    @SuppressWarnings("unused")
+    public String getBsiToken() {
+        return sharedBuildStep.getModel().getBsiTokenOriginal();
+    }
+
     @SuppressWarnings("unused")
     public String getUsername() {
         return sharedBuildStep.getAuthModel().getUsername();
@@ -241,9 +248,14 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             return true;
         }
 
-        public FormValidation doCheckReleaseId(@QueryParameter String releaseId) {
+        public FormValidation doCheckReleaseId(@QueryParameter String releaseId, @QueryParameter String bsiToken) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-            return SharedUploadBuildStep.doCheckReleaseId(releaseId);
+            return SharedUploadBuildStep.doCheckReleaseId(releaseId, bsiToken);
+        }
+
+        public FormValidation doCheckBsiToken(@QueryParameter String bsiToken, @QueryParameter String releaseId) {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            return SharedUploadBuildStep.doCheckBsiToken(bsiToken, releaseId);
         }
 
         @Override

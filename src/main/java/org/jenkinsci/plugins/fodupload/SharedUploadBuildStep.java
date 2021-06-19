@@ -52,6 +52,7 @@ public class SharedUploadBuildStep {
     private int scanId;
 
     public SharedUploadBuildStep(String releaseId,
+                                 String bsiToken,
                                  boolean overrideGlobalConfig,
                                  String username,
                                  String personalAccessToken,
@@ -68,6 +69,7 @@ public class SharedUploadBuildStep {
                                  String userSelectedRelease) {
 
         model = new JobModel(releaseId,
+                bsiToken,
                 purchaseEntitlements,
                 entitlementPreference,
                 srcLocation,
@@ -85,7 +87,7 @@ public class SharedUploadBuildStep {
                 tenantId);
     }
 
-    public static FormValidation doCheckReleaseId(String releaseId) {
+    public static FormValidation doCheckReleaseId(String releaseId, String bsiToken) {
         if (releaseId != null && !releaseId.isEmpty()) {
             try {
                 Integer testReleaseId = Integer.parseInt(releaseId);
@@ -95,9 +97,32 @@ public class SharedUploadBuildStep {
             }
         }
         else {
+            if (bsiToken != null && !bsiToken.isEmpty()) {
+                return FormValidation.ok();
+            }
 
-            return FormValidation.error("Please specify Release ID.");
+            return FormValidation.error("Please specify Release ID or BSI Token.");
         }
+    }
+
+    public static FormValidation doCheckBsiToken(String bsiToken, String releaseId) {
+        if (bsiToken != null && !bsiToken.isEmpty()) {
+            BsiTokenParser tokenParser = new BsiTokenParser();
+            try {
+                BsiToken testToken = tokenParser.parse(bsiToken);
+                if (testToken != null) {
+                    return FormValidation.ok();
+                }
+            } catch (Exception ex) {
+                return FormValidation.error("Could not parse BSI token.");
+            }
+        } else {
+            if (releaseId != null && !releaseId.isEmpty()) {
+                return FormValidation.ok();
+            }
+            return FormValidation.error("Please specify Release ID or BSI Token.");
+        }
+        return FormValidation.error("Please specify Release ID or BSI Token.");
     }
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -243,8 +268,8 @@ public class SharedUploadBuildStep {
             return false;
         }
 
-        if ((model.getReleaseId() == null || model.getReleaseId().isEmpty())) {
-            logger.println("Invalid release ID");
+        if ((model.getReleaseId() == null || model.getReleaseId().isEmpty()) && model.loadBsiToken() == false) {
+            logger.println("Invalid release ID or BSI Token");
             build.setResult(Result.FAILURE);
             return false;
         }
@@ -319,10 +344,14 @@ public class SharedUploadBuildStep {
             }
             catch (NumberFormatException ex) {}
 
-            if (releaseId == 0) {
+            if (releaseId == 0 && !model.loadBsiToken()) {
                 build.setResult(Result.FAILURE);
-                logger.println("Invalid release ID");
+                logger.println("Invalid release ID or BSI Token");
                 return;
+            }
+
+            if (releaseId > 0 && model.loadBsiToken()) {
+                logger.println("Warning: The BSI Token will be ignored since Release ID was entered.");
             }
 
             String technologyStack = null;
@@ -333,6 +362,20 @@ public class SharedUploadBuildStep {
                 apiConnection.authenticate();
 
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
+
+                if (releaseId == 0) {
+                    model.loadBsiToken();
+                    technologyStack = model.getBsiToken().getTechnologyStack();
+                } else {
+                    staticScanSetup = staticScanController.getStaticScanSettings(releaseId);
+                    if (staticScanSetup == null) {
+                        logger.println("No scan settings defined for release " + releaseId.toString());
+                        build.setResult(Result.FAILURE);
+                        return;
+                    }
+
+                    technologyStack = staticScanSetup.getTechnologyStack();
+                }
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
                 // zips the file in a temporary location

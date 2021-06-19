@@ -31,6 +31,7 @@ import org.kohsuke.stapler.verb.POST;
 
 public class SharedPollingBuildStep {
 
+    public static final BsiTokenParser tokenParser = new BsiTokenParser();
     public static final String CLIENT_ID = "clientId";
     public static final String CLIENT_SECRET = "clientSecret";
     public static final String USERNAME = "username";
@@ -38,6 +39,7 @@ public class SharedPollingBuildStep {
     public static final String TENANT_ID = "tenantId";
 
     private String releaseId;
+    private String bsiToken;
     private int pollingInterval;
     private int scanId;
     private String correlationId;
@@ -47,6 +49,7 @@ public class SharedPollingBuildStep {
     private AuthenticationModel authModel;
 
     public SharedPollingBuildStep(String releaseId,
+                                  String bsiToken,
                                   boolean overrideGlobalConfig,
                                   int pollingInterval,
                                   int policyFailureBuildResultPreference,
@@ -57,6 +60,7 @@ public class SharedPollingBuildStep {
                                   String tenantId) {
 
         this.releaseId = releaseId;
+        this.bsiToken = bsiToken;
         this.pollingInterval = pollingInterval;
         this.policyFailureBuildResultPreference = policyFailureBuildResultPreference;
         this.scanId = -1;
@@ -67,7 +71,7 @@ public class SharedPollingBuildStep {
                 tenantId);
     }
 
-    public static FormValidation doCheckReleaseId(String releaseId) {
+    public static FormValidation doCheckReleaseId(String releaseId, String bsiToken) {
         if (releaseId != null && !releaseId.isEmpty()) {
             try {
                 Integer testReleaseId = Integer.parseInt(releaseId);
@@ -77,8 +81,32 @@ public class SharedPollingBuildStep {
             }
         }
         else {
-            return FormValidation.error("Please specify Release ID.");
+             if (bsiToken != null && !bsiToken.isEmpty()) {
+                return FormValidation.ok();
+            }
+
+            return FormValidation.error("Please specify Release ID or BSI Token.");
         }
+    }
+
+    public static FormValidation doCheckBsiToken(String bsiToken, String releaseId) {
+        if (bsiToken != null && !bsiToken.isEmpty()) {
+            BsiTokenParser tokenParser = new BsiTokenParser();
+            try {
+                BsiToken testToken = tokenParser.parse(bsiToken);
+                if (testToken != null) {
+                    return FormValidation.ok();
+                }
+            } catch (Exception ex) {
+                return FormValidation.error("Could not parse BSI token.");
+            }
+        } else {
+            if (releaseId != null && !releaseId.isEmpty()) {
+                return FormValidation.ok();
+            }
+            return FormValidation.error("Please specify Release ID or BSI Token.");
+        }
+        return FormValidation.error("Please specify Release ID or BSI Token.");
     }
 
     public static FormValidation doCheckPollingInterval(String pollingInterval) {
@@ -221,18 +249,21 @@ public class SharedPollingBuildStep {
                 }
             }
 
-            if (releaseIdNum == 0) {
+            if (releaseIdNum == 0 && (this.getBsiToken() == null || this.getBsiToken().isEmpty())) {
                 run.setResult(Result.FAILURE);
-                logger.println("Invalid release ID");
+                logger.println("Invalid release ID or BSI Token");
                 return;
             }
  
-            //Need to have access to bsi token here...
+            if (releaseIdNum > 0 && this.getBsiToken() != null && !this.getBsiToken().isEmpty()) {
+                logger.println("Warning: The BSI Token will be ignored since Release ID was entered.");
+            }
 
+            BsiToken token = releaseIdNum == 0 ? tokenParser.parse(this.getBsiToken()) : null;
             if (apiConnection != null) {
                 apiConnection.authenticate();
                 ScanStatusPoller poller = new ScanStatusPoller(apiConnection, this.getPollingInterval(), logger);
-                PollReleaseStatusResult result = poller.pollReleaseStatus(releaseIdNum, scanId, correlationId);
+                PollReleaseStatusResult result = poller.pollReleaseStatus(releaseIdNum == 0 ? token.getProjectVersionId() : releaseIdNum, scanId, correlationId);
 
                 // if the polling fails, crash the build
                 if (!result.isPollingSuccessful()) {
@@ -268,7 +299,8 @@ public class SharedPollingBuildStep {
                 logger.println("Failed to authenticate");
                 run.setResult(Result.FAILURE);
             }
-
+        } catch (URISyntaxException e) {
+            logger.println("Failed to parse BSI.");
         } finally {
             if (apiConnection != null) {
                 apiConnection.retireToken();
@@ -278,6 +310,10 @@ public class SharedPollingBuildStep {
 
     public String getReleaseId() {
         return releaseId;
+    }
+
+    public String getBsiToken() {
+        return bsiToken;
     }
 
     public int getPollingInterval() {

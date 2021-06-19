@@ -222,11 +222,11 @@ public class ReleaseController extends ControllerBase {
 
         FodApiFilterList filters = new FodApiFilterList()
                 .addFilter("frequencyTypeId", model.getEntitlementPreference())
-                .addFilter("assessmentTypeId", "TODO: AssessmentID");
+                .addFilter("assessmentTypeId", model.getBsiToken().getAssessmentTypeId());
 
         //TODO: "Project version ID"
         String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
-                .addPathSegments(String.format("/api/v3/releases/%s/assessment-types", "TODO: projectVersionID"))
+                .addPathSegments(String.format("/api/v3/releases/%s/assessment-types", model.getBsiToken().getProjectVersionId()))
                 .addQueryParameter("scanType", "1")
                 .addQueryParameter("filters", filters.toString())
                 .build().toString();

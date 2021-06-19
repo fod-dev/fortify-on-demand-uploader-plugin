@@ -13,6 +13,7 @@ public class StaticScanSetupResponse {
     private int auditPreferenceTypeId;
     private boolean includeThirdPartyLibraries;
     private boolean useSourceControl;
+    private String bsiToken;
 
     public int getAssessmentTypeId() {
         return assessmentTypeId;
@@ -52,6 +53,10 @@ public class StaticScanSetupResponse {
 
     public boolean isUseSourceControl() {
         return useSourceControl;
+    }
+
+    public String getBsiToken() {
+        return bsiToken;
     }
 
     public String getTechnologyStack() {

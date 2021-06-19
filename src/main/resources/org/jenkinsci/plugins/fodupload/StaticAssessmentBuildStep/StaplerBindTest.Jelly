@@ -23,6 +23,12 @@
                                         <input type="text" id="releaseIdMainWindow" name="releaseIdField"></input>
                                     </form>
                                 </div>
+                                <div id="bsiTokenView">
+                                    <form>
+                                        <label for="bsiTokenField">BSI Token: </label>
+                                        <input type="text" id="bsiTokenMainWindow" name="bsiTokenField"></input>
+                                    </form>
+                                </div>
                                 <div id="appAndReleaseNameView">
                                     <form>
                                         <label for="applicationSelectEntry">    Application:    </label>

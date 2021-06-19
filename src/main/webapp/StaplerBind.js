@@ -49,6 +49,8 @@ function managePickReleaseView(viewChoice) {
         showPickReleaseViewAppAndReleaseNameView();
     } else if (viewChoice == "UseReleaseId") {
         showPickReleaseViewReleaseIdView();
+    } else if (viewChoice == "UseBsiToken") {
+        showPickReleaseViewReleaseIdView();
     }
 }
 
@@ -60,6 +62,7 @@ function showPickReleaseViewAppAndReleaseNameView() {
     jQuery3('#allPickReleaseViews').show();
     jQuery3('#appAndReleaseNameView').show();
     jQuery3('#releaseIdView').hide();
+    jQuery3('#bsiTokenView').hide();
 
     if ($('#microserviceSeletList').is(':empty')){
         jQuery3('#microserviceSeletList').prop('disabled', true);
@@ -73,5 +76,13 @@ function showPickReleaseViewAppAndReleaseNameView() {
 function showPickReleaseViewReleaseIdView() {
     jQuery3('#allPickReleaseViews').show();
     jQuery3('#releaseIdView').show();
+    jQuery3('#bsiTokenView').hide();
+    jQuery3('#appAndReleaseNameView').hide();
+}
+
+function showPickReleaseViewBsiTokenView() {
+    jQuery3('#allPickReleaseViews').show();
+    jQuery3('#bsiTokenView').show();
+    jQuery3('#releaseIdView').hide();
     jQuery3('#appAndReleaseNameView').hide();
 }
