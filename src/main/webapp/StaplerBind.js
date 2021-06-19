@@ -50,7 +50,7 @@ function managePickReleaseView(viewChoice) {
     } else if (viewChoice == "UseReleaseId") {
         showPickReleaseViewReleaseIdView();
     } else if (viewChoice == "UseBsiToken") {
-        showPickReleaseViewReleaseIdView();
+        showPickReleaseViewBsiTokenView();
     }
 }
 

@@ -213,7 +213,8 @@ public class FodEnums {
 
         public static SelectedReleaseType fromInt(int val) {
             switch (val) {
-                case 3: UseAppAndReleaseName;
+                case 3: 
+                    return UseAppAndReleaseName;
                 case 2:
                     return UseReleaseId;
                 case 1:

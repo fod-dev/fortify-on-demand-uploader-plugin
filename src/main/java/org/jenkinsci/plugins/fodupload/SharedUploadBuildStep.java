@@ -12,6 +12,7 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
+import org.jenkinsci.plugins.fodupload.models.BsiToken;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressBuildResultType;
@@ -109,7 +110,7 @@ public class SharedUploadBuildStep {
         if (bsiToken != null && !bsiToken.isEmpty()) {
             BsiTokenParser tokenParser = new BsiTokenParser();
             try {
-                BsiToken testToken = tokenParser.parse(bsiToken);
+                BsiToken testToken = tokenParser.parseBsiToken(bsiToken);
                 if (testToken != null) {
                     return FormValidation.ok();
                 }

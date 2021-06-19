@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.fodupload.models;
 
+import org.jenkinsci.plugins.fodupload.BsiTokenParser;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -147,7 +149,7 @@ public class JobModel {
                     entitlementPreference,
                     inProgressScanActionType,
                     inProgressBuildResultType,
-                    selectedReleaceType);
+                    selectedReleaseType);
         } else {
             return String.format("Release Id: %s", releaseId);
         }
@@ -159,7 +161,7 @@ public class JobModel {
         }
 
         try {
-            this.bsiTokenCache = tokenParser.parse(bsiTokenOriginal);
+            this.bsiTokenCache = tokenParser.parseBsiToken(bsiTokenOriginal);
         } catch (Exception ex) {
             return false;
         }

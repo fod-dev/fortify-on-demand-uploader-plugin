@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
+import org.jenkinsci.plugins.fodupload.models.BsiToken;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.polling.PollReleaseStatusResult;
 import org.jenkinsci.plugins.fodupload.polling.ScanStatusPoller;
@@ -93,7 +94,7 @@ public class SharedPollingBuildStep {
         if (bsiToken != null && !bsiToken.isEmpty()) {
             BsiTokenParser tokenParser = new BsiTokenParser();
             try {
-                BsiToken testToken = tokenParser.parse(bsiToken);
+                BsiToken testToken = tokenParser.parseBsiToken(bsiToken);
                 if (testToken != null) {
                     return FormValidation.ok();
                 }
@@ -259,7 +260,7 @@ public class SharedPollingBuildStep {
                 logger.println("Warning: The BSI Token will be ignored since Release ID was entered.");
             }
 
-            BsiToken token = releaseIdNum == 0 ? tokenParser.parse(this.getBsiToken()) : null;
+            BsiToken token = releaseIdNum == 0 ? tokenParser.parseBsiToken(this.getBsiToken()) : null;
             if (apiConnection != null) {
                 apiConnection.authenticate();
                 ScanStatusPoller poller = new ScanStatusPoller(apiConnection, this.getPollingInterval(), logger);
@@ -299,8 +300,6 @@ public class SharedPollingBuildStep {
                 logger.println("Failed to authenticate");
                 run.setResult(Result.FAILURE);
             }
-        } catch (URISyntaxException e) {
-            logger.println("Failed to parse BSI.");
         } finally {
             if (apiConnection != null) {
                 apiConnection.retireToken();
