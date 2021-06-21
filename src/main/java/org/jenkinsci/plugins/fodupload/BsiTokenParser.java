@@ -9,8 +9,6 @@ public class BsiTokenParser {
         byte[] bsiBytes = Base64.getDecoder().decode(encodedBsiString);
         String decodedBsiString = new String(bsiBytes);
         Gson gson = new Gson();
-        System.out.println("Decoded BSI String: ");
-        System.out.println(decodedBsiString);
         org.jenkinsci.plugins.fodupload.models.BsiToken token = gson.fromJson(decodedBsiString, org.jenkinsci.plugins.fodupload.models.BsiToken.class);
         return token;
     }
