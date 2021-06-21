@@ -1,34 +1,9 @@
 initializeControls();
 
 function initializeControls() {
-    jQuery3('#releaseTypeSelectList').change(function(){
-        let viewChoice = jQuery3('#releaseTypeSelectList').val();
-        backend.retrieveApplicationList(function(t) {
-            const applicationSelection = jQuery3('#applicationSeletList');
-            const responseJson = jQuery.parseJson(t.responseObject());
 
-            updateSelectListWithResponse(applicationSelection, responseJson);
-        });
-        managePickReleaseView(viewChoice);
-    });
-    jQuery3('#applicationSeletList').change(function(){
-        let applicationSelection = jQuery3('#applicationSeletList').val();
-        backend.retrieveMicroserviceList(applicationSelection, function(t) {
-            const microserviceSelectList = jQuery3('#microserviceSeletList');
-            const responseJson = jQuery.parseJson(t.responseObject());
-            
-            updateSelectListWithResponse(microserviceSelectList, responseJson);
-        });
 
-        backend.retriveReleaseList(applicationSelection, function(t) {
-            const releaseSelectList = jQuery3('#releaseSelectList');
-            const responseJson = jQuery.parseJson(t.responseObject());
-            
-            updateSelectListWithResponse(releaseSelectList, responseJson);
-        });
 
-        jQuery3('#userSelectedApplication').val(applicationSelection);
-    });
     jQuery3('#microserviceSeletList').change(function(){
         jQuery3('#userSelectedMicroservice').val(jQuery3('#microserviceSeletList').val());
     });
@@ -39,9 +14,9 @@ function initializeControls() {
 
 function updateSelectListWithResponse(selectListJquery, jsonResponse) {
     selectListJquery.empty();
-    jsonResponse.each(function(item) {
-        selectListJquery.append('<option value="' + item.Key + '">' + item.Value + '</option>');
-    })
+    for(const app of jsonResponse) {
+        selectListJquery.append('<option value="' + app.applicationId + '">' + app.applicationName + '</option>');
+    }
 }
 
 function managePickReleaseView(viewChoice) {
@@ -64,12 +39,8 @@ function showPickReleaseViewAppAndReleaseNameView() {
     jQuery3('#releaseIdView').hide();
     jQuery3('#bsiTokenView').hide();
 
-    if ($('#microserviceSeletList').is(':empty')){
-        jQuery3('#microserviceSeletList').prop('disabled', true);
-    }
-      
-    if ($('#releaseSeletList').is(':empty')){
-    jQuery3('#releaseSeletList').prop('disabled', true);
+    if (jQuery3('#microserviceSeletList').is(':empty')){
+        jQuery3('#microserviceSelectForm').hide();
     }
 }
 

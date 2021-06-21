@@ -5,19 +5,19 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 
 public class MicroserviceApiResponse {
-    private int MicroserviceId;
-    private String MicroserviceName;
-    private int ReleaseId;
+    private int microserviceId;
+    private String microserviceName;
+    private int releaseId;
     
     public int getMicroserviceId() {
-        return MicroserviceId;
+        return microserviceId;
     }
 
     public String getMicroserviceName() {
-        return MicroserviceName;
+        return microserviceName;
     }
 
     public int getReleaseId() {
-        return ReleaseId;
+        return releaseId;
     }
 }

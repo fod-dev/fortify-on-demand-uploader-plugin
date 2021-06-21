@@ -5,50 +5,50 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 
 public class ApplicationApiResponse {
-    private int ApplicationId;
-    private String ApplicationName;
-    private String ApplicationDescription;
-    private String ApplicationCreatedDate;
-    private int BusinessCriticalityTypeId;
-    private String BusinessCriticalityType;
-    private String EmailList;
-    private int ApplicationTypeId;
-    private String ApplicationType;
-    private Boolean HasMicroservices;
-    private List<ApplicationAttributeExtended> Attributes;
+    private int applicationId;
+    private String applicationName;
+    private String applicationDescription;
+    private String applicationCreatedDate;
+    private int businessCriticalityTypeId;
+    private String businessCriticalityType;
+    private String emailList;
+    private int applicationTypeId;
+    private String applicationType;
+    private Boolean hasMicroservices;
+    private List<ApplicationAttributeExtended> attributes;
 
     public int getApplicationId() {
-        return ApplicationId;
+        return applicationId;
     };
     public String getApplicationName() {
-        return ApplicationName;
+        return applicationName;
     };
     public String getApplicationDescription() {
-        return ApplicationDescription;
+        return applicationDescription;
     };
     public String getApplicationCreatedDate() {
-        return ApplicationCreatedDate;
+        return applicationCreatedDate;
     };
     public int getBusinessCriticalityTypeId() {
-        return BusinessCriticalityTypeId;
+        return businessCriticalityTypeId;
     };
     public String getBusinessCriticalityType() {
-        return BusinessCriticalityType;
+        return businessCriticalityType;
     };
     public String getEmailList() {
-        return EmailList;
+        return emailList;
     };
     public int getApplicationTypeId() {
-        return ApplicationTypeId;
+        return applicationTypeId;
     };
     public String getApplicationType() {
-        return ApplicationType;
+        return applicationType;
     };
     public Boolean getHasMicroservices() {
-        return HasMicroservices;
+        return hasMicroservices;
     };
     public List<ApplicationAttributeExtended> getAttributes() {
-        return Attributes;
+        return attributes;
     };
 }
 

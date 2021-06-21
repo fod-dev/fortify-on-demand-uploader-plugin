@@ -75,7 +75,7 @@ public class ApplicationsController extends ControllerBase {
             apiConnection.authenticate();
 
         String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
-                .addPathSegments("/api/v3/applications" + releaseListApplicationId + "/releases")
+                .addPathSegments("/api/v3/applications/" + releaseListApplicationId + "/releases")
                 .build().toString();
 
         Request request = new Request.Builder()
@@ -111,7 +111,7 @@ public class ApplicationsController extends ControllerBase {
             apiConnection.authenticate();
 
         String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
-                .addPathSegments("/api/v3/applications" + microserviceListApplicationId + "/microservices")
+                .addPathSegments("/api/v3/applications/" + microserviceListApplicationId + "/microservices")
                 .build().toString();
 
         Request request = new Request.Builder()

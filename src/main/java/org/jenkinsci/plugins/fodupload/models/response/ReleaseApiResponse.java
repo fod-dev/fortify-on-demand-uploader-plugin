@@ -3,145 +3,145 @@ package org.jenkinsci.plugins.fodupload.models.response;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class ReleaseApiResponse {
-    private int ReleaseId;
-    private String ReleaseName;
-    private String ReleaseDescription;
-    private Boolean Suspend;
-    private String ReleaseCreatedDate;
-    private String MicroserviceName;
-    private int MicroserviceId;
-    private int ApplicationId;
-    private String ApplicationName;
-    private int CurrentAnalysisStatusTypeId;
-    private String CurrentAnalysisStatusType;
-    private int Rating;
-    private int Critical;
-    private int High;
-    private int Medium;
-    private int Low;
-    private int CurrentStaticScanId;
-    private int CurrentDynamicScanId;
-    private int CurrentMobileScanId;
-    private String StaticAnalysisStatusType;
-    private String DynamicAnalysisStatusType;
-    private String MobileAnalysisStatusType;
-    private int StaticAnalysisStatusTypeId;
-    private int DynamicAnalysisStatusTypeId;
-    private int MobileAnalysisStatusTypeId;
-    private String StaticScanDate;
-    private String DynamicScanDate;
-    private String MobileScanDate;
-    private int IssueCount;
-    private Boolean IsPassed;
-    private int PassFailReasonTypeId;
-    private String PassFailReasonType;
-    private int SldcStatusTypeId;
-    private String SldcStatusType;
-    private int OwnerId;
+    private int releaseId;
+    private String releaseName;
+    private String releaseDescription;
+    private Boolean suspend;
+    private String releaseCreatedDate;
+    private String microserviceName;
+    private int microserviceId;
+    private int applicationId;
+    private String applicationName;
+    private int currentAnalysisStatusTypeId;
+    private String currentAnalysisStatusType;
+    private int rating;
+    private int critical;
+    private int high;
+    private int medium;
+    private int low;
+    private int currentStaticScanId;
+    private int currentDynamicScanId;
+    private int currentMobileScanId;
+    private String staticAnalysisStatusType;
+    private String dynamicAnalysisStatusType;
+    private String mobileAnalysisStatusType;
+    private int staticAnalysisStatusTypeId;
+    private int dynamicAnalysisStatusTypeId;
+    private int mobileAnalysisStatusTypeId;
+    private String staticScanDate;
+    private String dynamicScanDate;
+    private String mobileScanDate;
+    private int issueCount;
+    private Boolean isPassed;
+    private int passFailReasonTypeId;
+    private String passFailReasonType;
+    private int sldcStatusTypeId;
+    private String sldcStatusType;
+    private int ownerId;
 
     public int getReleaseId() {
-        return ReleaseId;
+        return releaseId;
     };
     public String getReleaseName() {
-        return ReleaseName;
+        return releaseName;
     };
     public String getReleaseDescription() {
-        return ReleaseDescription;
+        return releaseDescription;
     };
     public Boolean getSuspend() {
-        return Suspend;
+        return suspend;
     };
     public String getReleaseCreatedDate() {
-        return ReleaseCreatedDate;
+        return releaseCreatedDate;
     };
     public String getMicroserviceName() {
-        return MicroserviceName;
+        return microserviceName;
     };
     public int getMicroserviceId() {
-        return MicroserviceId;
+        return microserviceId;
     };
     public int getApplicationId() {
-        return ApplicationId;
+        return applicationId;
     };
     public String getApplicationName() {
-        return ApplicationName;
+        return applicationName;
     };
     public int getCurrentAnalysisStatusTypeId() {
-        return CurrentAnalysisStatusTypeId;
+        return currentAnalysisStatusTypeId;
     };
     public String getCurrentAnalysisStatusType() {
-        return CurrentAnalysisStatusType;
+        return currentAnalysisStatusType;
     };
     public int getRating() {
-        return Rating;
+        return rating;
     };
     public int getCritical() {
-        return Critical;
+        return critical;
     };
     public int getHigh() {
-        return High;
+        return high;
     };
     public int getMedium() {
-        return Medium;
+        return medium;
     };
     public int getLow() {
-        return Low;
+        return low;
     };
     public int getCurrentStaticScanId() {
-        return CurrentStaticScanId;
+        return currentStaticScanId;
     };
     public int getCurrentDynamicScanId() {
-        return CurrentDynamicScanId;
+        return currentDynamicScanId;
     };
     public int getCurrentMobileScanId() {
-        return CurrentMobileScanId;
+        return currentMobileScanId;
     };
     public String getStaticAnalysisStatusType() {
-        return StaticAnalysisStatusType;
+        return staticAnalysisStatusType;
     };
     public String getDynamicAnalysisStatusType() {
-        return DynamicAnalysisStatusType;
+        return dynamicAnalysisStatusType;
     };
     public String getMobileAnalysisStatusType() {
-        return MobileAnalysisStatusType;
+        return mobileAnalysisStatusType;
     };
     public int getStaticAnalysisStatusTypeId() {
-        return StaticAnalysisStatusTypeId;
+        return staticAnalysisStatusTypeId;
     };
     public int getDynamicAnalysisStatusTypeId() {
-        return DynamicAnalysisStatusTypeId;
+        return dynamicAnalysisStatusTypeId;
     };
     public int getMobileAnalysisStatusTypeId() {
-        return MobileAnalysisStatusTypeId;
+        return mobileAnalysisStatusTypeId;
     };
     public String getStaticScanDate() {
-        return StaticScanDate;
+        return staticScanDate;
     };
     public String getDynamicScanDate() {
-        return DynamicScanDate;
+        return dynamicScanDate;
     };
     public String getMobileScanDate() {
-        return MobileScanDate;
+        return mobileScanDate;
     };
     public int getIssueCount() {
-        return IssueCount;
+        return issueCount;
     };
     public Boolean getIsPassed() {
-        return IsPassed;
+        return isPassed;
     };
     public int getPassFailReasonTypeId() {
-        return PassFailReasonTypeId;
+        return passFailReasonTypeId;
     };
     public String getPassFailReasonType() {
-        return PassFailReasonType;
+        return passFailReasonType;
     };
     public int getSldcStatusTypeId() {
-        return SldcStatusTypeId;
+        return sldcStatusTypeId;
     };
     public String getSldcStatusType() {
-        return SldcStatusType;
+        return sldcStatusType;
     };
     public int getOwnerId() {
-        return OwnerId;
+        return ownerId;
     };
 }

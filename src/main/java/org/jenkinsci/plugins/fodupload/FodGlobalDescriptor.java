@@ -139,10 +139,12 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
     }
 
     public boolean getAuthTypeIsApiKey() {
-        return globalAuthType.equals("apiKeyType");
+        if(globalAuthType == null) return false;
+        return globalAuthType.equals("apiKeyType") ;
     }
 
     public boolean getAuthTypeIsPersonalToken() {
+        if(globalAuthType == null) return false;
         return globalAuthType.equals("personalAccessTokenType");
     }
 

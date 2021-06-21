@@ -190,28 +190,28 @@ public class Utils {
 
     public static String createApplicationResponseViewModel(List<ApplicationApiResponse> applicationResponseList) {
         Gson gson = new Gson();
-        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
-        for (ApplicationApiResponse applicationResponse : applicationResponseList) {
-            viewObject.put(applicationResponse.getApplicationId(), applicationResponse.getApplicationName());
-        }
-        return gson.toJson(viewObject);
+//        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
+//        for (ApplicationApiResponse applicationResponse : applicationResponseList) {
+//            viewObject.put(applicationResponse.getApplicationId(), applicationResponse.getApplicationName());
+//        }
+        return gson.toJson(applicationResponseList);
     }
 
     public static String createMicroserviceResponseViewModel(List<MicroserviceApiResponse> microserviceResponseList) {
         Gson gson = new Gson();
-        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
-        for (MicroserviceApiResponse microserviceResponse : microserviceResponseList) {
-            viewObject.put(microserviceResponse.getMicroserviceId(), microserviceResponse.getMicroserviceName());
-        }
-        return gson.toJson(viewObject);
+//        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
+//        for (MicroserviceApiResponse microserviceResponse : microserviceResponseList) {
+//            viewObject.put(microserviceResponse.getMicroserviceId(), microserviceResponse.getMicroserviceName());
+//        }
+        return gson.toJson(microserviceResponseList);
     }
 
     public static String createReleaseResponseViewModel(List<ReleaseApiResponse> releaseResponseList) {
         Gson gson = new Gson();
-        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
-        for (ReleaseApiResponse releaseResponse : releaseResponseList) {
-            viewObject.put(releaseResponse.getReleaseId(), releaseResponse.getReleaseName());
-        }
-        return gson.toJson(viewObject);
+//        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
+//        for (ReleaseApiResponse releaseResponse : releaseResponseList) {
+//            viewObject.put(releaseResponse.getReleaseId(), releaseResponse.getReleaseName());
+//        }
+        return gson.toJson(releaseResponseList);
     }
 }
