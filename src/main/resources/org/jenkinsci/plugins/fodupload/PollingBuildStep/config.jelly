@@ -5,7 +5,7 @@
     </f:entry>
     <f:entry title="BSI Token" field="bsiToken">
         <f:textbox />
-    </f:entry
+    </f:entry>
     <f:section title="Authentication - Select to override global authentication settings">
         
         <f:block>
