@@ -85,7 +85,7 @@ function initReleaseSelection() {
 
     const microserviceId = !hasMicroservices ? -1 : jq('#microserviceSelectList').val();
 
-    backend.retriveReleaseList(appId, microserviceId, t => {
+    backend.retrieveReleaseList(appId, microserviceId, t => {
         const releaseSelection = jq('#releaseSeletList');
         const responseJson = JSON.parse(t.responseJSON);
         releaseSelection.empty();

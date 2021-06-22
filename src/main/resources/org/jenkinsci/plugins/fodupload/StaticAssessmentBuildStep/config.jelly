@@ -4,7 +4,7 @@
         <f:textbox field="srcLocation"/>
     </f:entry>
 
-    <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/StaplerBindTest.jelly" />
+    <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AppAndReleaseSelection.jelly" />
 
     <f:section title="Authentication - Select to override global authentication settings">
         <f:optionalBlock name="overrideGlobalConfig" field ="overrideGlobalConfig" title="Configure Personal Access Token" inline="true">

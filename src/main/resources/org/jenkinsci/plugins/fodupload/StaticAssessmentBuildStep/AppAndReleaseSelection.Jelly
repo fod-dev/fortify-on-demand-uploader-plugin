@@ -55,6 +55,6 @@
             var backend = <st:bind value="${descriptor}"/>
         </script>
         
-        <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/StaplerBind.js"/>
+        <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/AppAndReleaseSelection.js"/>
     </f:block>
 </j:jelly>
