@@ -326,8 +326,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         }
 
         @JavaScriptMethod
-        public String retriveReleaseList(int selectedApplicationId) {
-            return SharedUploadBuildStep.customFillUserSelectedReleaseList(selectedApplicationId);
+        public String retriveReleaseList(int selectedApplicationId, int microserviceId) {
+            return SharedUploadBuildStep.customFillUserSelectedReleaseList(selectedApplicationId, microserviceId);
         }
 
         @JavaScriptMethod

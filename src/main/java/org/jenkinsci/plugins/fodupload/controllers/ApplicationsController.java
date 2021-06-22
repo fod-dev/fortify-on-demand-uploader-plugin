@@ -66,16 +66,23 @@ public class ApplicationsController extends ControllerBase {
      * GET given enum
      *
      * @param releaseListApplicationId ApplicationId for query
+     * @param microserviceId (0 = null)
      * @return list of Releases
      * @throws java.io.IOException in some circumstances
      */
-    public List<ReleaseApiResponse> getReleaseListByApplication(int releaseListApplicationId) throws IOException {
+    public List<ReleaseApiResponse> getReleaseListByApplication(int releaseListApplicationId, int microserviceId) throws IOException {
 
         if (apiConnection.getToken() == null)
             apiConnection.authenticate();
 
-        String url = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
-                .addPathSegments("/api/v3/applications/" + releaseListApplicationId + "/releases")
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+                .addPathSegments("/api/v3/applications/" + releaseListApplicationId + "/releases");
+
+        if (microserviceId > 0) {
+            urlBuilder = urlBuilder.addQueryParameter("filters", "microserviceId:" + microserviceId);
+        }
+
+        String url = urlBuilder
                 .build().toString();
 
         Request request = new Request.Builder()
