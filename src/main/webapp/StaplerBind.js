@@ -71,7 +71,7 @@ function initMicroserviceSelection() {
         jq('#microserviceSelectForm').show();
 
         onMicroserviceSelection();
-        jq('#microserviceSelectList').change(onMicroserviceSelection);
+        jq('#microserviceSelectList').off('change').change(onMicroserviceSelection);
     });
 }
 
@@ -100,7 +100,7 @@ function initReleaseSelection() {
 
 function init() {
     onReleaseMethodSelection();
-    jq('#releaseTypeSelectList').change(onReleaseMethodSelection);
+    jq('#releaseTypeSelectList').off('change').change(onReleaseMethodSelection);
 }
 
 function waitForReleaseMethodToInit(res) {
