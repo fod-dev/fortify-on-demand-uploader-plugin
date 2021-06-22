@@ -12,9 +12,6 @@
                     </f:entry>
                     <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB">
                         <f:block>
-                        <f:entry field="userSelectedApplication" id="userSelectedApplication" />
-                        <f:entry field="userSelectedMicroservice" id="userSelectedMicroservice" />
-                        <f:entry field="userSelectedRelease" id="userSelectedRelease" />
                             <div id="allPickReleaseViews">
                                 <div id="testMsg0" />
                                 <div id="releaseIdView">
@@ -30,23 +27,22 @@
                                     </form>
                                 </div>
                                 <div id="appAndReleaseNameView">
-                                    <form>
+                                    <div>
                                         <label for="applicationSelectEntry">    Application:    </label>
                                         <select name="applicationSelectEntry" id="applicationSelectList" style="width: 160px;">
                                             <option value="">Select an application</option>
                                         </select>
-                                    </form>
-                                    <form id="microserviceSelectForm">
+                                    </div>
+                                    <div id="microserviceSelectForm">
                                         <label for="microserviceSelectEntry">    Microservice:    </label>
-                                        <select name="microserviceSelectEntry" id="microserviceSeletList" style="width: 160px;">
+                                        <select name="microserviceSelectEntry" id="microserviceSelectList" style="width: 160px;">
                                         </select>
-                                        <input type="hidden" id="applicationHasMicroservice" value="false" />
-                                    </form>
-                                    <form>
+                                    </div>
+                                    <div id="releaseSelectForm">
                                         <label for="releaseSeletList">    Release:    </label>
                                         <select name="releaseSeletList" id="releaseSeletList" style="width: 160px;">
                                         </select>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </f:block>
@@ -57,46 +53,7 @@
         
         <script>
             var backend = <st:bind value="${descriptor}"/>
-
-            jQuery3('#releaseTypeSelectList').change(function(){
-                    let viewChoice = jQuery3('#releaseTypeSelectList').val();
-                    backend.retrieveApplicationList(function(t) {
-                        const applicationSelection = jQuery3('#applicationSelectList');
-                        const responseJson = JSON.parse(t.responseJSON);
-
-                        updateSelectListWithResponse(applicationSelection, responseJson);
-                    });
-                    managePickReleaseView(viewChoice);
-                });
-
-            jQuery3('#applicationSelectList').change(function(){
-                    let applicationSelection = jQuery3('#applicationSelectList').val();
-                    let applicationHasMicroservices = jQuery3('#applicationHasMicroservice').val();
-                    if(applicationHasMicroservices) {
-                        backend.retrieveMicroserviceList(applicationSelection, function(t) {
-                            const microserviceSelectList = jQuery3('#microserviceSeletList');
-                            const microserviceSelectForm = jQuery3('#microserviceSelectForm');
-                            const responseJson = JSON.parse(t.responseJSON);
-                            if(responseJson == null) {
-                                microserviceSelectForm.hide();
-                            } else {
-                                updateSelectListWithResponse(microserviceSelectList, responseJson);
-                                microserviceSelectForm.show();
-                            }
-                        });
-                    }
-
-                    backend.retriveReleaseList(applicationSelection, function(t) {
-                        const releaseSelectList = jQuery3('#releaseSelectList');
-                        const responseJson = JSON.parse(t.responseJSON);
-                        console.log("Response null check: " + responseJson !== "null");
-                        if(responseJson !== "null")
-                            updateSelectListWithResponse(releaseSelectList, responseJson);
-                    });
-
-                    jQuery3('#userSelectedApplication').val(applicationSelection);
-                });
-            </script>
+        </script>
         
         <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/StaplerBind.js"/>
     </f:block>

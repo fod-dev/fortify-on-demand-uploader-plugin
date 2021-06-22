@@ -245,7 +245,7 @@ public class SharedUploadBuildStep {
         return Utils.createMicroserviceResponseViewModel(microserviceList);
     }
 
-    public static String customFillUserSelectedReleaseList(int applicationId) {
+    public static String customFillUserSelectedReleaseList(int applicationId, int microserviceId) {
         FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         final PrintStream logger = new PrintStream(os);
@@ -253,7 +253,7 @@ public class SharedUploadBuildStep {
         List<ReleaseApiResponse> releaseList = null;
         try {
             ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
-            releaseList = applicationController.getReleaseListByApplication(applicationId);
+            releaseList = applicationController.getReleaseListByApplication(applicationId, microserviceId);
         } catch (IOException e) {
             logger.println(e.getMessage());
         }
