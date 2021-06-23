@@ -7,10 +7,11 @@
         <div id="SomethingSpecial">
             <f:section title="Application and Release Options">
                 <f:block>
-                    <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
-                        <f:select id="releaseTypeSelectList" style="width: 160px;"/>
-                    </f:entry>
-                    <div name="allPickReleaseBlock" id="allPickReleaseViewsB">
+
+                    <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB">
+                        <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
+                            <f:select id="releaseTypeSelectList" style="width: 160px;"/>
+                        </f:entry>
                         <f:block>
                             <div id="allPickReleaseViews">
                                 <div id="testMsg0" />
@@ -46,15 +47,15 @@
                                 </div>
                             </div>
                         </f:block>
-                    </div>
+                    </f:form>
                 </f:block>
             </f:section>
         </div>
-        
+
         <script>
             var backend = <st:bind value="${descriptor}"/>
         </script>
-        
+
         <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/AppAndReleaseSelection.js"/>
     </f:block>
 </j:jelly>

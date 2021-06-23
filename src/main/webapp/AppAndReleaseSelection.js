@@ -1,4 +1,4 @@
-jq = jQuery3;
+jq = jQuery;
 
 function hideAll() {
     jq('#releaseIdView').hide();
@@ -103,22 +103,17 @@ function init() {
     jq('#releaseTypeSelectList').off('change').change(onReleaseMethodSelection);
 }
 
-function waitForReleaseMethodToInit(res) {
-    if (res === undefined) {
-        return new Promise((resolve, _) => {
-            waitForReleaseMethodToInit(resolve);
-        });
-    }
-    else {
-        const viewChoice = jq('#releaseTypeSelectList').val();
-        if (viewChoice !== null) {
-            return res();
-        }
+function waitForReleaseMethodToInit() {
+    return new Promise((res, rej) => {
+        let elementsLoaded;
 
-        setTimeout(() => {
-            waitForReleaseMethodToInit(res);
-        }, 50);
-    }
+        elementsLoaded = () => {
+            if(jq('#releaseTypeSelectList').val()) res();
+            else setTimeout(elementsLoaded, 50);
+        };
+
+        elementsLoaded();
+    });
 }
 
 waitForReleaseMethodToInit().then(init);
