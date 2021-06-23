@@ -10,7 +10,7 @@
                     <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
                         <f:select id="releaseTypeSelectList" style="width: 160px;"/>
                     </f:entry>
-                    <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB">
+                    <div name="allPickReleaseBlock" id="allPickReleaseViewsB">
                         <f:block>
                             <div id="allPickReleaseViews">
                                 <div id="testMsg0" />
@@ -46,7 +46,7 @@
                                 </div>
                             </div>
                         </f:block>
-                    </f:form>
+                    </div>
                 </f:block>
             </f:section>
         </div>
