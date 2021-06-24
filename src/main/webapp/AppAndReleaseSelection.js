@@ -1,5 +1,7 @@
 jq = jQuery;
 
+const jobSettings = new JobSettings(instance);
+
 function hideAll() {
     jq('#releaseIdView').hide();
     jq('#bsiTokenView').hide();
@@ -26,18 +28,24 @@ function onReleaseMethodSelection() {
 function initAppSelection() {
     jq('#microserviceSelectForm').hide();
     jq('#releaseSelectForm').hide();
-    descriptor.retrieveApplicationList(t => {
+    descriptor.retrieveApplicationList(async t => {
         const applicationSelection = jq('#applicationSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         applicationSelection.empty();
+
+
 
         for(const app of responseJson) {
             applicationSelection.append('<option hasMicroServices="' + app.hasMicroservices + '" value="' + app.applicationId + '">' + app.applicationName + '</option>');
         }
 
-        jq('#appAndReleaseNameView').show();
+        const savedAppId = await jobSettings.getSavedApplicationId();
+        if (savedAppId) {
+            jq('#applicationSelectList').val(savedAppId);
+        }
 
         onAppSelection();
+        jq('#appAndReleaseNameView').show();
         jq('#applicationSelectList').off('change').change(() => onAppSelection());
     });
 }
@@ -85,13 +93,18 @@ function initReleaseSelection() {
 
     const microserviceId = !hasMicroservices ? -1 : jq('#microserviceSelectList').val();
 
-    descriptor.retrieveReleaseList(appId, microserviceId, t => {
+    descriptor.retrieveReleaseList(appId, microserviceId, async t => {
         const releaseSelection = jq('#releaseSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         releaseSelection.empty();
 
         for (const release of responseJson) {
             releaseSelection.append('<option value="' + release.releaseId + '">' + release.releaseName + '</option>');
+        }
+
+        const savedReleaseId = await jobSettings.getSavedReleaseId();
+        if (savedReleaseId) {
+            jq('#releaseSelectList').val(savedReleaseId);
         }
 
         jq('#releaseSelectForm').show();

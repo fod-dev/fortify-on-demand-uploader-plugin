@@ -14,9 +14,6 @@
                         </f:entry>
                         <f:block>
                             <div id="allPickReleaseViews">
-                                <div id="testMsg0" />
-                                <div id="testMsg1" />
-                                <div id="testMsg2" />
                                 <div id="releaseIdView">
                                     <div>
                                         <label for="releaseIdField">Release ID: </label>
@@ -39,13 +36,13 @@
                                     <div id="microserviceSelectForm">
                                         <label for="microserviceSelectEntry">    Microservice:    </label>
                                         <select name="userSelectedMicroservice" id="microserviceSelectList" style="width: 160px;">
-                                            <option value="TestMicroservice">Select a microservice</option>
+                                            <option value="">Select a microservice</option>
                                         </select>
                                     </div>
                                     <div id="releaseSelectForm">
                                         <label for="releaseSelectList">    Release:    </label>
                                         <select name="userSelectedRelease" id="releaseSelectList" style="width: 160px;">
-                                            <option value="TestRelease">Select an release</option>
+                                            <option value="">Select an release</option>
                                         </select>
                                     </div>
                                 </div>
@@ -59,20 +56,10 @@
         <script>
             var descriptor = <st:bind value="${descriptor}"/>
             var instance = <st:bind value="${instance}"/>
-            if(instance) {
-                instance.getUserSelectedApplication(function(t) {
-                    document.getElementById('testMsg0').innerHTML = t.responseObject();
-                });
-                instance.getUserSelectedMicroservice(function(t) {
-                    document.getElementById('testMsg1').innerHTML = t.responseObject();
-                });
-                instance.getUserSelectedRelease(function(t) {
-                    document.getElementById('testMsg2').innerHTML = t.responseObject();
-                });
-            } 
             
         </script>
 
+        <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/JobSettings.js" />
         <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/AppAndReleaseSelection.js"/>
     </f:block>
 </j:jelly>
