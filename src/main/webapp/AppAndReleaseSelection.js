@@ -76,6 +76,11 @@ function initMicroserviceSelection() {
             microserviceSelection.append('<option value="' + ms.microserviceId + '">' + ms.microserviceName + '</option>');
         }
 
+        const savedMicroserviceId = await jobSettings.getSavedMicroserviceId();
+        if (savedMicroserviceId) {
+            jq('#microserviceSelectList').val(savedMicroserviceId);
+        }
+
         jq('#microserviceSelectForm').show();
 
         onMicroserviceSelection();
