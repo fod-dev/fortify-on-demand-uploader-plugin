@@ -8,40 +8,44 @@
             <f:section title="Application and Release Options">
                 <f:block>
 
-                    <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB">
+                    <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB" method="POST" action="">
                         <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
                             <f:select id="releaseTypeSelectList" style="width: 160px;"/>
                         </f:entry>
                         <f:block>
                             <div id="allPickReleaseViews">
                                 <div id="testMsg0" />
+                                <div id="testMsg1" />
+                                <div id="testMsg2" />
                                 <div id="releaseIdView">
-                                    <form>
+                                    <div>
                                         <label for="releaseIdField">Release ID: </label>
                                         <input type="text" id="releaseIdMainWindow" name="releaseIdField"></input>
-                                    </form>
+                                    </div>
                                 </div>
                                 <div id="bsiTokenView">
-                                    <form>
+                                    <div>
                                         <label for="bsiTokenField">BSI Token: </label>
                                         <input type="text" id="bsiTokenMainWindow" name="bsiTokenField"></input>
-                                    </form>
+                                    </div>
                                 </div>
                                 <div id="appAndReleaseNameView">
                                     <div>
                                         <label for="applicationSelectEntry">    Application:    </label>
-                                        <select name="applicationSelectEntry" id="applicationSelectList" style="width: 160px;">
+                                        <select name="userSelectedApplication" id="applicationSelectList" style="width: 160px;">
                                             <option value="">Select an application</option>
                                         </select>
                                     </div>
                                     <div id="microserviceSelectForm">
                                         <label for="microserviceSelectEntry">    Microservice:    </label>
-                                        <select name="microserviceSelectEntry" id="microserviceSelectList" style="width: 160px;">
+                                        <select name="userSelectedMicroservice" id="microserviceSelectList" style="width: 160px;">
+                                            <option value="TestMicroservice">Select a microservice</option>
                                         </select>
                                     </div>
                                     <div id="releaseSelectForm">
-                                        <label for="releaseSeletList">    Release:    </label>
-                                        <select name="releaseSeletList" id="releaseSeletList" style="width: 160px;">
+                                        <label for="releaseSelectList">    Release:    </label>
+                                        <select name="userSelectedRelease" id="releaseSelectList" style="width: 160px;">
+                                            <option value="TestRelease">Select an release</option>
                                         </select>
                                     </div>
                                 </div>
@@ -53,7 +57,20 @@
         </div>
 
         <script>
-            var backend = <st:bind value="${descriptor}"/>
+            var descriptor = <st:bind value="${descriptor}"/>
+            var instance = <st:bind value="${instance}"/>
+            if(instance) {
+                instance.getUserSelectedApplication(function(t) {
+                    document.getElementById('testMsg0').innerHTML = t.responseObject();
+                });
+                instance.getUserSelectedMicroservice(function(t) {
+                    document.getElementById('testMsg1').innerHTML = t.responseObject();
+                });
+                instance.getUserSelectedRelease(function(t) {
+                    document.getElementById('testMsg2').innerHTML = t.responseObject();
+                });
+            } 
+            
         </script>
 
         <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/AppAndReleaseSelection.js"/>

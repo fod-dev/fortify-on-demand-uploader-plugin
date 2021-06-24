@@ -26,7 +26,7 @@ function onReleaseMethodSelection() {
 function initAppSelection() {
     jq('#microserviceSelectForm').hide();
     jq('#releaseSelectForm').hide();
-    backend.retrieveApplicationList(t => {
+    descriptor.retrieveApplicationList(t => {
         const applicationSelection = jq('#applicationSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         applicationSelection.empty();
@@ -59,7 +59,7 @@ function initMicroserviceSelection() {
     jq('#releaseSelectForm').hide();
 
     const appId = jq('#applicationSelectList').val();
-    backend.retrieveMicroserviceList(appId, t => {
+    descriptor.retrieveMicroserviceList(appId, t => {
         const microserviceSelection = jq('#microserviceSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         microserviceSelection.empty();
@@ -85,8 +85,8 @@ function initReleaseSelection() {
 
     const microserviceId = !hasMicroservices ? -1 : jq('#microserviceSelectList').val();
 
-    backend.retrieveReleaseList(appId, microserviceId, t => {
-        const releaseSelection = jq('#releaseSeletList');
+    descriptor.retrieveReleaseList(appId, microserviceId, t => {
+        const releaseSelection = jq('#releaseSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         releaseSelection.empty();
 

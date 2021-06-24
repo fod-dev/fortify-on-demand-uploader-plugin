@@ -57,8 +57,6 @@ import com.google.gson.Gson;
 public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildStep {
 
     SharedUploadBuildStep sharedBuildStep;
-    String selectedReleaseType;
-    String showReleaseIdOptions;
 
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
@@ -206,16 +204,19 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     }
 
     @SuppressWarnings("unused")
+    @JavaScriptMethod
     public String getUserSelectedApplication() {
         return sharedBuildStep.getModel().getUserSelectedApplication();
     }
-
+    
     @SuppressWarnings("unused")
+    @JavaScriptMethod
     public String getUserSelectedMicroservice() {
         return sharedBuildStep.getModel().getUserSelectedMicroservice();
     }
 
     @SuppressWarnings("unused")
+    @JavaScriptMethod
     public String getUserSelectedRelease() {
         return sharedBuildStep.getModel().getUserSelectedRelease();
     }
@@ -285,7 +286,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         }
 
         @SuppressWarnings("unused")
-
         public ListBoxModel doFillUsernameItems(@AncestorInPath Job job) {
             return SharedUploadBuildStep.doFillStringCredentialsItems(job);
         }
@@ -328,14 +328,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         @JavaScriptMethod
         public String retrieveReleaseList(int selectedApplicationId, int microserviceId) {
             return SharedUploadBuildStep.customFillUserSelectedReleaseList(selectedApplicationId, microserviceId);
-        }
-
-        @JavaScriptMethod
-        public String testBsiTokenParser(String testBsiTokenString) {
-            BsiTokenParser parser = new BsiTokenParser();
-            org.jenkinsci.plugins.fodupload.models.BsiToken token = parser.parseBsiToken(testBsiTokenString);
-            Gson gson = new Gson();
-            return gson.toJson(token);
         }
     }
 
