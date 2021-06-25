@@ -1,5 +1,12 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <style>
+        .spinner select {
+            display: none;
+        }
+    </style>
+
      <f:entry title="Source Location" help="/plugin/fortify-on-demand-uploader/help-srcLocation.html">
         <f:textbox field="srcLocation"/>
     </f:entry>
