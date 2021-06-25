@@ -78,6 +78,10 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String userSelectedApplication,
                                      String userSelectedMicroservice,
                                      String userSelectedRelease) {
+                                         
+        if(selectedReleaseType.equals(FodEnums.SelectedReleaseType.UseAppAndReleaseName.getValue()) && !userSelectedRelease.isEmpty()) {
+                releaseId = userSelectedRelease;
+        }
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
                 bsiToken,
