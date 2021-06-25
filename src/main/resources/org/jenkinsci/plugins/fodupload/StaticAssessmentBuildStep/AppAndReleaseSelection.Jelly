@@ -8,7 +8,6 @@
             <f:section title="Application and Release Options">
                 <f:block>
 
-                    <f:form name="allPickReleaseBlock" id="allPickReleaseViewsB" method="POST" action="">
                         <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
                             <f:select id="releaseTypeSelectList" style="width: 160px;"/>
                         </f:entry>
@@ -48,7 +47,6 @@
                                 </div>
                             </div>
                         </f:block>
-                    </f:form>
                 </f:block>
             </f:section>
         </div>

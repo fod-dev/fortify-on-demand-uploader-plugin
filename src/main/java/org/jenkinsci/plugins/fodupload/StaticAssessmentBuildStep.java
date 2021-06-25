@@ -79,7 +79,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String userSelectedMicroservice,
                                      String userSelectedRelease) {
                                          
-        if(selectedReleaseType.equals(FodEnums.SelectedReleaseType.UseAppAndReleaseName.getValue()) && !userSelectedRelease.isEmpty()) {
+        if(selectedReleaseType != null && selectedReleaseType.equals(FodEnums.SelectedReleaseType.UseAppAndReleaseName.getValue()) && !userSelectedRelease.isEmpty()) {
                 releaseId = userSelectedRelease;
         }
 
