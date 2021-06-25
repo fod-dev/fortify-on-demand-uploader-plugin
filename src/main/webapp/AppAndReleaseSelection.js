@@ -67,7 +67,7 @@ function initMicroserviceSelection() {
     jq('#releaseSelectForm').hide();
 
     const appId = jq('#applicationSelectList').val();
-    descriptor.retrieveMicroserviceList(appId, t => {
+    descriptor.retrieveMicroserviceList(appId, async t => {
         const microserviceSelection = jq('#microserviceSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         microserviceSelection.empty();

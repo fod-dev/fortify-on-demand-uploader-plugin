@@ -247,6 +247,9 @@ public class FortifyStaticAssessment extends FortifyStep {
         remediationScanPreferenceType = remediationScanPreferenceType != null ? remediationScanPreferenceType : FodEnums.RemediationScanPreferenceType.RemediationScanIfAvailable.getValue();
         inProgressScanActionType = inProgressScanActionType != null ? inProgressScanActionType : FodEnums.InProgressScanActionType.DoNotStartScan.getValue();
         inProgressBuildResultType = inProgressBuildResultType != null ? inProgressBuildResultType : FodEnums.InProgressBuildResultType.FailBuild.getValue();
+        userSelectedApplication = "";
+        userSelectedMicroservice = "";
+        userSelectedRelease = "";
 
         String correlationId = UUID.randomUUID().toString();
 
