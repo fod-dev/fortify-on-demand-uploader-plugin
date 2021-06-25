@@ -4,11 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.text.Normalizer;
 import java.util.List;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
+import org.apache.commons.lang.CharEncoding;
 import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
@@ -216,15 +218,16 @@ public class SharedUploadBuildStep {
     public static String customFillUserSelectedApplicationList() {
         FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        final PrintStream logger = new PrintStream(os);
+        PrintStream logger;
         List<ApplicationApiResponse> applicationList = null;
         String correlationId = "appListRequest";
         try {
+            logger = new PrintStream(os, true, CharEncoding.UTF_8);
             ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
             applicationList = applicationController.getApplicationList();
         } catch (IOException e) {
-            logger.println(e.getMessage());
-        }
+            e.printStackTrace();
+        } 
 
         return Utils.createApplicationResponseViewModel(applicationList);
     }
@@ -232,14 +235,15 @@ public class SharedUploadBuildStep {
     public static String customFillUserSelectedMicroserviceList(int applicationId) {
         FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        final PrintStream logger = new PrintStream(os);
+        PrintStream logger;
         List<MicroserviceApiResponse> microserviceList = null;
         String correlationId = "microListRequest";
         try {
+            logger = new PrintStream(os, true, CharEncoding.UTF_8);
             ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
             microserviceList = applicationController.getMicroserviceListByApplication(applicationId);
         } catch (IOException e) {
-            logger.println(e.getMessage());
+            e.printStackTrace();
         }
 
         return Utils.createMicroserviceResponseViewModel(microserviceList);
@@ -248,14 +252,15 @@ public class SharedUploadBuildStep {
     public static String customFillUserSelectedReleaseList(int applicationId, int microserviceId) {
         FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        final PrintStream logger = new PrintStream(os);
+        PrintStream logger;
         String correlationId = "releaseListRequest";
         List<ReleaseApiResponse> releaseList = null;
         try {
+            logger = new PrintStream(os, true, CharEncoding.UTF_8);
             ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
             releaseList = applicationController.getReleaseListByApplication(applicationId, microserviceId);
         } catch (IOException e) {
-            logger.println(e.getMessage());
+            e.printStackTrace();
         }
 
         return Utils.createReleaseResponseViewModel(releaseList);
@@ -473,9 +478,15 @@ public class SharedUploadBuildStep {
         AuthenticationModel staticAuthModel = null;
 
         FodGlobalDescriptor globalSettings = GlobalConfiguration.all().get(FodGlobalDescriptor.class);
-        String userName = globalSettings.getUsername();
-        String tenantId = globalSettings.getTenantId();
-        String personalAccessToken = globalSettings.getPersonalAccessToken();
+        String userName = "";
+        String tenantId = "";
+        String personalAccessToken = "";
+        
+        if(globalSettings != null) {
+            userName = globalSettings.getUsername();
+            tenantId = globalSettings.getTenantId();
+            personalAccessToken = globalSettings.getPersonalAccessToken();
+        }
         staticAuthModel = new AuthenticationModel(false, userName, personalAccessToken, tenantId);
         return staticAuthModel;
     }

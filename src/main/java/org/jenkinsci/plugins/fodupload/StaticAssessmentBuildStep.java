@@ -229,9 +229,6 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     @Extension
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
 
-        private String showReleaseIdOptions;
-        String selectedReleaseType;
-        private static final String showReleaseIdOptionsField = "showReleaseIdOptionsField";
         /**
          * In order to load the persisted global configuration, you have to
          * call load() in the constructor.

@@ -13,6 +13,7 @@ public class MicroserviceApiResponse {
         return microserviceId;
     }
 
+    @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
     public String getMicroserviceName() {
         return microserviceName;
     }
