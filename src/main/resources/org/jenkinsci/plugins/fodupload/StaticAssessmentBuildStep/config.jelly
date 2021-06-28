@@ -11,11 +11,11 @@
         <f:textbox field="srcLocation"/>
     </f:entry>
 
-    <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AppAndReleaseSelection.jelly" />
+    <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AppAndReleaseSelection.jelly" class="org.jenkinsci.plugins.fodupload.StaticAssessmentBuildStep" />
 
     <f:section title="Authentication - Select to override global authentication settings">
         <f:optionalBlock name="overrideGlobalConfig" field ="overrideGlobalConfig" title="Configure Personal Access Token" inline="true">
-            <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AuthenticationOverride.jelly" />
+            <st:include page="/org/jenkinsci/plugins/fodupload/StaticAssessmentBuildStep/AuthenticationOverride.jelly" class="org.jenkinsci.plugins.fodupload.StaticAssessmentBuildStep" />
         </f:optionalBlock>
     </f:section>
 
