@@ -4,7 +4,7 @@
         <st:adjunct includes="io.jenkins.plugins.jquery3"/>
 
 
-        <div id="SomethingSpecial">
+        <div>
             <f:section title="Application and Release Options">
                 <f:block>
 
