@@ -26,14 +26,17 @@ function onReleaseMethodSelection() {
 }
 
 function initAppSelection() {
+    jq('#appAndReleaseNameView').show();
     jq('#microserviceSelectForm').hide();
     jq('#releaseSelectForm').hide();
+
+    showWithSpinner('#applicationSelectForm');
+
+
     descriptor.retrieveApplicationList(async t => {
         const applicationSelection = jq('#applicationSelectList');
         const responseJson = JSON.parse(t.responseJSON);
         applicationSelection.empty();
-
-
 
         for(const app of responseJson) {
             applicationSelection.append('<option hasMicroServices="' + app.hasMicroservices + '" value="' + app.applicationId + '">' + app.applicationName + '</option>');
@@ -45,7 +48,7 @@ function initAppSelection() {
         }
 
         onAppSelection();
-        jq('#appAndReleaseNameView').show();
+        hideSpinner('#applicationSelectForm');
         jq('#applicationSelectList').off('change').change(() => onAppSelection());
     });
 }
@@ -65,6 +68,7 @@ function onAppSelection() {
 
 function initMicroserviceSelection() {
     jq('#releaseSelectForm').hide();
+    showWithSpinner('#microserviceSelectForm');
 
     const appId = jq('#applicationSelectList').val();
     descriptor.retrieveMicroserviceList(appId, async t => {
@@ -81,7 +85,7 @@ function initMicroserviceSelection() {
             jq('#microserviceSelectList').val(savedMicroserviceId);
         }
 
-        jq('#microserviceSelectForm').show();
+        hideSpinner('#microserviceSelectForm');
 
         onMicroserviceSelection();
         jq('#microserviceSelectList').off('change').change(onMicroserviceSelection);
@@ -93,6 +97,8 @@ function onMicroserviceSelection() {
 }
 
 function initReleaseSelection() {
+    showWithSpinner('#releaseSelectForm');
+
     const appId = jq('#applicationSelectList').val();
     const hasMicroservices = jq('#applicationSelectList option:selected').attr('hasMicroServices') === 'true';
 
@@ -112,7 +118,7 @@ function initReleaseSelection() {
             jq('#releaseSelectList').val(savedReleaseId);
         }
 
-        jq('#releaseSelectForm').show();
+        hideSpinner('#releaseSelectForm');
     });
 }
 

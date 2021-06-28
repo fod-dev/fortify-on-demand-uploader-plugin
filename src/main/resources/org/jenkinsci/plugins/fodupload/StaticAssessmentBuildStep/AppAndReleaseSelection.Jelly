@@ -26,23 +26,29 @@
                                     </div>
                                 </div>
                                 <div id="appAndReleaseNameView">
-                                    <div>
+                                    <div id="applicationSelectForm">
                                         <label for="applicationSelectEntry">    Application:    </label>
-                                        <select name="userSelectedApplication" id="applicationSelectList" style="width: 160px;">
-                                            <option value="">Select an application</option>
-                                        </select>
+                                        <span class="spinner-container">
+                                            <select name="userSelectedApplication" id="applicationSelectList" style="width: 160px;">
+                                                <option value="">Select an application</option>
+                                            </select>
+                                        </span>
                                     </div>
                                     <div id="microserviceSelectForm">
                                         <label for="microserviceSelectEntry">    Microservice:    </label>
-                                        <select name="userSelectedMicroservice" id="microserviceSelectList" style="width: 160px;">
-                                            <option value="">Select a microservice</option>
-                                        </select>
+                                        <span class="spinner-container">
+                                            <select name="userSelectedMicroservice" id="microserviceSelectList" style="width: 160px;">
+                                                <option value="">Select a microservice</option>
+                                            </select>
+                                        </span>
                                     </div>
                                     <div id="releaseSelectForm">
                                         <label for="releaseSelectList">    Release:    </label>
-                                        <select name="userSelectedRelease" id="releaseSelectList" style="width: 160px;">
-                                            <option value="">Select an release</option>
-                                        </select>
+                                        <span class="spinner-container">
+                                            <select name="userSelectedRelease" id="releaseSelectList" style="width: 160px;">
+                                                <option value="">Select an release</option>
+                                            </select>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
