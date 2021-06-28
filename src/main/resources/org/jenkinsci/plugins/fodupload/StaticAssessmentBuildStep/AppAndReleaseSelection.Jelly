@@ -62,7 +62,7 @@
             var instance = <st:bind value="${instance}"/>
             
         </script>
-
+        <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/Styling.js" />
         <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/JobSettings.js" />
         <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/AppAndReleaseSelection.js"/>
     </f:block>
