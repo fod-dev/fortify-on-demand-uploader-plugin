@@ -229,7 +229,7 @@ public class SharedUploadBuildStep {
             e.printStackTrace();
         } 
 
-        return Utils.createApplicationResponseViewModel(applicationList);
+        return Utils.createResponseViewModel(applicationList);
     }
 
     public static String customFillUserSelectedMicroserviceList(int applicationId) {
@@ -246,7 +246,7 @@ public class SharedUploadBuildStep {
             e.printStackTrace();
         }
 
-        return Utils.createMicroserviceResponseViewModel(microserviceList);
+        return Utils.createResponseViewModel(microserviceList);
     }
 
     public static String customFillUserSelectedReleaseList(int applicationId, int microserviceId) {
@@ -263,7 +263,7 @@ public class SharedUploadBuildStep {
             e.printStackTrace();
         }
 
-        return Utils.createReleaseResponseViewModel(releaseList);
+        return Utils.createResponseViewModel(releaseList);
     }
 
     public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {

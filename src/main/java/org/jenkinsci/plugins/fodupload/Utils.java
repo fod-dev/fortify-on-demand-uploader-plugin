@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.fodupload;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import hudson.FilePath;
 import hudson.security.ACL;
 import hudson.util.Secret;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -188,30 +190,9 @@ public class Utils {
         return response.code() == HttpStatus.SC_FORBIDDEN || response.code() == HttpStatus.SC_UNAUTHORIZED;
     }
 
-    public static String createApplicationResponseViewModel(List<ApplicationApiResponse> applicationResponseList) {
+    public static <T> String createResponseViewModel(List<T> responseList) {
         Gson gson = new Gson();
-//        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
-//        for (ApplicationApiResponse applicationResponse : applicationResponseList) {
-//            viewObject.put(applicationResponse.getApplicationId(), applicationResponse.getApplicationName());
-//        }
-        return gson.toJson(applicationResponseList);
-    }
-
-    public static String createMicroserviceResponseViewModel(List<MicroserviceApiResponse> microserviceResponseList) {
-        Gson gson = new Gson();
-//        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
-//        for (MicroserviceApiResponse microserviceResponse : microserviceResponseList) {
-//            viewObject.put(microserviceResponse.getMicroserviceId(), microserviceResponse.getMicroserviceName());
-//        }
-        return gson.toJson(microserviceResponseList);
-    }
-
-    public static String createReleaseResponseViewModel(List<ReleaseApiResponse> releaseResponseList) {
-        Gson gson = new Gson();
-//        HashMap<Integer, String> viewObject = new HashMap<Integer, String>();
-//        for (ReleaseApiResponse releaseResponse : releaseResponseList) {
-//            viewObject.put(releaseResponse.getReleaseId(), releaseResponse.getReleaseName());
-//        }
-        return gson.toJson(releaseResponseList);
+        Type typeOfSrc = new TypeToken<List<T>>(){}.getType();
+        return gson.toJson(responseList, typeOfSrc);
     }
 }
