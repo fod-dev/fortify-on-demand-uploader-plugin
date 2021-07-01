@@ -2,13 +2,14 @@ package org.jenkinsci.plugins.fodupload.controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.fodupload.FodApiConnection;
-import org.jenkinsci.plugins.fodupload.models.FodEnums;
+import org.jenkinsci.plugins.fodupload.models.request.AddMicroserviceName;
+import org.jenkinsci.plugins.fodupload.models.request.CreateApplicationRequest;
+import org.jenkinsci.plugins.fodupload.models.request.CreateReleaseRequest;
 import org.jenkinsci.plugins.fodupload.models.response.*;
+import okhttp3.MediaType;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -16,6 +17,9 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class ApplicationsController extends ControllerBase {
+
+    public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     /**
      * Constructor
      *
@@ -139,5 +143,113 @@ public class ApplicationsController extends ControllerBase {
         }.getType();
         GenericListResponse<MicroserviceApiResponse> results = gson.fromJson(content, t);
         return results.getItems();
+    }
+
+    public CreateApplicationApiResponse postApplicationAndRelease(CreateApplicationRequest req) throws IOException {
+
+        if (apiConnection.getToken() == null)
+            apiConnection.authenticate();
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+                .addPathSegments("/api/v3/applications/");
+
+        String url = urlBuilder
+                .build().toString();
+
+        Gson gson = new Gson();
+        Type typeOfSrc = new TypeToken<CreateApplicationRequest>(){}.getType();
+        String jsonRequest = gson.toJson(req, typeOfSrc);
+
+        RequestBody formBody = RequestBody.create(JSON, jsonRequest);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .post(formBody)
+                .build();
+        Response response = apiConnection.getClient().newCall(request).execute();
+
+        // Read the results and close the response
+        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
+        response.body().close();
+
+        Type t = new TypeToken<CreateApplicationApiResponse>() {
+        }.getType();
+        CreateApplicationApiResponse results = gson.fromJson(content, t);
+        return results;
+    }
+
+    public AddMicroserviceApiResponse postMicroserviceToApplication(String applicationId, AddMicroserviceName msName) throws IOException {
+
+        if (apiConnection.getToken() == null)
+            apiConnection.authenticate();
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+                .addPathSegments("/api/v3/applications/" + applicationId + "/microservices");
+
+        String url = urlBuilder
+                .build().toString();
+
+        Gson gson = new Gson();
+        Type typeOfSrc = new TypeToken<AddMicroserviceName>(){}.getType();
+        String jsonRequest = gson.toJson(msName, typeOfSrc);
+
+        RequestBody formBody = RequestBody.create(JSON, jsonRequest);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .post(formBody)
+                .build();
+        Response response = apiConnection.getClient().newCall(request).execute();
+
+        // Read the results and close the response
+        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
+        response.body().close();
+
+        Type t = new TypeToken<AddMicroserviceApiResponse>() {
+        }.getType();
+        AddMicroserviceApiResponse results = gson.fromJson(content, t);
+        return results;
+    }
+
+    public CreateReleaseApiResponse postRelease(CreateReleaseRequest req) throws IOException {
+
+        if (apiConnection.getToken() == null)
+            apiConnection.authenticate();
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
+                .addPathSegments("/api/v3/releases");
+
+        String url = urlBuilder
+                .build().toString();
+
+        Gson gson = new Gson();
+        Type typeOfSrc = new TypeToken<AddMicroserviceName>(){}.getType();
+        String jsonRequest = gson.toJson(req, typeOfSrc);
+
+        RequestBody formBody = RequestBody.create(JSON, jsonRequest);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .post(formBody)
+                .build();
+        Response response = apiConnection.getClient().newCall(request).execute();
+
+        // Read the results and close the response
+        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
+        response.body().close();
+
+        Type t = new TypeToken<CreateReleaseApiResponse>() {
+        }.getType();
+        CreateReleaseApiResponse results = gson.fromJson(content, t);
+        return results;
     }
 }

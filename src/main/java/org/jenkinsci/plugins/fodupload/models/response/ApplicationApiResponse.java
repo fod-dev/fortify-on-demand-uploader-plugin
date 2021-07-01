@@ -52,20 +52,3 @@ public class ApplicationApiResponse {
     };
 }
 
-class ApplicationAttributeExtended {
-    private String name;
-    private int id;
-    private String value;
-    
-    @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
-    public String getName() {
-        return name;
-    };
-    public int getId() {
-        return id;
-    };
-    @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
-    public String getValue() {
-        return value;
-    };
-}

@@ -330,6 +330,8 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public String retrieveReleaseList(int selectedApplicationId, int microserviceId) {
             return SharedUploadBuildStep.customFillUserSelectedReleaseList(selectedApplicationId, microserviceId);
         }
+
+
     }
 
 }

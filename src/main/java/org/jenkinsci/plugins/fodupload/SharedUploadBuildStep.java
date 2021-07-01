@@ -20,6 +20,9 @@ import org.jenkinsci.plugins.fodupload.models.JobModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressBuildResultType;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.InProgressScanActionType;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.SelectedReleaseType;
+import org.jenkinsci.plugins.fodupload.models.request.AddMicroserviceName;
+import org.jenkinsci.plugins.fodupload.models.request.CreateApplicationRequest;
+import org.jenkinsci.plugins.fodupload.models.request.CreateReleaseRequest;
 import org.jenkinsci.plugins.fodupload.models.response.*;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
@@ -264,6 +267,57 @@ public class SharedUploadBuildStep {
         }
 
         return Utils.createResponseViewModel(releaseList);
+    }
+
+    public static String createApplicationAndRelease(CreateApplicationRequest req) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream logger;
+        String correlationId = "createApplicationAndReleaseRequest";
+        CreateApplicationApiResponse apiResponse= null;
+        try {
+            logger = new PrintStream(os, true, CharEncoding.UTF_8);
+            ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+            apiResponse = applicationController.postApplicationAndRelease(req);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //TODO FIX THIS
+        return apiResponse.toString();
+    }
+
+    public static String addMicroserviceToApplication(String applicationId, AddMicroserviceName msName) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream logger;
+        String correlationId = "addMicroserviceRequest";
+        AddMicroserviceApiResponse apiResponse= null;
+        try {
+            logger = new PrintStream(os, true, CharEncoding.UTF_8);
+            ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+            apiResponse = applicationController.postMicroserviceToApplication(applicationId, msName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //TODO FIX THIS
+        return apiResponse.toString();
+    }
+
+    public static String createRelease(CreateReleaseRequest req) {
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(createStaticAuthModel());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream logger;
+        String correlationId = "createReleaseRequest";
+        CreateReleaseApiResponse apiResponse= null;
+        try {
+            logger = new PrintStream(os, true, CharEncoding.UTF_8);
+            ApplicationsController applicationController = new ApplicationsController(apiConnection, logger, correlationId);
+            apiResponse = applicationController.postRelease(req);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //TODO FIX THIS
+        return apiResponse.toString();
     }
 
     public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
