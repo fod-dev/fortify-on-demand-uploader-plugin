@@ -17,7 +17,6 @@ function onAuthInfoChanged(cb) {
 }
 
 function sendChangedEvent() {
-    console.log('changed');
     debounce(() => document.dispatchEvent(AuthInfoChangedEvent), 500)();
 }
 
