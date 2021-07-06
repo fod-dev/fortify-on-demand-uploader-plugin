@@ -6,7 +6,7 @@
             <f:section title="Application and Release Options">
                 <f:block>
 
-                        <f:entry name="sdfsdf" id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
+                        <f:entry id="releaseTypeSelectList" title="Pick a Release" field="selectedReleaseType" help="/plugin/fortify-on-demand-uploader/help-slReleaseTypeList.html">
                             <f:select id="releaseTypeSelectList" style="width: 160px;"/>
                         </f:entry>
 
@@ -58,50 +58,6 @@
                                 Failed to retrieve applications/releases/microservices from the FoD API
                             </div>
                         </f:block>
-
-                        <!-- <f:block>
-                            <div id="allPickReleaseViews">
-                                <div id="releaseIdView">
-                                    <div>
-                                        <label for="releaseIdField">Release ID: </label>
-                                        <input type="text" id="releaseIdMainWindow" name="releaseIdField"></input>
-                                    </div>
-                                </div>
-                                <div id="bsiTokenView">
-                                    <div>
-                                        <label for="bsiTokenField">BSI Token: </label>
-                                        <input type="text" id="bsiTokenMainWindow" name="bsiTokenField"></input>
-                                    </div>
-                                </div>
-                                <div id="appAndReleaseNameView">
-                                    <div id="applicationSelectForm">
-                                        <label for="applicationSelectEntry">    Application:    </label>
-                                        <span class="spinner-container">
-                                            <select name="userSelectedApplication" id="applicationSelectList" style="width: 160px;">
-                                                <option value="">Select an application</option>
-                                            </select>
-                                        </span>
-                                    </div>
-                                    <div id="microserviceSelectForm">
-                                        <label for="microserviceSelectEntry">    Microservice:    </label>
-                                        <span class="spinner-container">
-                                            <select name="userSelectedMicroservice" id="microserviceSelectList" style="width: 160px;">
-                                                <option value="">Select a microservice</option>
-                                            </select>
-                                        </span>
-                                    </div>
-                                    <div id="releaseSelectForm">
-                                        <label for="releaseSelectList">    Release:    </label>
-                                        <span class="spinner-container">
-                                            <select name="userSelectedRelease" id="releaseSelectList" style="width: 160px;">
-                                                <option value="">Select an release</option>
-                                            </select>
-                                        </span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </f:block> -->
                 </f:block>
             </f:section>
         </div>
