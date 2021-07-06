@@ -13,7 +13,7 @@ function onCredsChanged() {
     const viewChoice = jq('#releaseTypeSelectList').val();
 
     if (viewChoice == "UseAppAndReleaseName") {
-        initAppSelection();
+        initAppSelection(true);
     }
 }
 
