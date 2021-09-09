@@ -93,6 +93,7 @@ class StatusPollerThread extends Thread {
                 }else {
                     result.setPassing(true);
                 }
+                result.setPollingSuccessful(true);
                 if (!statusString.equals(AnalysisStatusTypeEnum.Waiting.name())) {
                         result.setFailReason(pollingSummaryDTO.getPassFailReasonType());
                 }
