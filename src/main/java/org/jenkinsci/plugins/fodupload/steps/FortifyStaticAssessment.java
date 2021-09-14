@@ -516,6 +516,10 @@ public class FortifyStaticAssessment extends FortifyStep {
         inProgressScanActionType = inProgressScanActionType != null ? inProgressScanActionType : FodEnums.InProgressScanActionType.DoNotStartScan.getValue();
         inProgressBuildResultType = inProgressBuildResultType != null ? inProgressBuildResultType : FodEnums.InProgressBuildResultType.FailBuild.getValue();
 
+        if (Utils.tryParseInt(releaseId) > 0) selectedReleaseType = FodEnums.SelectedReleaseType.UseReleaseId.getValue();
+        else if (!Utils.isNullOrEmpty(bsiToken)) selectedReleaseType = FodEnums.SelectedReleaseType.UseBsiToken.getValue();
+        else throw new IllegalArgumentException("Invalid arguments, releaseId or bsiToken must be defined");
+
         String correlationId = UUID.randomUUID().toString();
 
         commonBuildStep = new SharedUploadBuildStep(releaseId,
