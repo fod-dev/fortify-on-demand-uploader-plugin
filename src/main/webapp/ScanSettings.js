@@ -71,7 +71,6 @@ class ScanSettings {
             apsel.val('2');
             apsel.prop('disabled', true);
         }
-
         this.onEntitlementChanged();
         // ToDo: set to unselected if selected value doesn't exist
     }
