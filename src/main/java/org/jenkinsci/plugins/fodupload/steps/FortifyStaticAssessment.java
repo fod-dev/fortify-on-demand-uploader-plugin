@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet;
 
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.fodupload.SharedUploadBuildStep;
+import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
@@ -81,7 +82,9 @@ public class FortifyStaticAssessment extends FortifyStep {
         return bsiToken;
     }
 
-    public String getReleaseId() { return releaseId; }
+    public String getReleaseId() {
+        return releaseId;
+    }
 
     public boolean getOverrideGlobalConfig() {
         return overrideGlobalConfig;
@@ -224,46 +227,74 @@ public class FortifyStaticAssessment extends FortifyStep {
     }
 
     @SuppressWarnings("unused")
-    public boolean getScanCentralIncludeTests() { return scanCentralIncludeTests; }
+    public boolean getScanCentralIncludeTests() {
+        return scanCentralIncludeTests;
+    }
 
     @DataBoundSetter
-    public void setScanCentralIncludeTests(boolean scanCentralIncludeTests) { this.scanCentralIncludeTests = scanCentralIncludeTests; }
+    public void setScanCentralIncludeTests(boolean scanCentralIncludeTests) {
+        this.scanCentralIncludeTests = scanCentralIncludeTests;
+    }
 
     @SuppressWarnings("unused")
-    public boolean getScanCentralSkipBuild() { return scanCentralSkipBuild; }
+    public boolean getScanCentralSkipBuild() {
+        return scanCentralSkipBuild;
+    }
 
     @DataBoundSetter
-    public void setScanCentralSkipBuild(boolean scanCentralSkipBuild) { this.scanCentralSkipBuild = scanCentralSkipBuild; }
+    public void setScanCentralSkipBuild(boolean scanCentralSkipBuild) {
+        this.scanCentralSkipBuild = scanCentralSkipBuild;
+    }
 
     @SuppressWarnings("unused")
-    public String getScanCentralBuildCommand() { return scanCentralBuildCommand; }
+    public String getScanCentralBuildCommand() {
+        return scanCentralBuildCommand;
+    }
 
     @DataBoundSetter
-    public void setScanCentralBuildCommand(String scanCentralBuildCommand) { this.scanCentralBuildCommand = scanCentralBuildCommand; }
+    public void setScanCentralBuildCommand(String scanCentralBuildCommand) {
+        this.scanCentralBuildCommand = scanCentralBuildCommand;
+    }
 
     @SuppressWarnings("unused")
-    public String getScanCentralBuildFile() { return scanCentralBuildFile; }
+    public String getScanCentralBuildFile() {
+        return scanCentralBuildFile;
+    }
 
     @DataBoundSetter
-    public void setScanCentralBuildFile(String scanCentralBuildFile) { this.scanCentralBuildFile = scanCentralBuildFile; }
+    public void setScanCentralBuildFile(String scanCentralBuildFile) {
+        this.scanCentralBuildFile = scanCentralBuildFile;
+    }
 
     @SuppressWarnings("unused")
-    public String getScanCentralBuildToolVersion() { return scanCentralBuildToolVersion; }
+    public String getScanCentralBuildToolVersion() {
+        return scanCentralBuildToolVersion;
+    }
 
     @DataBoundSetter
-    public void setScanCentralBuildToolVersion(String scanCentralBuildToolVersion) { this.scanCentralBuildToolVersion = scanCentralBuildToolVersion; }
+    public void setScanCentralBuildToolVersion(String scanCentralBuildToolVersion) {
+        this.scanCentralBuildToolVersion = scanCentralBuildToolVersion;
+    }
 
     @SuppressWarnings("unused")
-    public String getScanCentralVirtualEnv() { return scanCentralVirtualEnv; }
+    public String getScanCentralVirtualEnv() {
+        return scanCentralVirtualEnv;
+    }
 
     @DataBoundSetter
-    public void setScanCentralVirtualEnv(String scanCentralVirtualEnv) { this.scanCentralVirtualEnv = scanCentralVirtualEnv; }
+    public void setScanCentralVirtualEnv(String scanCentralVirtualEnv) {
+        this.scanCentralVirtualEnv = scanCentralVirtualEnv;
+    }
 
     @SuppressWarnings("unused")
-    public String getScanCentralRequirementFile() { return scanCentralRequirementFile; }
+    public String getScanCentralRequirementFile() {
+        return scanCentralRequirementFile;
+    }
 
     @DataBoundSetter
-    public void setScanCentralRequirementFile(String scanCentralRequirementFile) { this.scanCentralRequirementFile = scanCentralRequirementFile; }
+    public void setScanCentralRequirementFile(String scanCentralRequirementFile) {
+        this.scanCentralRequirementFile = scanCentralRequirementFile;
+    }
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
@@ -305,19 +336,27 @@ public class FortifyStaticAssessment extends FortifyStep {
 
     @Override
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException {
+    public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, IllegalArgumentException {
         PrintStream log = listener.getLogger();
         log.println("Fortify on Demand Upload Running...");
         build.addAction(new CrossBuildAction());
-        try{build.save();} catch(IOException ex){log.println("Error saving settings. Error message: " + ex.toString());}
+        try {
+            build.save();
+        } catch (IOException ex) {
+            log.println("Error saving settings. Error message: " + ex.toString());
+        }
 
-        
+
         remediationScanPreferenceType = remediationScanPreferenceType != null ? remediationScanPreferenceType : FodEnums.RemediationScanPreferenceType.RemediationScanIfAvailable.getValue();
         inProgressScanActionType = inProgressScanActionType != null ? inProgressScanActionType : FodEnums.InProgressScanActionType.DoNotStartScan.getValue();
         inProgressBuildResultType = inProgressBuildResultType != null ? inProgressBuildResultType : FodEnums.InProgressBuildResultType.FailBuild.getValue();
         userSelectedApplication = "";
         userSelectedMicroservice = "";
         userSelectedRelease = "";
+
+        if (Utils.tryParseInt(releaseId) > 0) selectedReleaseType = FodEnums.SelectedReleaseType.UseReleaseId.getValue();
+        else if (!Utils.isNullOrEmpty(bsiToken)) selectedReleaseType = FodEnums.SelectedReleaseType.UseBsiToken.getValue();
+        else throw new IllegalArgumentException("Invalid arguments, releaseId or bsiToken must be defined");
 
         String correlationId = UUID.randomUUID().toString();
 
@@ -349,11 +388,15 @@ public class FortifyStaticAssessment extends FortifyStep {
         commonBuildStep.perform(build, workspace, launcher, listener, correlationId);
         CrossBuildAction crossBuildAction = build.getAction(CrossBuildAction.class);
         crossBuildAction.setPreviousStepBuildResult(build.getResult());
-        if(Result.SUCCESS.equals(crossBuildAction.getPreviousStepBuildResult())) {
+        if (Result.SUCCESS.equals(crossBuildAction.getPreviousStepBuildResult())) {
             crossBuildAction.setScanId(commonBuildStep.getScanId());
             crossBuildAction.setCorrelationId(correlationId);
         }
-        try{build.save();} catch(IOException ex){log.println("Error saving settings. Error message: " + ex.toString());}
+        try {
+            build.save();
+        } catch (IOException ex) {
+            log.println("Error saving settings. Error message: " + ex.toString());
+        }
     }
 
     @Extension
