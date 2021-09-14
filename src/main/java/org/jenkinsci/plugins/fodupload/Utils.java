@@ -56,12 +56,20 @@ public class Utils {
         }
     }
 
+    public static Integer tryParseInt(String value, Integer defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException nfe) {
+            return defaultValue;
+        }
+    }
+
     public static boolean isNullOrEmpty(List list) {
         return list == null || list.isEmpty();
     }
 
     public static boolean isNullOrEmpty(String string) {
-        return string == null || string.isEmpty();
+        return string == null || string.trim().isEmpty();
     }
 
     public static String getFileExpressionPatternString(String technologyStack) {
