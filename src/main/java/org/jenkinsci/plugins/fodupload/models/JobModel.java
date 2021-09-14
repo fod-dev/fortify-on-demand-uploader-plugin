@@ -4,12 +4,8 @@ import org.jenkinsci.plugins.fodupload.BsiTokenParser;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JobModel {
 
@@ -193,7 +189,7 @@ public class JobModel {
                             "In Progress Scan Action:           %s%n" +
                             "In Progress Build Action:          %s%n" +
                             "Selected Release Type:             %s%n",
-                    bsiTokenCache.getProjectVersionId(),
+                    bsiTokenCache.getReleaseId(),
                     bsiTokenCache.getAssessmentTypeId(),
                     bsiTokenCache.getTechnologyStack(),
                     bsiTokenCache.getLanguageLevel(),
@@ -212,11 +208,8 @@ public class JobModel {
             return true;
         }
 
-        try {
-            this.bsiTokenCache = tokenParser.parseBsiToken(bsiTokenOriginal);
-        } catch (Exception ex) {
-            return false;
-        }
+        this.bsiTokenCache = tokenParser.tryParseBsiToken(bsiTokenOriginal);
+
         return (this.bsiTokenCache != null);
     }
 
@@ -242,7 +235,7 @@ public class JobModel {
             if (bsiTokenCache.getTechnologyType() == null)
                 errors.add("Technology Stack");
 
-            if (bsiTokenCache.getProjectVersionId() == 0)
+            if (bsiTokenCache.getReleaseId() == 0)
                 errors.add("BSI Token Release Id");
         }
 
