@@ -1,5 +1,3 @@
-jq = jQuery;
-
 function getAuthInfo() {
     return {
         overrideGlobalAuth: jq('[name="overrideGlobalConfig"]').is(':checked'),

@@ -1,5 +1,3 @@
-jq = jQuery;
-
 class ApplicationSource {
 
     constructor(api) {

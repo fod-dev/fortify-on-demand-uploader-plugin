@@ -1,4 +1,14 @@
-jq = jQuery;
+/**
+ * @typedef {jQuery} jQueryExtended
+ * @property {function([value:string]): string} val
+ */
+/**
+ * @callback jQueryFunc
+ * @param {string|Object} selector
+ * @return {jQueryExtended}
+ * */
+/** @type {jQueryFunc} */
+const jq = jQuery;
 
 function dispatchEvent(type, payload) {
     document.dispatchEvent(new CustomEvent(type, {detail: payload}));
@@ -63,6 +73,19 @@ function getValidationErrRow(row) {
 
     return null;
 }
+
+function getHelpRow(row) {
+    let vtr = nextRow(row);
+
+    if (vtr.length > 0 && vtr.hasClass('validation-error-area')) {
+        let htr = nextRow(vtr);
+
+        if (htr.length > 0 && htr.hasClass('help-area')) return htr;
+    } else if (vtr.length > 0 && vtr.hasClass('help-area')) return vtr;
+
+    return null;
+}
+
 function createDialog(dialog) {
     spinAndWait(() => jq('#' + dialog._formId).html())
         .then(() => dialog.init());
@@ -179,4 +202,10 @@ function partitionArray(arr, elementsPerPartition) {
     }
 
     return partitions;
+}
+
+function numberOrNull(str) {
+    let res = Number(str);
+
+    return Number.isInteger(res) ? res : null;
 }
