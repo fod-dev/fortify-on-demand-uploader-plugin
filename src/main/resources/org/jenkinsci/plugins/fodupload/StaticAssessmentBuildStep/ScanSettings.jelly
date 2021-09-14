@@ -140,6 +140,24 @@
                     </div>
                 </f:entry>
 
+                <f:entry title="Entitlement Preference" field="entitlementPreference">
+                    <div id="entitlementPreferenceForm" class="fode-field fode-row-bsi spinner-container">
+                        <f:select/>
+                    </div>
+                </f:entry>
+
+                <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
+                    <div id="purchaseEntitlementsForm" class="fode-field fode-row-bsi spinner-container">
+                        <f:checkbox/>
+                    </div>
+                </f:entry>
+
+                <f:entry title="Remediation Preference" field="remediationScanPreferenceType" help="/plugin/fortify-on-demand-uploader/help-scanSettings-remediation.html">
+                    <div id="remediationScanPreferenceTypeForm" class="fode-field fode-row-remediation spinner-container">
+                        <f:select/>
+                    </div>
+                </f:entry>
+
                 <f:entry>
                     <div id="hiddenFields" class="fode-row-hidden">
                         <input type="textbox" name="userSelectedEntitlementId" id="entitlementId"></input>
