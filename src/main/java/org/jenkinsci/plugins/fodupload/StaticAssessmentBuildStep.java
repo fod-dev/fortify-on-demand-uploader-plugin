@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.fodupload;
 
-import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.FilePath;
@@ -25,6 +24,7 @@ import org.jenkinsci.plugins.fodupload.controllers.LookupItemsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.controllers.UsersController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
+import org.jenkinsci.plugins.fodupload.models.BsiToken;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.PutStaticScanSetupModel;
 import org.jenkinsci.plugins.fodupload.models.response.PutStaticScanSetupResponse;
@@ -35,6 +35,9 @@ import org.kohsuke.stapler.bind.JavaScriptMethod;
 import javax.annotation.Nonnull;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import jenkins.model.Jenkins;
@@ -47,6 +50,8 @@ import org.kohsuke.stapler.verb.POST;
 
 @SuppressWarnings("unused")
 public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildStep {
+
+    private static final BsiTokenParser tokenParser = new BsiTokenParser();
 
     SharedUploadBuildStep sharedBuildStep;
 
@@ -84,19 +89,66 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      String scanCentralBuildFile,
                                      String scanCentralBuildToolVersion,
                                      String scanCentralVirtualEnv,
-                                     String scanCentralRequirementFile) {
+                                     String scanCentralRequirementFile) throws IllegalArgumentException {
 
-        if(selectedReleaseType != null && selectedReleaseType.equals(FodEnums.SelectedReleaseType.UseAppAndReleaseName.getValue()) && !userSelectedRelease.isEmpty()) {
+        if (Utils.isNullOrEmpty(srcLocation)) {
+            throw new IllegalArgumentException("Invalid srcLocation");
+        }
+
+        if (Utils.isNullOrEmpty(selectedReleaseType)) {
+            throw new IllegalArgumentException("Invalid selectedReleaseType");
+        }
+
+        boolean saveSettingsToFod = false;
+        List<String> invalidFields = new ArrayList<>();
+
+        switch (FodEnums.SelectedReleaseType.valueOf(selectedReleaseType)) {
+            case UseBsiToken:
+                userSelectedApplication = "";
+                userSelectedMicroservice = "";
+                userSelectedRelease = "";
+                BsiToken bsi = tokenParser.tryParseBsiToken(bsiToken);
+
+                if (bsi == null || bsi.getReleaseId() <= 0) invalidFields.add("bsiToken");
+                break;
+            case UseReleaseId:
+                saveSettingsToFod = true;
+                break;
+            case UseAppAndReleaseName:
                 releaseId = userSelectedRelease;
-        }
-        else {
-            userSelectedApplication = "";
-            userSelectedMicroservice = "";
-            userSelectedRelease = "";
+                saveSettingsToFod = true;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid selectedReleaseType");
         }
 
-        FodApiConnection apiConnection = getApiConnection(overrideGlobalConfig, username, personalAccessToken, tenantId);
-        saveReleaseSettings(apiConnection, releaseId, purchaseEntitlements, entitlementPreference, userSelectedAssessmentType, userSelectedEntitlementId, userSelectedFrequencyType, userSelectedTechnologyStack, userSelectedLanguageLevel, sonatypeEnabled, userSelectedAuditPreference);
+        if (saveSettingsToFod) {
+            if (Utils.tryParseInt(releaseId) <= 0) invalidFields.add("releaseId");
+            if (Utils.tryParseInt(userSelectedAssessmentType) <= 0) invalidFields.add("userSelectedAssessmentType");
+            if (Utils.tryParseInt(userSelectedEntitlementId) <= 0) invalidFields.add("userSelectedEntitlementId");
+            if (Utils.tryParseInt(userSelectedFrequencyType) <= 0) invalidFields.add("userSelectedFrequencyType");
+            int ts = Utils.tryParseInt(userSelectedTechnologyStack);
+
+            if (ts <= 0) invalidFields.add("userSelectedTechnologyStack");
+            // PHP has no language levels
+            else if (ts != 9 && Utils.tryParseInt(userSelectedLanguageLevel) <= 0) {
+                invalidFields.add("userSelectedLanguageLevel");
+            }
+
+            if (Utils.tryParseInt(userSelectedAuditPreference) <= 0) invalidFields.add("userSelectedAuditPreference");
+
+            if (invalidFields.size() == 0) {
+                FodApiConnection apiConnection = getApiConnection(overrideGlobalConfig, username, personalAccessToken, tenantId);
+
+                saveReleaseSettings(apiConnection, releaseId, purchaseEntitlements, userSelectedAssessmentType,
+                        userSelectedEntitlementId, userSelectedFrequencyType, userSelectedTechnologyStack, userSelectedLanguageLevel,
+                        sonatypeEnabled, userSelectedAuditPreference);
+            }
+        }
+
+        if (invalidFields.size() > 0) {
+            throw new IllegalArgumentException("Invalid field(s): " + String.join(", ", invalidFields));
+        }
 
         sharedBuildStep = new SharedUploadBuildStep(releaseId,
                 bsiToken,
@@ -134,7 +186,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return ApiConnectionFactory.createApiConnection(authModel);
     }
 
-    private void saveReleaseSettings(FodApiConnection apiConnection, String releaseIdStr, boolean purchaseEntitlements, String entitlementPreferenceStr, String assessmentTypeIdStr, String entitlementIdStr, String entitlementFrequencyTypeStr, String technologyStackIdStr, String languageLevelIdStr, boolean performOpenSourceAnalysis, String auditPreferenceTypeStr) {
+    private void saveReleaseSettings(FodApiConnection apiConnection, String releaseIdStr, boolean purchaseEntitlements, String assessmentTypeIdStr, String entitlementIdStr, String entitlementFrequencyTypeStr, String technologyStackIdStr, String languageLevelIdStr, boolean performOpenSourceAnalysis, String auditPreferenceTypeStr) {
         StaticScanController staticScanController = new StaticScanController(apiConnection, null, Utils.createCorrelationId());
 
         int releaseId = Integer.parseInt(releaseIdStr);
@@ -142,21 +194,19 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         int entitlementId = Integer.parseInt(entitlementIdStr);
         int entitlementFrequencyType = Integer.parseInt(entitlementFrequencyTypeStr);
         int technologyStackId = Integer.parseInt(technologyStackIdStr);
-        int languageLevelId = Integer.parseInt(languageLevelIdStr);
+        Integer languageLevelId = Utils.tryParseInt(languageLevelIdStr, null);
         int auditPreferenceType = Integer.parseInt(auditPreferenceTypeStr);
 
         try {
             PutStaticScanSetupResponse response = staticScanController.putStaticScanSettings(releaseId, new PutStaticScanSetupModel(assessmentTypeId, entitlementId, entitlementFrequencyType, technologyStackId, languageLevelId, performOpenSourceAnalysis, auditPreferenceType));
             if (response.isSuccess()) {
                 System.out.println("Successfully saved settings for release id = " + releaseIdStr);
-            }
-            else if (response.getErrors() != null) {
+            } else if (response.getErrors() != null) {
                 for (String error : response.getErrors()) {
                     System.out.println("Error saving settings for release id = " + releaseIdStr + ": " + error);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -174,7 +224,11 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
 
         PrintStream log = listener.getLogger();
         build.addAction(new CrossBuildAction());
-        try{build.save();} catch(IOException ex){log.println("Error saving settings. Error message: " + ex.toString());}
+        try {
+            build.save();
+        } catch (IOException ex) {
+            log.println("Error saving settings. Error message: " + ex.toString());
+        }
 
         String correlationId = UUID.randomUUID().toString();
 
@@ -182,11 +236,15 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
 
         CrossBuildAction crossBuildAction = build.getAction(CrossBuildAction.class);
         crossBuildAction.setPreviousStepBuildResult(build.getResult());
-        if(Result.SUCCESS.equals(crossBuildAction.getPreviousStepBuildResult())) {
+        if (Result.SUCCESS.equals(crossBuildAction.getPreviousStepBuildResult())) {
             crossBuildAction.setScanId(sharedBuildStep.getScanId());
             crossBuildAction.setCorrelationId(correlationId);
         }
-        try{build.save();} catch(IOException ex){log.println("Error saving settings. Error message: " + ex.toString());}
+        try {
+            build.save();
+        } catch (IOException ex) {
+            log.println("Error saving settings. Error message: " + ex.toString());
+        }
     }
 
     // Overridden for better type safety.
@@ -272,7 +330,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
     public String getUserSelectedApplication() {
         return sharedBuildStep.getModel().getUserSelectedApplication();
     }
-    
+
     @SuppressWarnings("unused")
     @JavaScriptMethod
     public String getUserSelectedMicroservice() {
@@ -295,19 +353,33 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return sharedBuildStep.getModel().getSelectedScanCentralBuildType();
     }
 
-    public boolean getScanCentralIncludeTests() { return sharedBuildStep.getModel().getScanCentralIncludeTests(); }
+    public boolean getScanCentralIncludeTests() {
+        return sharedBuildStep.getModel().getScanCentralIncludeTests();
+    }
 
-    public boolean getScanCentralSkipBuild() { return sharedBuildStep.getModel().getScanCentralSkipBuild(); }
+    public boolean getScanCentralSkipBuild() {
+        return sharedBuildStep.getModel().getScanCentralSkipBuild();
+    }
 
-    public String getScanCentralBuildCommand() { return sharedBuildStep.getModel().getScanCentralBuildCommand(); }
+    public String getScanCentralBuildCommand() {
+        return sharedBuildStep.getModel().getScanCentralBuildCommand();
+    }
 
-    public String getScanCentralBuildFile() { return sharedBuildStep.getModel().getScanCentralBuildFile(); }
+    public String getScanCentralBuildFile() {
+        return sharedBuildStep.getModel().getScanCentralBuildFile();
+    }
 
-    public String getScanCentralBuildToolVersion() { return sharedBuildStep.getModel().getScanCentralBuildToolVersion(); }
+    public String getScanCentralBuildToolVersion() {
+        return sharedBuildStep.getModel().getScanCentralBuildToolVersion();
+    }
 
-    public String getScanCentralVirtualEnv() { return sharedBuildStep.getModel().getScanCentralVirtualEnv(); }
+    public String getScanCentralVirtualEnv() {
+        return sharedBuildStep.getModel().getScanCentralVirtualEnv();
+    }
 
-    public String getScanCentralRequirementFile() { return sharedBuildStep.getModel().getScanCentralRequirementFile(); }
+    public String getScanCentralRequirementFile() {
+        return sharedBuildStep.getModel().getScanCentralRequirementFile();
+    }
 
     @Extension
     public static final class StaticAssessmentStepDescriptor extends BuildStepDescriptor<Publisher> {
@@ -352,7 +424,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                                                   @QueryParameter(SharedUploadBuildStep.TENANT_ID) final String tenantId,
                                                                   @AncestorInPath Job job) {
             job.checkPermission(Item.CONFIGURE);
-            return SharedUploadBuildStep.doTestPersonalAccessTokenConnection(username, personalAccessToken, tenantId,job);
+            return SharedUploadBuildStep.doTestPersonalAccessTokenConnection(username, personalAccessToken, tenantId, job);
         }
 
         @SuppressWarnings("unused")
@@ -405,8 +477,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedCreateApplicationForm.submitCreateApplication(authModel, formObject));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -417,8 +488,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedCreateApplicationForm.submitCreateMicroservice(authModel, formObject));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -429,8 +499,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedCreateApplicationForm.submitCreateRelease(authModel, formObject));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -441,8 +510,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedUploadBuildStep.customFillUserSelectedApplicationList(searchTerm, offset, limit, authModel));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -453,8 +521,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedUploadBuildStep.customFillUserApplicationById(applicationId, authModel));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -465,8 +532,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedUploadBuildStep.customFillUserSelectedMicroserviceList(selectedApplicationId, authModel));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -477,8 +543,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedUploadBuildStep.customFillUserSelectedReleaseList(selectedApplicationId, microserviceId, searchTerm, offset, limit, authModel));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -489,8 +554,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedUploadBuildStep.customFillUserReleaseById(releaseId, authModel));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -504,8 +568,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 UsersController usersController = new UsersController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(usersController.getCurrentUserSession());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -519,8 +582,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 AssessmentTypesController assessmentTypesController = new AssessmentTypesController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(assessmentTypesController.getStaticAssessmentTypeEntitlements(releaseId));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -534,8 +596,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 LookupItemsController lookupItemsController = new LookupItemsController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(lookupItemsController.getLookupItems(FodEnums.APILookupItemTypes.valueOf(type)));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -549,8 +610,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 StaticScanController staticScanController = new StaticScanController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(staticScanController.getStaticScanSettings(releaseId));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
@@ -562,8 +622,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
                 return Utils.createResponseViewModel(SharedUploadBuildStep.customFillEntitlementSettings(selectedReleaseId, authModel));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
