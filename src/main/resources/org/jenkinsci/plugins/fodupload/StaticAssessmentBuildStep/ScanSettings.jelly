@@ -105,6 +105,7 @@
                     <div id="virtualEnvForm" class="fode-field spinner-container fode-row-sc fode-row-sc-python">
                         <f:textbox></f:textbox>
                     </div>
+
                 </f:entry>
 
                 <f:entry title="Requirement File" field="scanCentralRequirementFile" help="/plugin/fortify-on-demand-uploader/help-scanCentral-reqsFile.html">

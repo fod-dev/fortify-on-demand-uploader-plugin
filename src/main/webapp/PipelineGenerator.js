@@ -1,5 +1,6 @@
 const fodpRowSelector = '.fodp-field-row, .fodp-field-row-verr';
 const fodpOverrideRowsSelector = '.fodp-row-relid-ovr';
+
 const fodpAutoProvRowsSelector = '.fodp-row-autoProv';
 const appAttributeKeyDelimiter = '&';
 const appAttributeValueDelimiter = ';';
