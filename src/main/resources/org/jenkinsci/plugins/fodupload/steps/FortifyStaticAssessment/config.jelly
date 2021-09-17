@@ -1,27 +1,74 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-    <f:entry title="Release ID" field="releaseId">
-        <f:textbox />
-    </f:entry>
-    <f:entry title="BSI Token" field="bsiToken">
-        <f:textbox />
-    </f:entry>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+         xmlns:f="/lib/form">
 
+    <st:adjunct includes="io.jenkins.plugins.jquery3"/>
+
+    <style>
+        #fodp-error {
+        color: red;
+        }
+
+        .fode-row-hidden {
+        display: none;
+        }
+
+        .spinner select {
+        display: none;
+        }
+
+        .spinner button {
+        display: none;
+        }
+
+        .spinner a {
+        display: none;
+        }
+
+        .spinner input {
+        display: none;
+        }
+
+        .fodp-field-row select.setting-input,
+        .fodp-field-row input.setting-input,
+        .fodp-bound select.setting-input {
+        width: 240px;
+        }
+
+        #releaseSelection{
+        width: 100px;
+        margin-right: 10px;
+        }
+
+        #releaseSelectionValue{
+        width: calc(100% - 110px);
+        }
+
+        #releaseLookup {
+        margin-left: 110px;
+        }
+    </style>
+
+    <f:entry></f:entry>
     <f:entry title="Source Location" help="/plugin/fortify-on-demand-uploader/help-srcLocation.html">
-        <f:textbox field="srcLocation"/>
+        <div id="srcLocationForm" class="fodp-field fodp-row-all">
+            <f:textbox field="srcLocation"/>
+        </div>
     </f:entry>
 
     <f:section title="Authentication - Select to override global authentication settings">
         <f:block>
-            <f:optionalBlock name="overrideGlobalConfig" field ="overrideGlobalConfig" title="Configure Personal Access Token"  checked="${instance.overrideGlobalConfig}"  inline="true">
-                <f:entry title="Username" field="username" >
-                    <f:textbox style="width: 160px;" />
+            <f:optionalBlock name="overrideGlobalConfig" field="overrideGlobalConfig" title="Configure Personal Access Token"
+                             checked="${instance.overrideGlobalConfig}" inline="true">
+                <f:entry title="Username" field="username">
+                    <f:textbox/>
                 </f:entry>
-                <f:entry title="Personal Access Token" field="personalAccessToken" help="/plugin/fortify-on-demand-uploader/help-personalAccessToken.html">
-                     <c:select style="width: 160px;"/>
+                <f:entry title="Personal Access Token" field="personalAccessToken"
+                         help="/plugin/fortify-on-demand-uploader/help-personalAccessToken.html">
+                    <c:select/>
                 </f:entry>
-                <f:entry title="Tenant ID" field="tenantId" >
-                     <f:textbox style="width: 160px;" />
+                <f:entry title="Tenant ID" field="tenantId">
+                    <f:textbox/>
                 </f:entry>
                 <f:validateButton title="${%Test Connection}" progress="${%Testing connection to Fortify on Demand...}"
                                   method="testPersonalAccessTokenConnection" with="username,personalAccessToken,tenantId"/>
@@ -29,29 +76,201 @@
         </f:block>
     </f:section>
 
-
-
+    <f:section title="Release Selection">
+        <f:block>
+            <div id="releaseSelectionForm">
+                <div>
+                    <select id="releaseSelection" class="setting-input" value="0">
+                        <option value="0">Release Id</option>
+                        <option value="1">BSI Token</option>
+                    </select>
+                    <input type="text" id="releaseSelectionValue" class="setting-input"/>
+                </div>
+                <div >
+                    <a href="#" id="releaseLookup">Look up release</a>
+                </div>
+            </div>
+        </f:block>
+    </f:section>
 
     <f:section title="Entitlement Options">
-        <f:entry title="Entitlement Preference" field="entitlementPreference">
-            <f:select style="width: 160px;"/>
+        <f:block>
+            <div id="fodp-msg" style="display: none">Select a release</div>
+            <div id="fodp-error" style="display: none">Error</div>
+        </f:block>
+
+        <f:entry title="Override Release Settings">
+            <div id="overrideReleaseSettingsForm" class="fodp-field fodp-checkbox fodp-row-relid">
+                <input type="checkbox" value="false" id="overrideReleaseSettings"/>
+            </div>
         </f:entry>
-        <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
-            <f:checkbox/>
+
+        <f:entry title="Assessment Type">
+            <div id="assessmentTypeForm" class="fodp-field spinner-container fodp-row-relid-ovr">
+                <select id="assessmentTypeSelect" class="setting-input">
+                    <option value="-1">Select an Assessment Type</option>
+                </select>
+            </div>
         </f:entry>
+
+        <f:entry title="Entitlement">
+            <div id="entitlementForm" class="fodp-field spinner-container fodp-row-relid-ovr">
+                <select id="entitlementSelect" class="setting-input">
+                    <option value="-1">Select an Entitlement</option>
+                </select>
+            </div>
+        </f:entry>
+
         <f:entry title="Remediation Preference" field="remediationScanPreferenceType">
-            <select name="remediationScanPreferenceType">
-                <option value="RemediationScanIfAvailable">Remediate Scan If Available</option>
-                <option value="RemediationScanOnly">Remediation Scan Only</option>
-                <option value="NonRemediationScanOnly">Non-Remediation Scan Only</option>
-            </select>
+            <div id="entitlementPrefForm" class="fodp-field fodp-row-all">
+                <select name="remediationScanPreferenceType" class="setting-input">
+                    <option value="RemediationScanIfAvailable">Remediate Scan If Available</option>
+                    <option value="RemediationScanOnly">Remediation Scan Only</option>
+                    <option value="NonRemediationScanOnly">Non-Remediation Scan Only</option>
+                </select>
+            </div>
         </f:entry>
+
+        <f:entry title="Entitlement Preference">
+            <div id="entitlementPrefForm" class="fodp-field fodp-row-bsi">
+                <select id="entitlementPref" value="" class="setting-input">
+                    <option value="SubscriptionFirstThenSingleScan">Subscription First Then Single Scan</option>
+                    <option value="SingleScanFirstThenSubscription">Single Scan First Then Subscription</option>
+                    <option value="SubscriptionOnly">Subscription Only</option>
+                    <option value="SingleScanOnly">Single Scan Only</option>
+                </select>
+            </div>
+        </f:entry>
+
+        <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
+            <div id="entitlementPrefForm" class="fodp-field fodp-row-bsi">
+                <f:checkbox/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Audit Preference">
+            <div id="auditPreferenceForm" class="fodp-field fodp-row-relid-ovr">
+                <select name="userSelectedAuditPreference" id="auditPreferenceSelectList" class="setting-input">
+                    <option value="2">Automated</option>
+                    <option value="1">Manual</option>
+                </select>
+            </div>
+        </f:entry>
+
+    </f:section>
+
+    <f:section title="Scan Options">
+        <f:entry title="ScanCentral Build Type" help="/plugin/fortify-on-demand-uploader/help-scanCentral-buildType.html">
+            <div id="scanCentralBuildTypeForm" class="fodp-field spinner-container fodp-row-all">
+                <select id="selectedScanCentralBuildType" value="None" class="setting-input">
+                    <option value="None">None</option>
+                    <option value="Gradle">Gradle</option>
+                    <option value="Maven">Maven</option>
+                    <option value="MSBuild">MSBuild</option>
+                    <option value="PHP">PHP</option>
+                    <option value="Python">Python</option>
+                </select>
+            </div>
+        </f:entry>
+
+        <f:entry title="Include Tests" help="/plugin/fortify-on-demand-uploader/help-scanCentral-includeTests.html">
+            <div id="includeTestsForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-gradle fodp-row-sc-maven">
+                <input type="checkbox" id="scanCentralIncludeTests"/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Skip Build" help="/plugin/fortify-on-demand-uploader/help-scanCentral-skipBuild.html">
+            <div id="skipBuildForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-gradle fodp-row-sc-maven">
+                <input type="checkbox" id="scanCentralSkipBuild"/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Build Command" help="/plugin/fortify-on-demand-uploader/help-scanCentral-buildCmd.html">
+            <div id="buildCommandForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-gradle fodp-row-sc-maven fodp-row-sc-msbuild">
+                <input type="text" id="scanCentralBuildCommand" class="setting-input"/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Build File" help="/plugin/fortify-on-demand-uploader/help-scanCentral-buildFile.html">
+            <div id="buildFileForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-gradle fodp-row-sc-maven fodp-row-sc-msbuild">
+                <input type="text" id="scanCentralBuildFile" class="setting-input"/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Version" help="/plugin/fortify-on-demand-uploader/help-scanCentral-version.html">
+            <div id="buildToolVersionForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-php">
+                <input type="text" id="scanCentralBuildToolVersion" class="setting-input"/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Virtual Env" help="/plugin/fortify-on-demand-uploader/help-scanCentral-venv.html">
+            <div id="virtualEnvForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-python">
+                <input type="text" id="scanCentralVirtualEnv" class="setting-input"/>
+            </div>
+
+        </f:entry>
+
+        <f:entry title="Requirement File" help="/plugin/fortify-on-demand-uploader/help-scanCentral-reqsFile.html">
+            <div id="requirementFileForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-python">
+                <input type="text" id="scanCentralRequirementFile" class="setting-input"/>
+            </div>
+        </f:entry>
+
+        <f:entry title="Technology Stack">
+            <div id="technologyStackForm" class="fodp-field spinner-container fodp-row-relid-ovr fodp-row-nonsc">
+                <select id="technologyStack" class="setting-input">
+                    <option value="-1">Select a Technology Stack</option>
+                </select>
+            </div>
+        </f:entry>
+
+        <f:entry title="Language Level">
+            <div id="languageLevelForm" class="fodp-field spinner-container fodp-row-relid-ovr fodp-row-langLev">
+                <select id="languageLevel" class="setting-input">
+                    <option value="-1">Select a Language Level</option>
+                </select>
+            </div>
+        </f:entry>
+
+        <f:entry title="Open Source Component Analysis by Sonatype">
+            <div id="sonatypeEnabledForm" class="fodp-field fodp-checkbox spinner-container fodp-row-relid-ovr">
+                <input type="checkbox" value="false" id="sonatypeEnabled"/>
+            </div>
+        </f:entry>
+
+    </f:section>
+
+    <f:section title="Build Step Options">
         <f:entry title="Action when scan is in progress" field="inProgressScanActionType">
-            <f:select style="width: 160px;"/>
+            <div class="fodp-bound">
+                <f:select/>
+            </div>
         </f:entry>
         <f:entry title="Build result if scan in progress" field="inProgressBuildResultType">
-            <f:select style="width: 160px;"/>
+            <div class="fodp-bound">
+                <f:select/>
+            </div>
         </f:entry>
     </f:section>
 
+    <f:entry>
+        <div id="hiddenFields" class="fode-row-hidden">
+            <input type="textbox" name="releaseId" id="releaseId"/>
+            <input type="textbox" name="bsiToken" id="bsiToken"/>
+            <input type="textbox" name="entitlementPreference" id="entitlementPreference"/>
+            <!--            <input type="textbox" name="assessmentType" id="assessmentType"/>-->
+            <!--            <input type="textbox" name="entitlementId" id="entitlementId"/>-->
+            <!--            <input type="textbox" name="frequencyId" id="frequencyId"/>-->
+        </div>
+    </f:entry>
+
+    <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/Common.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/Styling.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/Auth.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/Api.js"/>
+    <script>
+        var descriptor =
+        <st:bind value="${descriptor}"/>
+    </script>
+    <script type="text/javascript" src="${resURL}/plugin/fortify-on-demand-uploader/PipelineGenerator.js"/>
 </j:jelly>

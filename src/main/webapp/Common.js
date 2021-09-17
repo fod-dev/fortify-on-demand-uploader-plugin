@@ -10,6 +10,15 @@
 /** @type {jQueryFunc} */
 const jq = jQuery;
 
+const techStackConsts = {
+    none: -1,
+    dotNet: 1,
+    dotNetCore: 23,
+    java: 7,
+    php: 9,
+    python: 10
+};
+
 function dispatchEvent(type, payload) {
     document.dispatchEvent(new CustomEvent(type, {detail: payload}));
 }

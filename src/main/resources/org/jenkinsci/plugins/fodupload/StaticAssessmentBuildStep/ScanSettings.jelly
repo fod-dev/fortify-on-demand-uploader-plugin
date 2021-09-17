@@ -14,7 +14,6 @@
                 <div id="fode-msg">Select a release</div>
                 <div id="fode-error" style="display: none">Error</div>
 
-                <!-- ToDo: Add names to elements with values needing saving to API                -->
                 <f:entry title="Assessment Type">
                     <div id="assessmentTypeForm" class="fode-field spinner-container">
                         <div class="fode-edit">
@@ -32,6 +31,35 @@
                                 <option value="-1">Select an Entitlement</option>
                             </select>
                         </div>
+                    </div>
+                </f:entry>
+
+                <f:entry title="Remediation Preference" field="remediationScanPreferenceType" help="/plugin/fortify-on-demand-uploader/help-scanSettings-remediation.html">
+                    <div id="remediationScanPreferenceTypeForm" class="fode-field fode-row-remediation spinner-container">
+                        <f:select/>
+                    </div>
+                </f:entry>
+
+                <f:entry title="Audit Preference">
+                    <div id="auditPreferenceForm" class="fode-field spinner-container">
+                        <div class="fode-edit">
+                            <select name="userSelectedAuditPreference" id="auditPreferenceSelectList">
+                                <option value="2">Automated</option>
+                                <option value="1">Manual</option>
+                            </select>
+                        </div>
+                    </div>
+                </f:entry>
+
+                <f:entry title="Entitlement Preference" field="entitlementPreference">
+                    <div id="entitlementPreferenceForm" class="fode-field fode-row-bsi spinner-container">
+                        <f:select/>
+                    </div>
+                </f:entry>
+
+                <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
+                    <div id="purchaseEntitlementsForm" class="fode-field fode-row-bsi spinner-container">
+                        <f:checkbox/>
                     </div>
                 </f:entry>
 
@@ -77,6 +105,7 @@
                     <div id="virtualEnvForm" class="fode-field spinner-container fode-row-sc fode-row-sc-python">
                         <f:textbox></f:textbox>
                     </div>
+
                 </f:entry>
 
                 <f:entry title="Requirement File" field="scanCentralRequirementFile" help="/plugin/fortify-on-demand-uploader/help-scanCentral-reqsFile.html">
@@ -105,38 +134,9 @@
                     </div>
                 </f:entry>
 
-                <f:entry title="Audit Preference">
-                    <div id="auditPreferenceForm" class="fode-field spinner-container">
-                        <div class="fode-edit">
-                            <select name="userSelectedAuditPreference" id="auditPreferenceSelectList">
-                                <option value="2">Automated</option>
-                                <option value="1">Manual</option>
-                            </select>
-                        </div>
-                    </div>
-                </f:entry>
-
                 <f:entry title="Open Source Component Analysis by Sonatype">
                     <div id="sonatypeForm" class="fode-field fode-checkbox spinner-container">
                         <input type="checkbox" value="false" name="sonatypeEnabled" id="cbSonatypeEnabled"/>
-                    </div>
-                </f:entry>
-
-                <f:entry title="Entitlement Preference" field="entitlementPreference">
-                    <div id="entitlementPreferenceForm" class="fode-field fode-row-bsi spinner-container">
-                        <f:select/>
-                    </div>
-                </f:entry>
-
-                <f:entry title="Purchase Entitlements" field="purchaseEntitlements">
-                    <div id="purchaseEntitlementsForm" class="fode-field fode-row-bsi spinner-container">
-                        <f:checkbox/>
-                    </div>
-                </f:entry>
-
-                <f:entry title="Remediation Preference" field="remediationScanPreferenceType" help="/plugin/fortify-on-demand-uploader/help-scanSettings-remediation.html">
-                    <div id="remediationScanPreferenceTypeForm" class="fode-field fode-row-remediation spinner-container">
-                        <f:select/>
                     </div>
                 </f:entry>
 

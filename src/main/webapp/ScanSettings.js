@@ -1,12 +1,4 @@
 const fodeRowSelector = '.fode-field-row, .fode-field-row-verr';
-const techStackConsts = {
-    none: -1,
-    dotNet: 1,
-    dotNetCore: 23,
-    java: 7,
-    php: 9,
-    python: 10
-};
 
 class ScanSettings {
 
@@ -31,19 +23,6 @@ class ScanSettings {
     hideMessages(msg) {
         jq('#fode-error').hide();
         jq('#fode-msg').hide();
-    }
-
-    setSelectValues(id, selected, options) {
-        let select = jq(`#${id} .fode-edit > select`);
-
-        if (options) {
-            select.find('option[value]:not([value=""])').remove();
-            for (let o of options) {
-                select.append(`<option value="${o.value}">${o.text}</option>`);
-            }
-        }
-
-        select.val(selected);
     }
 
     populateAssessmentsDropdown() {
@@ -399,7 +378,10 @@ class ScanSettings {
         this.populateTechStackDropdown();
 
         this.uiLoaded = true;
-        if (this.deferredLoadEntitlementSettings) this.deferredLoadEntitlementSettings();
+        if (this.deferredLoadEntitlementSettings) {
+            this.deferredLoadEntitlementSettings();
+            this.deferredLoadEntitlementSettings = null;
+        }
     }
 
 }
