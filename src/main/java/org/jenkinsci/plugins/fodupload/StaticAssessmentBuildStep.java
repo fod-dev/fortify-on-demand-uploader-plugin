@@ -130,7 +130,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             int ts = Utils.tryParseInt(userSelectedTechnologyStack);
 
             if (ts <= 0) invalidFields.add("userSelectedTechnologyStack");
-            // PHP has no language levels
+                // PHP has no language levels
             else if (ts != 9 && Utils.tryParseInt(userSelectedLanguageLevel) <= 0) {
                 invalidFields.add("userSelectedLanguageLevel");
             }
