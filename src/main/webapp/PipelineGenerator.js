@@ -412,7 +412,6 @@ class PipelineGenerator {
         return jq(sel).prop('checked') ? 'true' : '';
     }
 
-
     populateHiddenFields() {
         // Auth
         let un = '';

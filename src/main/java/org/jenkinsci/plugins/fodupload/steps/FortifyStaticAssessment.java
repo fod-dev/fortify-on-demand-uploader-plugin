@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.fodupload.steps;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,7 +12,6 @@ import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.fodupload.ApiConnectionFactory;
 import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.SharedUploadBuildStep;
-import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
 import org.jenkinsci.plugins.fodupload.controllers.*;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
