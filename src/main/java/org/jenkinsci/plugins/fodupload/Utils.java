@@ -217,8 +217,19 @@ public class Utils {
         unexpectedErrorResponseErrors = new ArrayList<>();
         unexpectedErrorResponseErrors.add("Unexpected response from server");
     }
+
     public static List<String> unexpectedServerResponseErrors() {
         return unexpectedErrorResponseErrors;
+    }
+
+    private static List<String> unauthorizedErrorResponseErrors;
+    static {
+        unauthorizedErrorResponseErrors = new ArrayList<>();
+        unauthorizedErrorResponseErrors.add("Not authorized to perform this action");
+    }
+
+    public static List<String> unauthorizedServerResponseErrors() {
+        return unauthorizedErrorResponseErrors;
     }
 
     public static AuthenticationModel getAuthModelFromObject(JSONObject authModelObject) {

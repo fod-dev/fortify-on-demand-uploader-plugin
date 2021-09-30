@@ -2,7 +2,7 @@ function getAuthInfo() {
     return {
         overrideGlobalAuth: jq('[name="overrideGlobalConfig"]').is(':checked'),
         username: jq('#usernameField').val(),
-        accessTokenKey: jq('[name="_.personalAccessToken"]').val(),
+        accessTokenKey: jq('[name="_.personalAccessToken"]').val() || jq('[name="_.personalAccessTokenSelect"]').val(),
         tenantId: jq('#tenantIdField').val()
     };
 }

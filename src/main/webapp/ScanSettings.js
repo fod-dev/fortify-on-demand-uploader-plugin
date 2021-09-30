@@ -52,7 +52,7 @@ class ScanSettings {
             let availableGrp = forPurchase.length > 0 ? jq(`<optgroup label="Available Entitlements"></optgroup>`) : entsel;
 
             for (let e of available) {
-                availableGrp.append(`<option value="${this.getEntitlementDropdownValue(e.id, e.frequencyId)}">${e.description}</option>`);
+                availableGrp.append(`<option value="${getEntitlementDropdownValue(e.id, e.frequencyId)}">${e.description}</option>`);
             }
 
             if (forPurchase.length > 0){
@@ -61,7 +61,7 @@ class ScanSettings {
                 entsel.append(availableGrp);
                 entsel.append(grp);
                 for (let e of forPurchase) {
-                    grp.append(`<option value="${this.getEntitlementDropdownValue(0, e.frequencyId)}">${e.description}</option>`);
+                    grp.append(`<option value="${getEntitlementDropdownValue(0, e.frequencyId)}">${e.description}</option>`);
                 }
             }
         }
@@ -77,22 +77,12 @@ class ScanSettings {
     }
 
     onEntitlementChanged() {
-        let entId = '';
-        let freqId = '';
         let val = jq('#entitlementSelectList').val();
+        let {entitlementId, frequencyId} = parseEntitlementDropdownValue(val);
 
-        if (val) {
-            let spl = val.split('-');
-
-            if (spl.length === 2) {
-                entId = numberOrNull(spl[0]);
-                freqId = numberOrNull(spl[1]);
-            }
-        }
-
-        jq('#entitlementId').val(entId);
-        jq('#frequencyId').val(freqId);
-        jq('#purchaseEntitlementsForm input').prop('checked', (entId <=  0));
+        jq('#entitlementId').val(entitlementId);
+        jq('#frequencyId').val(frequencyId);
+        jq('#purchaseEntitlementsForm input').prop('checked', (entitlementId <=  0));
     }
 
     async loadEntitlementSettings(releaseChangedPayload) {
@@ -140,7 +130,7 @@ class ScanSettings {
 
                 jq('#ddAssessmentType').val(assessmentId);
                 this.onAssessmentChanged();
-                jq('#entitlementSelectList').val(this.getEntitlementDropdownValue(entitlementId, this.scanSettings.entitlementFrequencyType));
+                jq('#entitlementSelectList').val(getEntitlementDropdownValue(entitlementId, this.scanSettings.entitlementFrequencyType));
                 this.onEntitlementChanged();
                 jq('#technologyStackSelectList').val(this.scanSettings.technologyStackId);
                 this.onTechStackChanged();
@@ -235,10 +225,6 @@ class ScanSettings {
             tsSel.find('option').first().prop('selected', true);
             this.onTechStackChanged();
         }
-    }
-
-    getEntitlementDropdownValue(id, freq) {
-        return `${id}-${freq}`;
     }
 
     onTechStackChanged() {

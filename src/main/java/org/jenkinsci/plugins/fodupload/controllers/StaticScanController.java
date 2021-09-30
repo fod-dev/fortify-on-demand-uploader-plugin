@@ -41,14 +41,13 @@ public class StaticScanController extends ControllerBase {
     /**
      * Begin a static scan on FoD
      *
-     * @param releaseId          id of release being targeted
-     * @param staticScanSettings config information for scan
-     * @param uploadRequest      zip file to upload
-     * @param notes              notes
+     * @param releaseId     id of release being targeted
+     * @param uploadRequest zip file to upload
+     * @param notes         notes
      * @return true if the scan succeeded
      */
     @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "The intent of the catch-all is to make sure that the Jenkins user and logs show the plugin's problem in the build log.")
-    public StartScanResponse startStaticScan(final Integer releaseId, final GetStaticScanSetupResponse staticScanSettings, final JobModel uploadRequest, final String notes) {
+    public StartScanResponse startStaticScan(Integer releaseId, final JobModel uploadRequest, final String notes) {
         PostStartScanResponse scanStartedResponse = null;
         StartScanResponse scanResults = new StartScanResponse();
 
@@ -72,16 +71,26 @@ public class StaticScanController extends ControllerBase {
             }
 
             HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder();
-            FodEnums.SelectedReleaseType type = FodEnums.SelectedReleaseType.valueOf(uploadRequest.getSelectedReleaseType());
 
-            switch (type) {
-                case UseReleaseId:
-                case UseAppAndReleaseName:
-                    buildReleaseSettingsRequest(builder, releaseId, uploadRequest);
-                    break;
-                case UseBsiToken:
-                    buildBsiRequest(builder, uploadRequest);
-                    break;
+            if (Utils.isNullOrEmpty(uploadRequest.getSelectedReleaseType())) {
+                if (uploadRequest.getIsPipeline()) {
+                    if (releaseId < 1) releaseId = createApplicationAndRelease(uploadRequest);
+                    buildPipelineRequest(builder, releaseId, uploadRequest);
+                } else throw new IllegalArgumentException("Invalid job model");
+            } else {
+                FodEnums.SelectedReleaseType type = FodEnums.SelectedReleaseType.valueOf(uploadRequest.getSelectedReleaseType());
+
+                switch (type) {
+                    case UseReleaseId:
+                    case UseAppAndReleaseName:
+                        buildReleaseSettingsRequest(builder, releaseId, uploadRequest);
+                        break;
+                    case UseBsiToken:
+                        buildBsiRequest(builder, uploadRequest);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid job model");
+                }
             }
 
             builder.addQueryParameter("inProgressScanActionType", uploadRequest.getInProgressScanActionType())
@@ -200,6 +209,35 @@ public class StaticScanController extends ControllerBase {
                 .addQueryParameter("remediationScanPreferenceType", uploadRequest.getRemediationScanPreferenceType());
     }
 
+    private void buildPipelineRequest(final HttpUrl.Builder builder, final Integer releaseId, final JobModel uploadRequest) {
+        builder.addPathSegments(String.format("/api/v3/releases/%d/static-scans/start-scan-advanced-with-defaults", releaseId));
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getAssessmentType())) builder.addQueryParameter("assessmentTypeId", uploadRequest.getAssessmentType());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getEntitlementId())) builder.addQueryParameter("entitlementId", uploadRequest.getEntitlementId());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getFrequencyId()))
+            builder.addQueryParameter("entitlementFrequencyType", uploadRequest.getFrequencyId());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getOpenSourceScan())) builder.addQueryParameter("doSonatypeScan", uploadRequest.getOpenSourceScan());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getAuditPreference()))
+            builder.addQueryParameter("auditPreferenceType", uploadRequest.getAuditPreference());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getTechnologyStack()))
+            builder.addQueryParameter("technologyTypeId", uploadRequest.getTechnologyStack());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getLanguageLevel()))
+            builder.addQueryParameter("technologyVersionTypeId", uploadRequest.getLanguageLevel());
+
+        if (!Utils.isNullOrEmpty(uploadRequest.getRemediationScanPreferenceType()))
+            builder.addQueryParameter("remediationScanPreferenceType", uploadRequest.getRemediationScanPreferenceType());
+    }
+
+    private Integer createApplicationAndRelease(final JobModel uploadRequest) throws Exception {
+        throw new Exception("Not implemented");
+    }
+
     /**
      * @deprecated Use the {@link StaticScanController#getStaticScanSettings} method instead
      */
@@ -264,7 +302,7 @@ public class StaticScanController extends ControllerBase {
                 .build();
         Response response = apiConnection.request(request);
 
-        if (response.code() < 500) {
+        if (response.code() < 300) {
             return apiConnection.parseResponse(response, new TypeToken<PutStaticScanSetupResponse>() {
             }.getType());
         } else {

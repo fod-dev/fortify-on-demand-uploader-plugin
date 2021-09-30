@@ -47,6 +47,26 @@ function debounce(func, wait, immediate) {
     };
 };
 
+function getEntitlementDropdownValue(id, freq) {
+    return `${id}-${freq}`;
+}
+
+function parseEntitlementDropdownValue(val) {
+    let entitlementId = '';
+    let frequencyId = '';
+
+    if (val) {
+        let spl = val.split('-');
+
+        if (spl.length === 2) {
+            entitlementId = numberOrNull(spl[0]);
+            frequencyId = numberOrNull(spl[1]);
+        }
+    }
+
+    return { entitlementId, frequencyId };
+}
+
 function spinAndWait(fn) {
     return new Promise((res, rej) => {
         let elementsLoaded;

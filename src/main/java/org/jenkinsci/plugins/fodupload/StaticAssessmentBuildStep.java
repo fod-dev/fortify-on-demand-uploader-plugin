@@ -130,7 +130,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             int ts = Utils.tryParseInt(userSelectedTechnologyStack);
 
             if (ts <= 0) invalidFields.add("userSelectedTechnologyStack");
-            // PHP has no language levels
+                // PHP has no language levels
             else if (ts != 9 && Utils.tryParseInt(userSelectedLanguageLevel) <= 0) {
                 invalidFields.add("userSelectedLanguageLevel");
             }
@@ -186,7 +186,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         return ApiConnectionFactory.createApiConnection(authModel);
     }
 
-    private void saveReleaseSettings(FodApiConnection apiConnection, String releaseIdStr, boolean purchaseEntitlements, String assessmentTypeIdStr, String entitlementIdStr, String entitlementFrequencyTypeStr, String technologyStackIdStr, String languageLevelIdStr, boolean performOpenSourceAnalysis, String auditPreferenceTypeStr) {
+    private void saveReleaseSettings(FodApiConnection apiConnection, String releaseIdStr, boolean purchaseEntitlements, String assessmentTypeIdStr, String entitlementIdStr, String entitlementFrequencyTypeStr, String technologyStackIdStr, String languageLevelIdStr, boolean performOpenSourceAnalysis, String auditPreferenceTypeStr) throws IllegalArgumentException {
         StaticScanController staticScanController = new StaticScanController(apiConnection, null, Utils.createCorrelationId());
 
         int releaseId = Integer.parseInt(releaseIdStr);
@@ -205,9 +205,12 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 for (String error : response.getErrors()) {
                     System.out.println("Error saving settings for release id = " + releaseIdStr + ": " + error);
                 }
+                throw new IllegalArgumentException("Failed to saved scan settings");
             }
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Failed to saved scan settings", e);
         }
     }
 

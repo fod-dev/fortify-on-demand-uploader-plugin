@@ -1,11 +1,18 @@
 const fodpRowSelector = '.fodp-field-row, .fodp-field-row-verr';
 const fodpOverrideRowsSelector = '.fodp-row-relid-ovr';
-
+const fodpAutoProvRowsSelector = '.fodp-row-autoProv';
+const appAttributeKeyDelimiter = '&';
+const appAttributeValueDelimiter = ';';
+const appAttributeKeyValueDelimiter = ':';
 
 class PipelineGenerator {
     constructor() {
         this.api = new Api(null, descriptor);
+        this.currentSession = null
+        this.appAttributes = {};
+        this.autoProvMode = false;
         this.overrideServerSettings = false;
+        this.overrideAuth = false;
         this.releaseId = null;
         this.uiLoaded = false;
         this.techStacks = {};
@@ -22,82 +29,54 @@ class PipelineGenerator {
         msgElem.show();
     }
 
-    hideMessages(msg) {
+    hideMessages() {
         jq('#fodp-error').hide();
         jq('#fodp-msg').hide();
     }
 
     populateAssessmentsDropdown() {
-        // let atsel = jq(`#ddAssessmentType`);
-        //
-        // atsel.find('option').remove();
-        // jq(`#entitlementSelectList`).find('option').remove();
-        //
-        // for (let k of Object.keys(this.assessments)) {
-        //     let at = this.assessments[k];
-        //
-        //     atsel.append(`<option value="${at.id}">${at.name}</option>`);
-        // }
+        let atsel = jq(`#assessmentTypeSelect`);
+
+        atsel.find('option').remove();
+        jq(`#entitlementSelect`).find('option').remove();
+
+        for (let k of Object.keys(this.assessments)) {
+            let at = this.assessments[k];
+
+            atsel.append(`<option value="${at.id}">${at.name}</option>`);
+        }
     }
 
     onAssessmentChanged() {
-        // let atval = jq('#ddAssessmentType').val();
-        // let entsel = jq('#entitlementSelectList');
-        // let apsel = jq('#auditPreferenceSelectList');
-        // let at = this.assessments[atval];
-        //
-        // entsel.find('option,optgroup').remove();
-        //
-        // if (at) {
-        //     let available = at.entitlementsSorted.filter(e => e.id > 0);
-        //     let forPurchase = at.entitlementsSorted.filter(e => e.id <= 0);
-        //     let availableGrp = forPurchase.length > 0 ? jq(`<optgroup label="Available Entitlements"></optgroup>`) : entsel;
-        //
-        //     for (let e of available) {
-        //         availableGrp.append(`<option value="${this.getEntitlementDropdownValue(e.id, e.frequencyId)}">${e.description}</option>`);
-        //     }
-        //
-        //     if (forPurchase.length > 0){
-        //         let grp = jq(`<optgroup label="Available For Purchase"></optgroup>`);
-        //
-        //         entsel.append(availableGrp);
-        //         entsel.append(grp);
-        //         for (let e of forPurchase) {
-        //             grp.append(`<option value="${this.getEntitlementDropdownValue(0, e.frequencyId)}">${e.description}</option>`);
-        //         }
-        //     }
-        // }
-        //
-        // if (at && at.name === 'Static+ Assessment') apsel.prop('disabled', false);
-        // else {
-        //     apsel.val('2');
-        //     apsel.prop('disabled', true);
-        // }
-        //
-        // this.onEntitlementChanged();
-        // ToDo: set to unselected if selected value doesn't exist
+        let atval = jq('#assessmentTypeSelect').val();
+        let entsel = jq('#entitlementSelect');
+        let apsel = jq('#auditPreferenceSelect');
+        let at = this.assessments ? this.assessments[atval] : null;
+
+        entsel.find('option,optgroup').remove();
+
+        if (at) {
+            let available = at.entitlementsSorted.filter(e => e.id > 0);
+
+            for (let e of available) {
+                entsel.append(`<option value="${getEntitlementDropdownValue(e.id, e.frequencyId)}">${e.description}</option>`);
+            }
+        }
+
+        if (at && at.name === 'Static+ Assessment') apsel.prop('disabled', false);
+        else {
+            apsel.val('2');
+            apsel.prop('disabled', true);
+        }
+
+        this.onEntitlementChanged();
     }
 
     onEntitlementChanged() {
-        // let entId = '';
-        // let freqId = '';
-        // let val = jq('#entitlementSelectList').val();
-        //
-        // if (val) {
-        //     let spl = val.split('-');
-        //
-        //     if (spl.length === 2) {
-        //         entId = numberOrNull(spl[0]);
-        //         freqId = numberOrNull(spl[1]);
-        //     }
-        // }
-        //
-        // jq('#entitlementId').val(entId);
-        // jq('#frequencyId').val(freqId);
-        // jq('#purchaseEntitlementsForm input').prop('checked', (entId <=  0));
+        this.populateHiddenFields();
     }
 
-    async loadEntitlementSettings() {
+    async loadReleaseEntitlementSettings() {
         let rows = jq(fodpOverrideRowsSelector);
 
         this.hideMessages();
@@ -115,36 +94,80 @@ class PipelineGenerator {
         this.onScanCentralChanged();
 
         // ToDo: deal with overlapping calls
-        // let ssp = this.api.getReleaseEntitlementSettings(this.releaseId, getAuthInfo())
-        //     .then(r => this.scanSettings = r);
-        // let entp = this.api.getAssessmentTypeEntitlements(this.releaseId, getAuthInfo())
-        //     .then(r => this.assessments = r);
-        //
-        //
-        // await Promise.all([ssp, entp]);
-        //
-        // if (this.scanSettings && this.assessments) {
-        //     let assessmentId = this.scanSettings.assessmentTypeId;
-        //     let entitlementId = this.scanSettings.entitlementId;
-        //
-        //     this.populateAssessmentsDropdown();
-        //
-        //     jq('#ddAssessmentType').val(assessmentId);
-        //     this.onAssessmentChanged();
-        //     jq('#entitlementSelectList').val(this.getEntitlementDropdownValue(entitlementId, this.scanSettings.entitlementFrequencyType));
-        //     this.onEntitlementChanged();
-        //     jq('#technologyStackSelectList').val(this.scanSettings.technologyStackId);
-        //     this.onTechStackChanged();
-        //     jq('#languageLevelSelectList').val(this.scanSettings.languageLevelId);
-        //     jq('#auditPreferenceSelectList').val(this.scanSettings.auditPreferenceType);
-        //     jq('#cbSonatypeEnabled').prop('checked', this.scanSettings.performOpenSourceAnalysis === true);
-        //
-        // } else {
-        //     this.onAssessmentChanged();
-        //     this.showMessage('Failed to retrieve scan settings from API', true);
-        //     rows.hide();
-        // }
-        await new Promise((res, rej) => setTimeout(res, 1000));
+        let ssp = this.api.getReleaseEntitlementSettings(this.releaseId, getAuthInfo())
+            .then(r => this.scanSettings = r);
+        let entp = this.api.getAssessmentTypeEntitlements(this.releaseId, getAuthInfo())
+            .then(r => this.assessments = r);
+
+
+        await Promise.all([ssp, entp]);
+
+        if (this.scanSettings && this.assessments) {
+            let assessmentId = this.scanSettings.assessmentTypeId;
+            let entitlementId = this.scanSettings.entitlementId;
+
+            this.populateAssessmentsDropdown();
+
+            jq('#assessmentTypeSelect').val(assessmentId);
+            this.onAssessmentChanged();
+            jq('#entitlementSelect').val(getEntitlementDropdownValue(entitlementId, this.scanSettings.entitlementFrequencyType));
+            this.onEntitlementChanged();
+            jq('#technologyStackSelect').val(this.scanSettings.technologyStackId);
+            this.onTechStackChanged();
+            jq('#languageLevelSelect').val(this.scanSettings.languageLevelId);
+            this.onLangLevelChanged();
+            jq('#auditPreferenceSelect').val(this.scanSettings.auditPreferenceType);
+            jq('#sonatypeEnabled').prop('checked', this.scanSettings.performOpenSourceAnalysis === true);
+
+        } else {
+            this.onAssessmentChanged();
+            this.showMessage('Failed to retrieve scan settings from API', true);
+            rows.hide();
+        }
+        // await new Promise((res, rej) => setTimeout(res, 1000));
+
+        fields.removeClass('spinner');
+    }
+
+    async loadAutoProvEntitlementSettings() {
+        this.hideMessages();
+
+        let rows = jq(fodpAutoProvRowsSelector);
+        let fields = jq('.fodp-field.spinner-container');
+
+        fields.addClass('spinner');
+        rows.show();
+        this.onScanCentralChanged();
+
+        let entp = this.api.getAssessmentTypeEntitlements(this.releaseId, getAuthInfo())
+            .then(r => this.assessments = r);
+
+
+        await Promise.all([ssp, entp]);
+
+        if (this.scanSettings && this.assessments) {
+            let assessmentId = this.scanSettings.assessmentTypeId;
+            let entitlementId = this.scanSettings.entitlementId;
+
+            this.populateAssessmentsDropdown();
+
+            jq('#assessmentTypeSelect').val(assessmentId);
+            this.onAssessmentChanged();
+            jq('#entitlementSelect').val(getEntitlementDropdownValue(entitlementId, this.scanSettings.entitlementFrequencyType));
+            this.onEntitlementChanged();
+            jq('#technologyStackSelect').val(this.scanSettings.technologyStackId);
+            this.onTechStackChanged();
+            jq('#languageLevelSelect').val(this.scanSettings.languageLevelId);
+            this.onLangLevelChanged();
+            jq('#auditPreferenceSelect').val(this.scanSettings.auditPreferenceType);
+            jq('#sonatypeEnabled').prop('checked', this.scanSettings.performOpenSourceAnalysis === true);
+
+        } else {
+            this.onAssessmentChanged();
+            this.showMessage('Failed to retrieve scan settings from API', true);
+            rows.hide();
+        }
+        // await new Promise((res, rej) => setTimeout(res, 1000));
 
         fields.removeClass('spinner');
     }
@@ -176,21 +199,23 @@ class PipelineGenerator {
 
             switch (val) {
                 case 'msbuild':
-                    closestRow(jq('#technologyStackForm')).show();
-                    let currVal = this.techStacks[jq('#technologyStackSelectList').val()];
+                    if (this.overrideServerSettings) {
+                        closestRow(jq('#technologyStackForm')).show();
+                        let currVal = this.techStacks[jq('#technologyStackSelect').val()];
 
-                    if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelectList').val(techStackConsts.none);
-                    techStackFilter = this.isDotNetStack;
+                        if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelect').val(techStackConsts.none);
+                        techStackFilter = this.isDotNetStack;
+                    }
                     break;
                 case 'maven':
                 case 'gradle':
-                    jq('#technologyStackSelectList').val(techStackConsts.java);
+                    if (this.overrideServerSettings) jq('#technologyStackSelect').val(techStackConsts.java);
                     break;
                 case 'php':
-                    jq('#technologyStackSelectList').val(techStackConsts.php);
+                    if (this.overrideServerSettings) jq('#technologyStackSelect').val(techStackConsts.php);
                     break;
                 case 'python':
-                    jq('#technologyStackSelectList').val(techStackConsts.python);
+                    if (this.overrideServerSettings) jq('#technologyStackSelect').val(techStackConsts.python);
                     break;
             }
         }
@@ -200,108 +225,331 @@ class PipelineGenerator {
     }
 
     populateTechStackDropdown(filter) {
-        // let tsSel = jq('#technologyStackSelectList');
-        // let currVal = tsSel.val();
-        // let currValSelected = false;
-        //
-        // tsSel.find('option').not(':first').remove();
-        // tsSel.find('option').first().prop('selected', true);
-        //
-        //
-        // for (let ts of this.techStacksSorted) {
-        //     if (filter && filter(ts) !== true) continue;
-        //
-        //     // noinspection EqualityComparisonWithCoercionJS
-        //     if (currVal == ts.value) {
-        //         currValSelected = true;
-        //         tsSel.append(`<option value="${ts.value}" selected>${ts.text}</option>`);
-        //     } else tsSel.append(`<option value="${ts.value}">${ts.text}</option>`);
-        // }
-        //
-        // if (!currValSelected) {
-        //     tsSel.find('option').first().prop('selected', true);
-        //     this.onTechStackChanged();
-        // }
-    }
+        let tsSel = jq('#technologyStackSelect');
+        let currVal = tsSel.val();
+        let currValSelected = false;
 
-    getEntitlementDropdownValue(id, freq) {
-        return `${id}-${freq}`;
+        tsSel.find('option').not(':first').remove();
+        tsSel.find('option').first().prop('selected', true);
+
+
+        for (let ts of this.techStacksSorted) {
+            if (filter && filter(ts) !== true) continue;
+
+            // noinspection EqualityComparisonWithCoercionJS
+            if (currVal == ts.value) {
+                currValSelected = true;
+                tsSel.append(`<option value="${ts.value}" selected>${ts.text}</option>`);
+            } else tsSel.append(`<option value="${ts.value}">${ts.text}</option>`);
+        }
+
+        if (!currValSelected) {
+            tsSel.find('option').first().prop('selected', true);
+            this.onTechStackChanged();
+        }
     }
 
     onTechStackChanged() {
-        // let ts = this.techStacks[jq('#technologyStackSelectList').val()];
-        // let llsel = jq('#languageLevelSelectList');
-        // let llr = jq('.fodp-row-langLev');
-        //
-        // llr.show();
-        // llsel.find('option').not(':first').remove();
-        // llsel.find('option').first().prop('selected', true);
-        //
-        // // noinspection EqualityComparisonWithCoercionJS
-        // if (ts && ts.value == techStackConsts.php) llr.hide();
-        // else if (ts) {
-        //     for (let ll of ts.levels) {
-        //         llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
-        //     }
-        // }
-        //
-        // this.onLangLevelChanged();
+        let ts = this.techStacks[jq('#technologyStackSelect').val()];
+        let llsel = jq('#languageLevelSelect');
+        let llr = jq('.fodp-row-langLev');
+
+        if (this.overrideServerSettings) llr.show();
+        llsel.find('option').not(':first').remove();
+        llsel.find('option').first().prop('selected', true);
+
+        // noinspection EqualityComparisonWithCoercionJS
+        if (ts && ts.value == techStackConsts.php) llr.hide();
+        else if (ts) {
+            for (let ll of ts.levels) {
+                llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
+            }
+        }
+
+        this.onLangLevelChanged();
     }
 
     onLangLevelChanged() {
-        // let bt = jq('#scanCentralBuildTypeForm > select').val();
-        // let ssv = jq('#buildToolVersionForm > input');
-        //
-        // if (bt === 'Python'){
-        //     let ll = this.techStacks[techStackConsts.python].levels.find(e => e.value == jq('#languageLevelSelectList').val());
-        //
-        //     if (ll && ll.text) ssv.val(ll.text.replace(' (Django)', ''));
-        //
-        //     ssv.data('python', true);
-        // } else if (ssv.data('python')) {
-        //     ssv.removeData();
-        //     ssv.val('');
-        // }
+        let bt = jq('#scanCentralBuildTypeForm > select').val();
+        let ssv = jq('#buildToolVersionForm > input');
+
+        if (bt === 'Python') {
+            let ll = this.techStacks[techStackConsts.python].levels.find(e => e.value == jq('#languageLevelSelect').val());
+
+            if (ll && ll.text) ssv.val(ll.text.replace(' (Django)', ''));
+
+            ssv.data('python', true);
+        } else if (ssv.data('python')) {
+            ssv.removeData();
+            ssv.val('');
+        }
+
+        this.populateHiddenFields();
     }
 
-    // ToDo: Call this on auth change
     onReleaseIdChanged() {
         if (this.overrideServerSettings) {
             this.releaseId = numberOrNull(jq('#releaseSelectionValue').val());
 
             if (this.releaseId < 1) this.releaseId = null;
 
-            this.loadEntitlementSettings();
+            this.loadReleaseEntitlementSettings();
         } else {
+            this.onAssessmentChanged();
             this.hideMessages();
             jq(fodpOverrideRowsSelector).hide();
         }
     }
 
-    onReleaseSelectionChanged() {
+    async onReleaseSelectionChanged() {
         let rs = jq('#releaseSelection').val();
 
         jq('.fodp-row-relid').hide();
         jq('.fodp-row-relid-ovr').hide();
         jq('.fodp-row-bsi').hide();
+        jq('.fodp-row-autoProv').hide();
         jq('#releaseLookup').hide();
 
+        jq('#releaseSelectionValue').show();
+        this.autoProvMode = false;
+
         if (rs === '1') {
+            jq('#overrideReleaseSettings').prop('checked', false);
             jq('.fodp-row-bsi').show();
+        } else if (rs === '2') {
+            this.hideMessages();
+            if (!await this.retrieveCurrentSession()) {
+                this.showMessage('Failed to retrieve auth data');
+                return;
+            }
+
+            if (this.currentSession && this.currentSession.userId) jq('#autoProvOwnerAssignMe').show();
+            else jq('#autoProvOwnerAssignMe').hide();
+
+            jq('#overrideReleaseSettings').prop('checked', false);
+            jq('#releaseSelectionValue').hide();
+            this.autoProvMode = true;
+            jq('.fodp-row-autoProv').show();
+            this.onIsMicroserviceChanged();
         } else {
             jq('.fodp-row-relid').show();
             jq('#releaseLookup').show();
-            this.onReleaseIdChanged();
         }
+
+        this.loadEntitlementOptions();
     }
 
-    onOverrideReleaseSettingsChanged() {
-        this.overrideServerSettings = jq('#overrideReleaseSettings').prop('checked');
-        this.onReleaseIdChanged();
+    async retrieveCurrentSession() {
+        if (this.currentSession === null) {
+            try {
+                this.currentSession = await this.api.getCurrentUserSession(getAuthInfo());
+                return this.currentSession !== null;
+            } catch (e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    loadEntitlementOptions() {
+        if (this.autoProvMode) {
+
+        } else {
+            this.overrideServerSettings = jq('#overrideReleaseSettings').prop('checked');
+            jq(fodpOverrideRowsSelector).show();
+            this.onReleaseIdChanged();
+        }
+
         this.onScanCentralChanged();
     }
 
+    onAssignMeClick() {
+        if (this.currentSession) jq('#autoProvOwner').val(this.currentSession.userId);
+    }
+
+    onIsMicroserviceChanged() {
+        let v = jq('#autoProvIsMicro').prop('checked');
+
+        if (v) jq('.fodp-row-autoProv-micro').show();
+        else jq('.fodp-row-autoProv-micro').hide()
+    }
+
+    async onAuthChanged() {
+        if (!this.uiLoaded) await this.init();
+        else {
+            this.currentSession = null;
+            await this.onReleaseSelectionChanged();
+        }
+        this.populateHiddenFields();
+    }
+
+    getHiddenFieldSelectValue(sel) {
+        let v = numberOrNull(jq(sel).val());
+
+        return v && v > 0 ? v : '';
+    }
+
+    getHiddenFieldCheckValue(sel) {
+        return jq(sel).prop('checked') ? 'true' : '';
+    }
+
+    populateHiddenFields() {
+        // Auth
+        let un = '';
+        let pat = '';
+        let tid = '';
+
+        // Release Selection
+        let relId = '';
+        let bsi = '';
+        let entPref = '';
+        let relVal = jq('#releaseSelectionValue').val();
+        let relSel = jq('#releaseSelection').val();
+
+        // Entitlement Options
+        let entId = '';
+        let freqId = '';
+        let at = '';
+        let ap = '';
+        let ts = '';
+        let ll = '';
+        let son = '';
+
+        // ScanCentral
+        let ss = '';
+        let ssit = '';
+        let sssb = '';
+        let ssbc = '';
+        let ssbf = '';
+        let ssbtv = '';
+        let ssve = '';
+        let ssrf = '';
+
+        // Auto Provision
+        let app = '';
+        let bcrit = '';
+        let appT = '';
+        let attr = '';
+        let ismic = '';
+        let mic = '';
+        let rel = '';
+        let sdlc = '';
+        let own = '';
+
+        if (this.overrideAuth) {
+            un = jq('#userNameField').val();
+            pat = jq('#patField').val();
+            tid = jq('#tenantIdField').val();
+        }
+
+        if (relSel === '1') {
+            bsi = relVal;
+            entPref = jq('#entitlementPref').val();
+        } else if (relSel === '2') {
+            app = jq('#autoProvAppName').val();
+            bcrit = jq('#autoProvBussCrit').val();
+            appT = jq('#autoProvAppType').val();
+
+            for (let k of Object.keys(this.appAttributes)) {
+                let a = this.appAttributes[k];
+
+                if (a.length > 0) {
+                    if (attr) attr += appAttributeKeyDelimiter;
+                    attr += k + appAttributeKeyValueDelimiter + a.join(appAttributeValueDelimiter);
+                }
+            }
+
+            ismic = jq('#autoProvIsMicro').prop('checked');
+            if (ismic) mic = jq('#autoProvMicroName').val();
+
+            rel = jq('#autoProvRelName').val();
+            sdlc = jq('#autoProvSdlc').val();
+            own = numberOrNull(jq('#autoProvOwner').val());
+
+            at = jq('#assessmentTypeSelect').val();
+            entId = jq('#entitlementSelect').val();
+            freqId = jq('#frequencySelect').val();
+            ap = this.getHiddenFieldSelectValue('#auditPreferenceSelect');
+            ts = this.getHiddenFieldSelectValue('#technologyStackSelect');
+            ll = this.getHiddenFieldSelectValue('#languageLevelSelect');
+            son = this.getHiddenFieldCheckValue('#sonatypeEnabled');
+        } else if (this.overrideServerSettings) {
+            relId = relVal;
+
+            let entVal = jq('#entitlementSelect').val();
+            let {entitlementId, frequencyId} = parseEntitlementDropdownValue(entVal);
+
+            entId = entitlementId;
+            freqId = frequencyId;
+
+            let atVal = jq('#assessmentTypeSelect').val();
+
+            at = this.assessments && this.assessments[atVal] ? atVal : '';
+
+            ap = this.getHiddenFieldSelectValue('#auditPreferenceSelect');
+            ts = this.getHiddenFieldSelectValue('#technologyStackSelect');
+            ll = this.getHiddenFieldSelectValue('#languageLevelSelect');
+            son = this.getHiddenFieldCheckValue('#sonatypeEnabled');
+        } else relId = relVal;
+
+        ss = jq('#scanCentralBuildTypeSelect').val();
+
+        if (ss !== 'None') {
+            ssit = this.getHiddenFieldCheckValue('#scanCentralIncludeTestsCheck');
+            sssb = this.getHiddenFieldCheckValue('#scanCentralSkipBuildCheck');
+            ssbc = jq('#scanCentralBuildCommandInput').val();
+            ssbf = jq('#scanCentralBuildFileInput').val();
+            ssbtv = jq('#scanCentralBuildToolVersionInput').val();
+            ssve = jq('#scanCentralVirtualEnvInput').val();
+            ssrf = jq('#scanCentralRequirementFileInput').val();
+        } else ss = '';
+
+        // Auth
+        jq('#username').val(un);
+        jq('#personalAccessToken').val(pat);
+        jq('#tenantId').val(tid);
+
+        // Release Selection
+        jq('#releaseId').val(relId);
+        jq('#bsiToken').val(bsi);
+        jq('#entitlementPreference').val(entPref);
+
+        // Entitlement Options
+        jq('#entitlementId').val(entId);
+        jq('#frequencyId').val(freqId);
+        jq('#assessmentType').val(at);
+        jq('#auditPreference').val(ap);
+        jq('#technologyStack').val(ts);
+        jq('#languageLevel').val(ll);
+        jq('#sonatype').val(son);
+
+        // ScanCentral
+        jq('#scanCentral').val(ss);
+        jq('#scanCentralIncludeTests').val(ssit);
+        jq('#scanCentralSkipBuild').val(sssb);
+        jq('#scanCentralBuildCommand').val(ssbc);
+        jq('#scanCentralBuildFile').val(ssbf);
+        jq('#scanCentralBuildToolVersion').val(ssbtv);
+        jq('#scanCentralVirtualEnv').val(ssve);
+        jq('#scanCentralRequirementFile').val(ssrf);
+
+        // Auto Provision
+        jq('#applicationName').val(app);
+        jq('#businessCriticality').val(bcrit);
+        jq('#applicationType').val(appT);
+        jq('#attributes').val(attr);
+        jq('#isMicroservice').val(ismic);
+        jq('#microserviceName').val(mic);
+        jq('#releaseName').val(rel);
+        jq('#sdlcStatus').val(sdlc);
+        jq('#owner').val(own);
+    }
+
     preinit() {
+        jq('#fodp-authUser > input').attr('id', 'usernameField');
+        jq('#fodp-authPAT select.credentials-select').attr('id', 'patField');
+        jq('#fodp-authTenant > input').attr('id', 'tenantIdField');
+
         jq('.fodp-field')
             .each((i, e) => {
                 let jqe = jq(e);
@@ -339,6 +587,7 @@ class PipelineGenerator {
 
                         // Copy Scan Central and BSI css classes to validation-error-area and help-area rows
                         if (c.startsWith('fodp-row-sc') ||
+                            c.startsWith('fodp-row-autoProv') ||
                             c === 'fodp-row-nonsc' ||
                             c === 'fodp-row-bsi' ||
                             c === 'fodp-row-langLev' ||
@@ -368,38 +617,137 @@ class PipelineGenerator {
         // &nbsp; breaks Jelly compilation
         jq('#releaseLookup').parent().append('&nbsp;');
 
+        jq('[name="overrideGlobalConfig"]')
+            .change(_ => {
+                this.overrideAuth = jq('[name="overrideGlobalConfig"]').prop('checked');
+                this.onAuthChanged();
+            });
+
+        jq('#usernameField')
+            .change(_ => this.onAuthChanged());
+
+        jq('#patField')
+            .change(_ => this.onAuthChanged());
+
+        jq('#tenantIdField')
+            .change(_ => this.onAuthChanged());
+
         this.init();
     }
 
+    onAddAppAttribute() {
+        let key = jq('#autoProvAttrKey').val().trim();
+        let val = jq('#autoProvAttrValue').val().trim();
+
+        if (key !== '' && val != '') {
+            let attr = this.appAttributes[key];
+
+            if (!attr) {
+                attr = [];
+                this.appAttributes[key] = attr;
+            }
+
+            attr.push(val);
+
+            let ul = jq('#autoProvAttr');
+
+            ul.find('li').remove();
+
+            for (let k of Object.keys(this.appAttributes)) {
+                let attr = this.appAttributes[k];
+                let val = attr.join(';');
+
+                let li = ul.append(`<li value="${k}"><span>X</span>${k}:${val}</li>`);
+
+                li.find('span').click(e => this.onRemoveAppAttribute(e));
+            }
+
+            jq('#autoProvAttrKey').val('');
+            jq('#autoProvAttrValue').val('');
+            this.populateHiddenFields();
+        }
+    }
+
+    onRemoveAppAttribute(e) {
+        let li = jq(e.target).parent();
+
+        delete this.appAttributes[li.attr('value')];
+        li.remove();
+        this.populateHiddenFields();
+    }
+
     async init() {
-        // try {
-        //     this.techStacks = await this.api.getTechStacks(getAuthInfo());
-        //     for (let k of Object.keys(this.techStacks)) {
-        //         let ts = this.techStacks[k];
-        //
-        //         // noinspection EqualityComparisonWithCoercionJS
-        //         if (ts.value == techStackConsts.dotNetCore) {
-        //             for (let ll of ts.levels) {
-        //                 ll.text = ll.text.replace(' (.NET Core)', '');
-        //             }
-        //         }
-        //
-        //         this.techStacksSorted.push(ts);
-        //     }
-        //
-        //     this.techStacksSorted = this.techStacksSorted.sort((a, b) => a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1);
-        // } catch (err) {
-        //     if (!this.unsubInit) {
-        //         this.unsubInit = () => this.init();
-        //         subscribeToEvent('authInfoChanged', this.unsubInit);
-        //     }
-        //     return;
-        // }
-        //
-        // this.hideMessages();
-        // this.showMessage('Set a release id');
-        // ToDo: move this to wherever auth change is handled
-        // if (this.unsubInit) unsubscribeEvent('authInfoChanged', this.unsubInit);
+        try {
+            this.techStacks = await this.api.getTechStacks(getAuthInfo());
+            for (let k of Object.keys(this.techStacks)) {
+                let ts = this.techStacks[k];
+
+                // noinspection EqualityComparisonWithCoercionJS
+                if (ts.value == techStackConsts.dotNetCore) {
+                    for (let ll of ts.levels) {
+                        ll.text = ll.text.replace(' (.NET Core)', '');
+                    }
+                }
+
+                this.techStacksSorted.push(ts);
+            }
+
+            this.techStacksSorted = this.techStacksSorted.sort((a, b) => a.text.toLowerCase() < b.text.toLowerCase() ? -1 : 1);
+        } catch (err) {
+            this.techStacks = null;
+            this.showMessage('Failed to retrieve api data', true);
+            return;
+        }
+
+        this.hideMessages();
+        this.showMessage('Set a release id');
+
+        jq('#autoProvAppName')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvBussCrit')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvAppType')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvIsMicro')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvMicroName')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvRelName')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvSdlc')
+            .change(_ => this.populateHiddenFields());
+        jq('#autoProvOwner')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#auditPreferenceSelect')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#sonatypeEnabled')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralIncludeTestsCheck')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralSkipBuildCheck')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralBuildCommandInput')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralBuildFileInput')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralBuildToolVersionInput')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralVirtualEnvInput')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralRequirementFileInput')
+            .change(_ => this.populateHiddenFields());
+
+        jq('#entitlementPref')
+            .change(_ => this.populateHiddenFields());
 
         jq('#releaseSelection')
             .change(_ => this.onReleaseSelectionChanged());
@@ -408,22 +756,50 @@ class PipelineGenerator {
             .change(_ => this.onReleaseIdChanged());
 
         jq('#overrideReleaseSettings')
-            .change(_ => this.onOverrideReleaseSettingsChanged());
+            .change(_ => this.loadEntitlementOptions());
 
-        jq('#scanCentralBuildTypeForm > select')
+        jq('#scanCentralBuildTypeSelect')
             .change(_ => this.onScanCentralChanged());
 
-        jq('#technologyStackSelectList')
-            .change(_ => this.onTechStackChanged());
-
-        jq('#ddAssessmentType')
+        jq('#assessmentTypeSelect')
             .change(_ => this.onAssessmentChanged());
 
-        jq('#entitlementSelectList')
+        jq('#entitlementSelect')
             .change(_ => this.onEntitlementChanged());
 
-        jq('#languageLevelSelectList')
+        jq('#technologyStackSelect')
+            .change(_ => this.onTechStackChanged());
+
+        jq('#languageLevelSelect')
             .change(_ => this.onLangLevelChanged());
+
+        jq('#autoProvAttrAdd')
+            .click(_ => this.onAddAppAttribute());
+
+        jq('#autoProvAttrKey')
+            .keypress(e => {
+                if (this.isEnterPressed(e)) this.onAddAppAttribute();
+            });
+
+        jq('#autoProvAttrValue')
+            .keypress(e => {
+                if (this.isEnterPressed(e)) this.onAddAppAttribute();
+            });
+
+        jq('#autoProvIsMicro')
+            .change(_ => this.onIsMicroserviceChanged());
+
+        jq('#autoProvOwnerAssignMe')
+            .click(e => {
+                e.preventDefault();
+                this.onAssignMeClick();
+            });
+
+        // jq('.yui-button.yui-push-button.submit-button.primary button')
+        //     .click(_ => this.onGenScriptClick());
+        //
+        // jq('.yui-button.yui-push-button.submit-button.primary').parent().find('textarea')
+        //     .change(_ => this.onGenScriptClick());
 
         this.populateTechStackDropdown();
         this.onReleaseSelectionChanged();
@@ -432,6 +808,13 @@ class PipelineGenerator {
         this.uiLoaded = true;
     }
 
+    // onGenScriptClick() {
+    //     let v = jq('#prototypeText_id9').val();
+    // }
+
+    isEnterPressed(e) {
+        return e.which === 13;
+    }
 }
 
 
