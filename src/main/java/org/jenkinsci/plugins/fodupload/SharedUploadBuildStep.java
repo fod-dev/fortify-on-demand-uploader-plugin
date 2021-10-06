@@ -1,13 +1,16 @@
 package org.jenkinsci.plugins.fodupload;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
@@ -477,6 +480,7 @@ public class SharedUploadBuildStep {
                 String scanCentralPath = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
+                
                 // zips the file in a temporary location
                 File payload = Utils.createZipFile(technologyStack, workspaceModified, logger);
                 if (payload.length() == 0) {
@@ -586,4 +590,90 @@ public class SharedUploadBuildStep {
     public int setScanId(int newScanId) {
         return scanId = newScanId;
     }
+
+    public boolean packageScanCentral(FilePath workspace, FilePath scanCentralLocation, FilePath outputLocation, PrintStream logger, Run<?, ?> build) {
+        File dir = new File(String.valueOf(workspace));
+        BufferedReader stdInputVersion = null, stdInput = null;
+        try {
+            //version check
+            String scanCentralbatLocation = Paths.get(String.valueOf(scanCentralLocation)).resolve("scancentral.bat").toString();
+            ArrayList scanCentralVersionCommandList = new ArrayList<>();
+            scanCentralVersionCommandList.add(scanCentralbatLocation);
+            scanCentralVersionCommandList.add("--version");
+            Process pVersion = runProcessBuilder(scanCentralVersionCommandList, scanCentralLocation);
+
+            stdInputVersion = new BufferedReader(new InputStreamReader(
+                    pVersion.getInputStream()));
+            String versionLine = null;
+            String scanCentralVersion = null;
+            while ((versionLine = stdInputVersion.readLine()) != null) {
+                if (versionLine.contains("version")) {
+
+                    Pattern versionPattern = Pattern.compile("(?<=version:  ).*");
+                    Matcher m = versionPattern.matcher(versionLine);
+                    if (m.find()) {
+                        scanCentralVersion = m.group().trim();
+                        ComparableVersion minScanCentralVersion = new ComparableVersion("20.2.0.0019");
+                        ComparableVersion userScanCentralVersion = new ComparableVersion(scanCentralVersion);
+                        if (userScanCentralVersion.compareTo(minScanCentralVersion) < 0) {
+                            logger.println("The supplied scan central version is outdated . Please upgrade to higher version and try again !!");
+                            build.setResult(Result.FAILURE);
+                        } else {
+                            String outputZipFolderPath = Paths.get(String.valueOf(outputLocation)).resolve("output.zip").toString();
+                            ArrayList scanCentralPackageCommandList = new ArrayList<>();
+                            scanCentralPackageCommandList.add(scanCentralbatLocation);
+                            scanCentralPackageCommandList.add("package");
+                            scanCentralPackageCommandList.add("--bt");
+                            scanCentralPackageCommandList.add("mvn");
+                            scanCentralPackageCommandList.add("--o");
+                            scanCentralPackageCommandList.add(outputZipFolderPath);
+                            Process scanCentralProcess = runProcessBuilder(scanCentralPackageCommandList, workspace);
+                            stdInput = new BufferedReader(new InputStreamReader(scanCentralProcess.getInputStream()));
+                            String s = null;
+                            while ((s = stdInput.readLine()) != null) {
+                                logger.println(s);
+                            }
+                            int exitCode = scanCentralProcess.waitFor();
+                            logger.println(versionLine);
+                            if (exitCode != 0) {
+                                logger.println("Errors executing Scan Central. Exiting with errorcode : " + exitCode);
+                                build.setResult(Result.FAILURE);
+                            } else {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        } catch (IOException | InterruptedException e) {
+            logger.println(String.format("Failed executing scan central : ", e));
+        } finally {
+            try {
+                if (stdInputVersion != null) {
+                    stdInputVersion.close();
+                }
+                if (stdInput != null) {
+                    stdInput.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public Process runProcessBuilder(ArrayList cmdList, FilePath directoryLocation) throws IOException {
+        try {
+            ProcessBuilder pb = new ProcessBuilder(cmdList);
+            pb.directory(new File(String.valueOf(directoryLocation)));
+            Process p = pb.start();
+            System.out.println(pb.redirectErrorStream());
+            pb.redirectErrorStream(true);
+            return p;
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
 }
