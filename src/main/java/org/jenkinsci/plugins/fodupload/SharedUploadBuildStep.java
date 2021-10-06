@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.fodupload;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -477,25 +478,41 @@ public class SharedUploadBuildStep {
 
                     technologyStack = staticScanSetup.getTechnologyStack();
                 }
-                String scanCentralPath = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
-                
-                // zips the file in a temporary location
-                File payload = Utils.createZipFile(technologyStack, workspaceModified, logger);
-                if (payload.length() == 0) {
+                File payload;
 
-                    boolean deleteSuccess = payload.delete();
-                    if (!deleteSuccess) {
-                        logger.println("Unable to delete empty payload.");
+                if (model.getSelectedScanCentralBuildType() == FodEnums.SelectedScanCentralBuildType.None.name()) {
+                    // zips the file in a temporary location
+                    payload = Utils.createZipFile(technologyStack, workspaceModified, logger);
+                    if (payload.length() == 0) {
+                        boolean deleteSuccess = payload.delete();
+                        if (!deleteSuccess) {
+                            logger.println("Unable to delete empty payload.");
+                        }
+
+                        logger.println("Source is empty for given Technology Stack and Language Level.");
+                        build.setResult(Result.FAILURE);
+                        return;
                     }
 
-                    logger.println("Source is empty for given Technology Stack and Language Level.");
-                    build.setResult(Result.FAILURE);
-                    return;
+                    model.setPayload(payload);
+                } else {
+                    FilePath scanCentralPath = new FilePath(new File(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath()));
+                    Path scPackPath = packageScanCentral(workspaceModified, scanCentralPath, workspace, model, logger, build);
+
+                    if (scPackPath != null) {
+                        payload = new File(scPackPath.toString());
+
+                        if (!payload.exists()) {
+                            build.setResult(Result.FAILURE);
+                            return;
+                        }
+
+                        model.setPayload(payload);
+                    } else return;
                 }
 
-                model.setPayload(payload);
 
                 String notes = String.format("[%d] %s - Assessment submitted from Jenkins FoD Plugin",
                         build.getNumber(),
@@ -503,8 +520,8 @@ public class SharedUploadBuildStep {
 
                 StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, model, notes);
                 boolean deleted = payload.delete();
-
                 boolean isWarningSettingEnabled = model.getInProgressBuildResultType().equalsIgnoreCase(InProgressBuildResultType.WarnBuild.getValue());
+
                 /**
                  * If(able to contact api) {
                  *      if(Scan is allowed to start && the uploaded file is deleted) {
@@ -591,9 +608,9 @@ public class SharedUploadBuildStep {
         return scanId = newScanId;
     }
 
-    public boolean packageScanCentral(FilePath workspace, FilePath scanCentralLocation, FilePath outputLocation, PrintStream logger, Run<?, ?> build) {
-        File dir = new File(String.valueOf(workspace));
+    private Path packageScanCentral(FilePath srcLocation, FilePath scanCentralLocation, FilePath outputLocation, JobModel job, PrintStream logger, Run<?, ?> build) {
         BufferedReader stdInputVersion = null, stdInput = null;
+
         try {
             //version check
             String scanCentralbatLocation = Paths.get(String.valueOf(scanCentralLocation)).resolve("scancentral.bat").toString();
@@ -611,41 +628,86 @@ public class SharedUploadBuildStep {
 
                     Pattern versionPattern = Pattern.compile("(?<=version:  ).*");
                     Matcher m = versionPattern.matcher(versionLine);
+
                     if (m.find()) {
                         scanCentralVersion = m.group().trim();
+
                         ComparableVersion minScanCentralVersion = new ComparableVersion("20.2.0.0019");
                         ComparableVersion userScanCentralVersion = new ComparableVersion(scanCentralVersion);
+
                         if (userScanCentralVersion.compareTo(minScanCentralVersion) < 0) {
                             logger.println("The supplied scan central version is outdated . Please upgrade to higher version and try again !!");
                             build.setResult(Result.FAILURE);
                         } else {
-                            String outputZipFolderPath = Paths.get(String.valueOf(outputLocation)).resolve("output.zip").toString();
+                            Path outputZipFolderPath = Paths.get(String.valueOf(outputLocation)).resolve("output.zip");
                             ArrayList scanCentralPackageCommandList = new ArrayList<>();
+
                             scanCentralPackageCommandList.add(scanCentralbatLocation);
                             scanCentralPackageCommandList.add("package");
                             scanCentralPackageCommandList.add("--bt");
-                            scanCentralPackageCommandList.add("mvn");
+
+                            FodEnums.SelectedScanCentralBuildType buildType = FodEnums.SelectedScanCentralBuildType.valueOf(model.getSelectedScanCentralBuildType());
+
+                            switch (buildType) {
+                                case Gradle:
+                                    scanCentralPackageCommandList.add("gradle");
+                                    model.getScanCentralIncludeTests();
+                                    model.getScanCentralSkipBuild();
+                                    model.getScanCentralBuildCommand();
+                                    model.getScanCentralBuildFile();
+                                    break;
+                                case Maven:
+                                    scanCentralPackageCommandList.add("mvn");
+                                    model.getScanCentralIncludeTests();
+                                    model.getScanCentralSkipBuild();
+                                    model.getScanCentralBuildCommand();
+                                    model.getScanCentralBuildFile();
+                                    break;
+                                case MSBuild:
+                                    scanCentralPackageCommandList.add("msbuild");
+                                    model.getScanCentralBuildCommand();
+                                    model.getScanCentralBuildFile();
+                                    break;
+                                case Python:
+                                    scanCentralPackageCommandList.add("none");
+                                    model.getScanCentralVirtualEnv();
+                                    model.getScanCentralRequirementFile();
+                                    model.getScanCentralBuildToolVersion();
+                                    break;
+                                case PHP:
+                                    scanCentralPackageCommandList.add("none");
+                                    model.getScanCentralBuildToolVersion();
+                                    break;
+                            }
+
+
                             scanCentralPackageCommandList.add("--o");
-                            scanCentralPackageCommandList.add(outputZipFolderPath);
-                            Process scanCentralProcess = runProcessBuilder(scanCentralPackageCommandList, workspace);
+                            scanCentralPackageCommandList.add(outputZipFolderPath.toString());
+
+                            Process scanCentralProcess = runProcessBuilder(scanCentralPackageCommandList, srcLocation);
                             stdInput = new BufferedReader(new InputStreamReader(scanCentralProcess.getInputStream()));
                             String s = null;
+
                             while ((s = stdInput.readLine()) != null) {
                                 logger.println(s);
                             }
+
                             int exitCode = scanCentralProcess.waitFor();
+
                             logger.println(versionLine);
+
                             if (exitCode != 0) {
                                 logger.println("Errors executing Scan Central. Exiting with errorcode : " + exitCode);
                                 build.setResult(Result.FAILURE);
                             } else {
-                                return true;
+                                return outputZipFolderPath;
                             }
                         }
                     }
                 }
             }
-            return false;
+
+            return null;
         } catch (IOException | InterruptedException e) {
             logger.println(String.format("Failed executing scan central : ", e));
         } finally {
@@ -660,10 +722,20 @@ public class SharedUploadBuildStep {
                 e.printStackTrace();
             }
         }
-        return false;
+        return null;
     }
 
-    public Process runProcessBuilder(ArrayList cmdList, FilePath directoryLocation) throws IOException {
+    private String cleanMsBuildCommand(String cmd) {
+        if (!Utils.isNullOrEmpty(cmd)) {
+            StringBuilder result = new StringBuilder();
+
+
+        }
+
+        return null;
+    }
+
+    private Process runProcessBuilder(ArrayList cmdList, FilePath directoryLocation) throws IOException {
         try {
             ProcessBuilder pb = new ProcessBuilder(cmdList);
             pb.directory(new File(String.valueOf(directoryLocation)));
@@ -675,5 +747,6 @@ public class SharedUploadBuildStep {
             throw e;
         }
     }
+
 
 }
