@@ -651,51 +651,47 @@ public class SharedUploadBuildStep {
                             switch (buildType) {
                                 case Gradle:
                                     scanCentralPackageCommandList.add("gradle");
-                                    model.getScanCentralIncludeTests();
-                                    model.getScanCentralSkipBuild();
-                                    model.getScanCentralBuildCommand();
-                                    model.getScanCentralBuildFile();
+                                    if(model.getScanCentralIncludeTests()) scanCentralPackageCommandList.add("--include-test");
+                                    if(model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(model.getScanCentralBuildCommand()); }
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
                                     break;
                                 case Maven:
                                     scanCentralPackageCommandList.add("mvn");
-                                    model.getScanCentralIncludeTests();
-                                    model.getScanCentralSkipBuild();
-                                    model.getScanCentralBuildCommand();
-                                    model.getScanCentralBuildFile();
+                                    if(model.getScanCentralIncludeTests()) scanCentralPackageCommandList.add("--include-test");
+                                    if(model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(model.getScanCentralBuildCommand()); }
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
                                     break;
                                 case MSBuild:
                                     scanCentralPackageCommandList.add("msbuild");
-                                    model.getScanCentralBuildCommand();
-                                    model.getScanCentralBuildFile();
+                                    if(model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(transformMsBuildCommand(model.getScanCentralBuildCommand())); }
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
+                                    else { logger.println("Build File is a required field for msbuild build type. Please fill in the .sln file name in the current source folder "); build.setResult(Result.FAILURE);}
                                     break;
                                 case Python:
                                     scanCentralPackageCommandList.add("none");
-                                    model.getScanCentralVirtualEnv();
-                                    model.getScanCentralRequirementFile();
-                                    model.getScanCentralBuildToolVersion();
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralVirtualEnv())){scanCentralPackageCommandList.add("--python-virtual-env"); scanCentralPackageCommandList.add(model.getScanCentralVirtualEnv());};
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralRequirementFile())){scanCentralPackageCommandList.add("--python-requirements"); scanCentralPackageCommandList.add(model.getScanCentralRequirementFile());};
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildToolVersion())){scanCentralPackageCommandList.add("--python-version"); scanCentralPackageCommandList.add(model.getScanCentralBuildToolVersion());};
                                     break;
                                 case PHP:
                                     scanCentralPackageCommandList.add("none");
-                                    model.getScanCentralBuildToolVersion();
+                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildToolVersion())){scanCentralPackageCommandList.add("--php-version"); scanCentralPackageCommandList.add(model.getScanCentralBuildToolVersion());};
                                     break;
                             }
-
-
                             scanCentralPackageCommandList.add("--o");
                             scanCentralPackageCommandList.add(outputZipFolderPath.toString());
 
                             Process scanCentralProcess = runProcessBuilder(scanCentralPackageCommandList, srcLocation);
                             stdInput = new BufferedReader(new InputStreamReader(scanCentralProcess.getInputStream()));
                             String s = null;
-
                             while ((s = stdInput.readLine()) != null) {
                                 logger.println(s);
                             }
-
                             int exitCode = scanCentralProcess.waitFor();
-
                             logger.println(versionLine);
-
                             if (exitCode != 0) {
                                 logger.println("Errors executing Scan Central. Exiting with errorcode : " + exitCode);
                                 build.setResult(Result.FAILURE);
@@ -706,7 +702,6 @@ public class SharedUploadBuildStep {
                     }
                 }
             }
-
             return null;
         } catch (IOException | InterruptedException e) {
             logger.println(String.format("Failed executing scan central : ", e));
@@ -725,13 +720,19 @@ public class SharedUploadBuildStep {
         return null;
     }
 
-    private String cleanMsBuildCommand(String cmd) {
+    private String transformMsBuildCommand(String cmd) {
         if (!Utils.isNullOrEmpty(cmd)) {
-            StringBuilder result = new StringBuilder();
-
-
+            String[] arrOfCmds = cmd.split(" ");
+            StringBuilder transformedCommands = new StringBuilder();
+            for(String command : arrOfCmds)
+            {
+                if (command.charAt(0) == '-') {
+                    command = '/' + command.substring(1);
+                }
+                transformedCommands.append(command).append(" ");
+            }
+            return transformedCommands.substring(0, transformedCommands.length() - 1);
         }
-
         return null;
     }
 
@@ -747,6 +748,5 @@ public class SharedUploadBuildStep {
             throw e;
         }
     }
-
 
 }
