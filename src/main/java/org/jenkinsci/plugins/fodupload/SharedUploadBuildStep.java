@@ -481,8 +481,8 @@ public class SharedUploadBuildStep {
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
                 File payload;
-
-                if (model.getSelectedScanCentralBuildType() == FodEnums.SelectedScanCentralBuildType.None.name()) {
+                if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
+                    logger.println("I am in if");
                     // zips the file in a temporary location
                     payload = Utils.createZipFile(technologyStack, workspaceModified, logger);
                     if (payload.length() == 0) {
@@ -495,8 +495,6 @@ public class SharedUploadBuildStep {
                         build.setResult(Result.FAILURE);
                         return;
                     }
-
-                    model.setPayload(payload);
                 } else {
                     FilePath scanCentralPath = new FilePath(new File(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath()));
                     Path scPackPath = packageScanCentral(workspaceModified, scanCentralPath, workspace, model, logger, build);
@@ -509,11 +507,11 @@ public class SharedUploadBuildStep {
                             return;
                         }
 
-                        model.setPayload(payload);
+
                     } else return;
                 }
 
-
+                model.setPayload(payload);
                 String notes = String.format("[%d] %s - Assessment submitted from Jenkins FoD Plugin",
                         build.getNumber(),
                         build.getDisplayName());
