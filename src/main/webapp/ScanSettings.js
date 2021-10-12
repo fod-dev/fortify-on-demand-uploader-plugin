@@ -228,6 +228,7 @@ class ScanSettings {
     }
 
     onTechStackChanged() {
+        // ToDo: turn spinner on, why did Aish get a lag
         let ts = this.techStacks[jq('#technologyStackSelectList').val()];
         let llsel = jq('#languageLevelSelectList');
         let llr = jq('.fode-row-langLev');

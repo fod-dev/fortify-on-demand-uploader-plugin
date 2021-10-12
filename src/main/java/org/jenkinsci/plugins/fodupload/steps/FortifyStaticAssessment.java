@@ -2,25 +2,22 @@ package org.jenkinsci.plugins.fodupload.steps;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
 import com.google.common.collect.ImmutableSet;
 
-import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.fodupload.ApiConnectionFactory;
 import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.SharedUploadBuildStep;
 import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
-import org.jenkinsci.plugins.fodupload.controllers.AssessmentTypesController;
-import org.jenkinsci.plugins.fodupload.controllers.LookupItemsController;
-import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
-import org.jenkinsci.plugins.fodupload.controllers.UsersController;
+import org.jenkinsci.plugins.fodupload.controllers.*;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
+import org.jenkinsci.plugins.fodupload.models.response.AssessmentTypeEntitlementsForAutoProv;
+import org.jenkinsci.plugins.fodupload.models.response.GetStaticScanSetupResponse;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
@@ -42,7 +39,6 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import hudson.util.Secret;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
@@ -662,6 +658,32 @@ public class FortifyStaticAssessment extends FortifyStep {
                 AssessmentTypesController assessmentTypesController = new AssessmentTypesController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(assessmentTypesController.getStaticAssessmentTypeEntitlements(releaseId));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @JavaScriptMethod
+        public String retrieveAssessmentTypeEntitlementsForAutoProv(String appName, String relName, JSONObject authModelObject) {
+            try {
+                AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel);
+                ReleaseController releases = new ReleaseController(apiConnection, null, Utils.createCorrelationId());
+                AssessmentTypesController assessments = new AssessmentTypesController(apiConnection, null, Utils.createCorrelationId());
+                Integer relId = releases.getReleaseIdByName(appName.trim(), relName.trim());
+                AssessmentTypeEntitlementsForAutoProv result = null;
+
+                if (relId == null) {
+                    result = new AssessmentTypeEntitlementsForAutoProv(null, assessments.getStaticAssessmentTypeEntitlements(), null);
+                } else {
+                    StaticScanController staticScanController = new StaticScanController(apiConnection, null, Utils.createCorrelationId());
+                    GetStaticScanSetupResponse settings = staticScanController.getStaticScanSettings(relId);
+
+                    result = new AssessmentTypeEntitlementsForAutoProv(relId, assessments.getStaticAssessmentTypeEntitlements(relId), settings);
+                }
+
+                return Utils.createResponseViewModel(result);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
