@@ -490,7 +490,6 @@ public class SharedUploadBuildStep {
                         if (!deleteSuccess) {
                             logger.println("Unable to delete empty payload.");
                         }
-
                         logger.println("Source is empty for given Technology Stack and Language Level.");
                         build.setResult(Result.FAILURE);
                         return;
@@ -508,7 +507,11 @@ public class SharedUploadBuildStep {
                         }
 
 
-                    } else return;
+                    } else {
+                        logger.println("Scan Central package output not found.");
+                        build.setResult(Result.FAILURE);
+                        return;
+                    }
                 }
 
                 model.setPayload(payload);
@@ -663,7 +666,6 @@ public class SharedUploadBuildStep {
                                     break;
                                 case MSBuild:
                                     scanCentralPackageCommandList.add("msbuild");
-                                    if(model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
                                     if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(transformMsBuildCommand(model.getScanCentralBuildCommand())); }
                                     if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
                                     else { logger.println("Build File is a required field for msbuild build type. Please fill in the .sln file name in the current source folder "); build.setResult(Result.FAILURE);}
