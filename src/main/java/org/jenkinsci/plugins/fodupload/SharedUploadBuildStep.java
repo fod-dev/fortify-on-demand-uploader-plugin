@@ -481,6 +481,8 @@ public class SharedUploadBuildStep {
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
                 File payload;
+                logger.println("Selected Scan Central Type: "+ model.getSelectedScanCentralBuildType());
+                logger.println("Will i go to if : " + model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString()));
                 if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
                     logger.println("I am in if");
                     // zips the file in a temporary location
@@ -495,8 +497,11 @@ public class SharedUploadBuildStep {
                         return;
                     }
                 } else {
+                    logger.println("I am in else");
                     FilePath scanCentralPath = new FilePath(new File(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath()));
+                    logger.println("scan Central Path : " + scanCentralPath);
                     Path scPackPath = packageScanCentral(workspaceModified, scanCentralPath, workspace, model, logger, build);
+                    logger.println("scan Central Path : " + scPackPath);
 
                     if (scPackPath != null) {
                         payload = new File(scPackPath.toString());
@@ -505,8 +510,6 @@ public class SharedUploadBuildStep {
                             build.setResult(Result.FAILURE);
                             return;
                         }
-
-
                     } else {
                         logger.println("Scan Central package output not found.");
                         build.setResult(Result.FAILURE);
@@ -520,7 +523,7 @@ public class SharedUploadBuildStep {
                         build.getDisplayName());
 
                 StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, model, notes);
-                boolean deleted = payload.delete();
+              //  boolean deleted = payload.delete();
                 boolean isWarningSettingEnabled = model.getInProgressBuildResultType().equalsIgnoreCase(InProgressBuildResultType.WarnBuild.getValue());
 
                 /**
@@ -544,9 +547,9 @@ public class SharedUploadBuildStep {
                         logger.println("Scan Uploaded Successfully.");
                         setScanId(scanResponse.getScanId());
                         build.setResult(Result.SUCCESS);
-                        if (!deleted) {
+                       /* if (!deleted) {
                             logger.println("Unable to delete temporary zip file. Please manually delete file at location: " + payload.getAbsolutePath());
-                        }
+                        } */
                     } else if (isWarningSettingEnabled) {
                         logger.println("Fortify scan skipped because another scan is in progress.");
                         build.setResult(Result.UNSTABLE);
