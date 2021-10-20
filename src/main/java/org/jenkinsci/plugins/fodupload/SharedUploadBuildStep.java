@@ -481,10 +481,7 @@ public class SharedUploadBuildStep {
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
                 File payload;
-                logger.println("Selected Scan Central Type: "+ model.getSelectedScanCentralBuildType());
-                logger.println("Will i go to if : " + model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString()));
                 if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
-                    logger.println("I am in if");
                     // zips the file in a temporary location
                     payload = Utils.createZipFile(technologyStack, workspaceModified, logger);
                     if (payload.length() == 0) {
@@ -497,11 +494,10 @@ public class SharedUploadBuildStep {
                         return;
                     }
                 } else {
-                    logger.println("I am in else");
                     FilePath scanCentralPath = new FilePath(new File(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath()));
-                    logger.println("scan Central Path : " + scanCentralPath);
+                    logger.println("Scan Central Path : " + scanCentralPath);
                     Path scPackPath = packageScanCentral(workspaceModified, scanCentralPath, workspace, model, logger, build);
-                    logger.println("scan Central Path : " + scPackPath);
+                    logger.println("Packaged File Output Path : " + scPackPath);
 
                     if (scPackPath != null) {
                         payload = new File(scPackPath.toString());
@@ -523,7 +519,7 @@ public class SharedUploadBuildStep {
                         build.getDisplayName());
 
                 StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, model, notes);
-              //  boolean deleted = payload.delete();
+                //  boolean deleted = payload.delete();
                 boolean isWarningSettingEnabled = model.getInProgressBuildResultType().equalsIgnoreCase(InProgressBuildResultType.WarnBuild.getValue());
 
                 /**
@@ -617,17 +613,20 @@ public class SharedUploadBuildStep {
 
         try {
             //version check
+            logger.println("Checking ScanCentralVersion");
             String scanCentralbatLocation = Paths.get(String.valueOf(scanCentralLocation)).resolve("scancentral.bat").toString();
             ArrayList scanCentralVersionCommandList = new ArrayList<>();
             scanCentralVersionCommandList.add(scanCentralbatLocation);
             scanCentralVersionCommandList.add("--version");
             Process pVersion = runProcessBuilder(scanCentralVersionCommandList, scanCentralLocation);
-
             stdInputVersion = new BufferedReader(new InputStreamReader(
                     pVersion.getInputStream()));
             String versionLine = null;
             String scanCentralVersion = null;
+            Boolean isValidVersion = false;
+
             while ((versionLine = stdInputVersion.readLine()) != null) {
+                logger.println(versionLine);
                 if (versionLine.contains("version")) {
 
                     Pattern versionPattern = Pattern.compile("(?<=version:  ).*");
@@ -642,68 +641,113 @@ public class SharedUploadBuildStep {
                         if (userScanCentralVersion.compareTo(minScanCentralVersion) < 0) {
                             logger.println("The supplied scan central version is outdated . Please upgrade to higher version and try again !!");
                             build.setResult(Result.FAILURE);
-                        } else {
-                            Path outputZipFolderPath = Paths.get(String.valueOf(outputLocation)).resolve("output.zip");
-                            ArrayList scanCentralPackageCommandList = new ArrayList<>();
-
-                            scanCentralPackageCommandList.add(scanCentralbatLocation);
-                            scanCentralPackageCommandList.add("package");
-                            scanCentralPackageCommandList.add("--bt");
-
-                            FodEnums.SelectedScanCentralBuildType buildType = FodEnums.SelectedScanCentralBuildType.valueOf(model.getSelectedScanCentralBuildType());
-
-                            switch (buildType) {
-                                case Gradle:
-                                    scanCentralPackageCommandList.add("gradle");
-                                    if(model.getScanCentralIncludeTests()) scanCentralPackageCommandList.add("--include-test");
-                                    if(model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(model.getScanCentralBuildCommand()); }
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
-                                    break;
-                                case Maven:
-                                    scanCentralPackageCommandList.add("mvn");
-                                    if(model.getScanCentralIncludeTests()) scanCentralPackageCommandList.add("--include-test");
-                                    if(model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(model.getScanCentralBuildCommand()); }
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
-                                    break;
-                                case MSBuild:
-                                    scanCentralPackageCommandList.add("msbuild");
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) { scanCentralPackageCommandList.add("--build-command"); scanCentralPackageCommandList.add(transformMsBuildCommand(model.getScanCentralBuildCommand())); }
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildFile())){ scanCentralPackageCommandList.add("--build-file"); scanCentralPackageCommandList.add(model.getScanCentralBuildFile()); }
-                                    else { logger.println("Build File is a required field for msbuild build type. Please fill in the .sln file name in the current source folder "); build.setResult(Result.FAILURE);}
-                                    break;
-                                case Python:
-                                    scanCentralPackageCommandList.add("none");
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralVirtualEnv())){scanCentralPackageCommandList.add("--python-virtual-env"); scanCentralPackageCommandList.add(model.getScanCentralVirtualEnv());};
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralRequirementFile())){scanCentralPackageCommandList.add("--python-requirements"); scanCentralPackageCommandList.add(model.getScanCentralRequirementFile());};
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildToolVersion())){scanCentralPackageCommandList.add("--python-version"); scanCentralPackageCommandList.add(model.getScanCentralBuildToolVersion());};
-                                    break;
-                                case PHP:
-                                    scanCentralPackageCommandList.add("none");
-                                    if(!Utils.isNullOrEmpty(model.getScanCentralBuildToolVersion())){scanCentralPackageCommandList.add("--php-version"); scanCentralPackageCommandList.add(model.getScanCentralBuildToolVersion());};
-                                    break;
-                            }
-                            scanCentralPackageCommandList.add("--o");
-                            scanCentralPackageCommandList.add(outputZipFolderPath.toString());
-
-                            Process scanCentralProcess = runProcessBuilder(scanCentralPackageCommandList, srcLocation);
-                            stdInput = new BufferedReader(new InputStreamReader(scanCentralProcess.getInputStream()));
-                            String s = null;
-                            while ((s = stdInput.readLine()) != null) {
-                                logger.println(s);
-                            }
-                            int exitCode = scanCentralProcess.waitFor();
-                            logger.println(versionLine);
-                            if (exitCode != 0) {
-                                logger.println("Errors executing Scan Central. Exiting with errorcode : " + exitCode);
-                                build.setResult(Result.FAILURE);
-                            } else {
-                                return outputZipFolderPath;
-                            }
+                            return null;
                         }
+                        logger.println("ScanCentral Version " + scanCentralVersion);
+                        isValidVersion = true;
+                        break;
                     }
                 }
+            }
+            if (versionLine.contains("version")) {
+                Path outputZipFolderPath = Paths.get(String.valueOf(outputLocation)).resolve("output.zip");
+                ArrayList scanCentralPackageCommandList = new ArrayList<>();
+                scanCentralPackageCommandList.add(scanCentralbatLocation);
+                scanCentralPackageCommandList.add("package");
+                scanCentralPackageCommandList.add("--bt");
+
+                FodEnums.SelectedScanCentralBuildType buildType = FodEnums.SelectedScanCentralBuildType.valueOf(model.getSelectedScanCentralBuildType());
+
+                switch (buildType) {
+                    case Gradle:
+                        scanCentralPackageCommandList.add("gradle");
+                        if (model.getScanCentralIncludeTests()) scanCentralPackageCommandList.add("--include-test");
+                        if (model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) {
+                            scanCentralPackageCommandList.add("--build-command");
+                            scanCentralPackageCommandList.add(model.getScanCentralBuildCommand());
+                        }
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildFile())) {
+                            scanCentralPackageCommandList.add("--build-file");
+                            scanCentralPackageCommandList.add("\"" + model.getScanCentralBuildFile() + "\"");
+                        }
+                        break;
+                    case Maven:
+                        scanCentralPackageCommandList.add("mvn");
+                        if (model.getScanCentralIncludeTests()) scanCentralPackageCommandList.add("--include-test");
+                        if (model.getScanCentralSkipBuild()) scanCentralPackageCommandList.add("--skipBuild");
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) {
+                            scanCentralPackageCommandList.add("--build-command");
+                            scanCentralPackageCommandList.add(model.getScanCentralBuildCommand());
+                        }
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildFile())) {
+                            scanCentralPackageCommandList.add("--build-file");
+                            scanCentralPackageCommandList.add("\"" + model.getScanCentralBuildFile() + "\"");
+                        }
+                        break;
+                    case MSBuild:
+                        scanCentralPackageCommandList.add("msbuild");
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildCommand())) {
+                            scanCentralPackageCommandList.add("--build-command");
+                            scanCentralPackageCommandList.add(transformMsBuildCommand(model.getScanCentralBuildCommand()));
+                        }
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildFile())) {
+                            scanCentralPackageCommandList.add("--build-file");
+                            scanCentralPackageCommandList.add("\"" + model.getScanCentralBuildFile() + "\"");
+                        } else {
+                            logger.println("Build File is a required field for msbuild build type. Please fill in the .sln file name in the current source folder ");
+                            build.setResult(Result.FAILURE);
+                        }
+                        break;
+                    case Python:
+                        scanCentralPackageCommandList.add("none");
+                        if (!Utils.isNullOrEmpty(model.getScanCentralVirtualEnv())) {
+                            scanCentralPackageCommandList.add("--python-virtual-env");
+                            scanCentralPackageCommandList.add(model.getScanCentralVirtualEnv());
+                        }
+                        ;
+                        if (!Utils.isNullOrEmpty(model.getScanCentralRequirementFile())) {
+                            scanCentralPackageCommandList.add("--python-requirements");
+                            scanCentralPackageCommandList.add(model.getScanCentralRequirementFile());
+                        }
+                        ;
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildToolVersion())) {
+                            scanCentralPackageCommandList.add("--python-version");
+                            scanCentralPackageCommandList.add(model.getScanCentralBuildToolVersion());
+                        }
+                        ;
+                        break;
+                    case PHP:
+                        scanCentralPackageCommandList.add("none");
+                        if (!Utils.isNullOrEmpty(model.getScanCentralBuildToolVersion())) {
+                            scanCentralPackageCommandList.add("--php-version");
+                            scanCentralPackageCommandList.add(model.getScanCentralBuildToolVersion());
+                        }
+                        ;
+                        break;
+                }
+                scanCentralPackageCommandList.add("--o");
+                scanCentralPackageCommandList.add("\"" + outputZipFolderPath.toString() + "\"");
+
+                logger.println("Packaging ScanCentral\n" + String.join(" ", scanCentralPackageCommandList));
+
+                Process scanCentralProcess = runProcessBuilder(scanCentralPackageCommandList, srcLocation);
+                stdInput = new BufferedReader(new InputStreamReader(scanCentralProcess.getInputStream()));
+                String s = null;
+                while ((s = stdInput.readLine()) != null) {
+                    logger.println(s);
+                }
+                int exitCode = scanCentralProcess.waitFor();
+                logger.println(versionLine);
+                if (exitCode != 0) {
+                    logger.println("Errors executing Scan Central. Exiting with errorcode : " + exitCode);
+                    build.setResult(Result.FAILURE);
+                } else {
+                    return outputZipFolderPath;
+                }
+            } else {
+                build.setResult(Result.FAILURE);
+                logger.println("ScanCentral not found or invalid version");
             }
             return null;
         } catch (IOException | InterruptedException e) {
@@ -727,8 +771,7 @@ public class SharedUploadBuildStep {
         if (!Utils.isNullOrEmpty(cmd)) {
             String[] arrOfCmds = cmd.split(" ");
             StringBuilder transformedCommands = new StringBuilder();
-            for(String command : arrOfCmds)
-            {
+            for (String command : arrOfCmds) {
                 if (command.charAt(0) == '-') {
                     command = '/' + command.substring(1);
                 }
