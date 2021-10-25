@@ -8,10 +8,12 @@ import java.util.UUID;
 
 import com.google.common.collect.ImmutableSet;
 
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.fodupload.ApiConnectionFactory;
 import org.jenkinsci.plugins.fodupload.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.SharedUploadBuildStep;
+import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
 import org.jenkinsci.plugins.fodupload.controllers.*;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
@@ -39,6 +41,7 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.Secret;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
@@ -84,12 +87,12 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String applicationName;
     private String applicationType;
     private String releaseName;
-    private String owner;
+    private Integer owner;
     private String attributes;
     private String businessCriticality;
     private String sdlcStatus;
     private String microserviceName;
-    private String isMicroservice;
+    private Boolean isMicroservice;
 
     private SharedUploadBuildStep commonBuildStep;
 
@@ -317,12 +320,12 @@ public class FortifyStaticAssessment extends FortifyStep {
     }
 
     @SuppressWarnings("unused")
-    public String getOwner() {
+    public Integer getOwner() {
         return owner;
     }
 
     @DataBoundSetter
-    public void setOwner(String owner) {
+    public void setOwner(Integer owner) {
         this.owner = owner;
     }
 
@@ -367,12 +370,12 @@ public class FortifyStaticAssessment extends FortifyStep {
     }
 
     @SuppressWarnings("unused")
-    public String getIsMicroservice() {
+    public Boolean getIsMicroservice() {
         return isMicroservice;
     }
 
     @DataBoundSetter
-    public void setIsMicroservice(String isMicroservice) {
+    public void setIsMicroservice(Boolean isMicroservice) {
         this.isMicroservice = isMicroservice;
     }
 

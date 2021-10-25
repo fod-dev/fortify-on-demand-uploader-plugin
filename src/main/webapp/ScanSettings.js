@@ -71,6 +71,7 @@ class ScanSettings {
             apsel.val('2');
             apsel.prop('disabled', true);
         }
+
         this.onEntitlementChanged();
         // ToDo: set to unselected if selected value doesn't exist
     }
@@ -227,7 +228,6 @@ class ScanSettings {
     }
 
     onTechStackChanged() {
-        // ToDo: turn spinner on, why did Aish get a lag
         let ts = this.techStacks[jq('#technologyStackSelectList').val()];
         let llsel = jq('#languageLevelSelectList');
         let llr = jq('.fode-row-langLev');
@@ -248,6 +248,7 @@ class ScanSettings {
     }
 
     onLangLevelChanged(){
+        // Todo: When you switch to Python, Version remembers previous value. Could be problem
         let bt = jq('#scanCentralBuildTypeForm > select').val();
         let ssv = jq('#buildToolVersionForm > input');
 
