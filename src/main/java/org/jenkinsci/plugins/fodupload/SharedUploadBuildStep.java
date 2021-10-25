@@ -519,7 +519,7 @@ public class SharedUploadBuildStep {
                         build.getDisplayName());
 
                 StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, model, notes);
-                //  boolean deleted = payload.delete();
+                boolean deleted = payload.delete();
                 boolean isWarningSettingEnabled = model.getInProgressBuildResultType().equalsIgnoreCase(InProgressBuildResultType.WarnBuild.getValue());
 
                 /**
@@ -543,9 +543,9 @@ public class SharedUploadBuildStep {
                         logger.println("Scan Uploaded Successfully.");
                         setScanId(scanResponse.getScanId());
                         build.setResult(Result.SUCCESS);
-                       /* if (!deleted) {
+                        if (!deleted) {
                             logger.println("Unable to delete temporary zip file. Please manually delete file at location: " + payload.getAbsolutePath());
-                        } */
+                        }
                     } else if (isWarningSettingEnabled) {
                         logger.println("Fortify scan skipped because another scan is in progress.");
                         build.setResult(Result.UNSTABLE);
