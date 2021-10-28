@@ -140,7 +140,6 @@
                         <input type="textbox" name="userSelectedFrequencyType" id="frequencyId"></input>
                     </div>
                 </f:entry>
-
             </f:block>
         </f:section>
     </f:block>
