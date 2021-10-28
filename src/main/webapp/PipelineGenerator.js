@@ -456,7 +456,7 @@ class PipelineGenerator {
         let own = '';
 
         if (this.overrideAuth) {
-            un = jq('#userNameField').val();
+            un = jq('#usernameField').val();
             pat = jq('#patField').val();
             tid = jq('#tenantIdField').val();
         }
@@ -484,10 +484,11 @@ class PipelineGenerator {
             rel = jq('#autoProvRelName').val();
             sdlc = jq('#autoProvSdlc').val();
             own = numberOrNull(jq('#autoProvOwner').val());
+            let {entitlementId, frequencyId} = parseEntitlementDropdownValue(jq('#entitlementSelect').val());
 
             at = jq('#assessmentTypeSelect').val();
-            entId = jq('#entitlementSelect').val();
-            freqId = jq('#frequencySelect').val();
+            entId = entitlementId;
+            freqId = frequencyId;
             ap = this.getHiddenFieldSelectValue('#auditPreferenceSelect');
             ts = this.getHiddenFieldSelectValue('#technologyStackSelect');
             ll = this.getHiddenFieldSelectValue('#languageLevelSelect');
