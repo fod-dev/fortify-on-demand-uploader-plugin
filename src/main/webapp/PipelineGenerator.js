@@ -807,6 +807,9 @@ class PipelineGenerator {
                 this.onAssignMeClick();
             });
 
+        jq('#overrideReleaseSettings')
+            .change(_ => this.loadEntitlementOptions());
+
         // jq('.yui-button.yui-push-button.submit-button.primary button')
         //     .click(_ => this.onGenScriptClick());
         //
