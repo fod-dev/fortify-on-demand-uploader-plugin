@@ -15,8 +15,6 @@ import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.actions.CrossBuildAction;
 import org.jenkinsci.plugins.fodupload.controllers.*;
 import org.jenkinsci.plugins.fodupload.models.*;
-import org.jenkinsci.plugins.fodupload.models.response.AssessmentTypeEntitlementsForAutoProv;
-import org.jenkinsci.plugins.fodupload.models.response.GetStaticScanSetupResponse;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
@@ -466,7 +464,6 @@ public class FortifyStaticAssessment extends FortifyStep {
                 inProgressScanActionType,
                 inProgressBuildResultType,
                 scanCentral,
-                scanCentralIncludeTests != null && scanCentralIncludeTests.equalsIgnoreCase("true"),
                 scanCentralSkipBuild != null && scanCentralSkipBuild.equalsIgnoreCase("true"),
                 scanCentralBuildCommand,
                 scanCentralBuildFile,
@@ -551,7 +548,6 @@ public class FortifyStaticAssessment extends FortifyStep {
                 inProgressScanActionType,
                 inProgressBuildResultType,
                 scanCentral,
-                scanCentralIncludeTests != null && scanCentralIncludeTests.equalsIgnoreCase("true"),
                 scanCentralSkipBuild != null && scanCentralSkipBuild.equalsIgnoreCase("true"),
                 scanCentralBuildCommand,
                 scanCentralBuildFile,
