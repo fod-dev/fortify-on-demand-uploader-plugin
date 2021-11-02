@@ -205,7 +205,7 @@ class PipelineGenerator {
                     if (jqe.hasClass(scClass)) jqe.show();
                     else jqe.hide();
                 });
-            populateTechStackDropdown();
+            this.populateTechStackDropdown();
             switch (val) {
                 case 'msbuild':
                     if (this.overrideServerSettings) {
