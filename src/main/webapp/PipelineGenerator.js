@@ -211,12 +211,8 @@ class PipelineGenerator {
                     if (this.overrideServerSettings) {
                         closestRow(jq('#technologyStackForm')).show();
                         let currVal = this.techStacks[jq('#technologyStackSelect').val()];
-                        console.log('currVal :'+ currVal);
-                        console.log('')
                         if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelect').val(techStackConsts.none);
                         techStackFilter = this.isDotNetStack;
-                        console.log('currVal :'+ currVal);
-                        console.log('')
                     }
                     break;
                 case 'maven':
@@ -262,8 +258,6 @@ class PipelineGenerator {
     }
 
     onTechStackChanged() {
-        console.log('I am here in onTechStackChanged');
-        console.log('tech stack :'+ jq('#technologyStackSelect').val());
         let ts = this.techStacks[jq('#technologyStackSelect').val()];
         let llsel = jq('#languageLevelSelect');
         let llr = jq('.fodp-row-langLev');
@@ -272,9 +266,6 @@ class PipelineGenerator {
         llsel.find('option').not(':first').remove();
         llsel.find('option').first().prop('selected', true);
 
-        // noinspection EqualityComparisonWithCoercionJS
-        console.log(ts);
-        //console.log(doesTechStackHaslanguageLevels(ts.value));
         if (ts){
          var haslangLevels = (ts.value == techStackConsts.dotNet || ts.value == techStackConsts.java || ts.value == techStackConsts.python) ? true : false;
          if(! haslangLevels) llr.hide();
