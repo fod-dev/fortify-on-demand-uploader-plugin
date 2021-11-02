@@ -205,15 +205,18 @@ class PipelineGenerator {
                     if (jqe.hasClass(scClass)) jqe.show();
                     else jqe.hide();
                 });
-
+            populateTechStackDropdown();
             switch (val) {
                 case 'msbuild':
                     if (this.overrideServerSettings) {
                         closestRow(jq('#technologyStackForm')).show();
                         let currVal = this.techStacks[jq('#technologyStackSelect').val()];
-
+                        console.log('currVal :'+ currVal);
+                        console.log('')
                         if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelect').val(techStackConsts.none);
                         techStackFilter = this.isDotNetStack;
+                        console.log('currVal :'+ currVal);
+                        console.log('')
                     }
                     break;
                 case 'maven':
@@ -228,8 +231,8 @@ class PipelineGenerator {
                     break;
             }
         }
-
-        this.populateTechStackDropdown(techStackFilter);
+        if(techStackFilter)
+           this.populateTechStackDropdown(techStackFilter);
         this.onTechStackChanged();
     }
 
@@ -259,6 +262,8 @@ class PipelineGenerator {
     }
 
     onTechStackChanged() {
+        console.log('I am here in onTechStackChanged');
+        console.log('tech stack :'+ jq('#technologyStackSelect').val());
         let ts = this.techStacks[jq('#technologyStackSelect').val()];
         let llsel = jq('#languageLevelSelect');
         let llr = jq('.fodp-row-langLev');
@@ -268,18 +273,22 @@ class PipelineGenerator {
         llsel.find('option').first().prop('selected', true);
 
         // noinspection EqualityComparisonWithCoercionJS
-        if (ts && ! doesTechStackHaslanguageLevels(ts.value)) llr.hide();
-        else if (ts) {
-            for (let ll of ts.levels) {
-                llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
-            }
+        console.log(ts);
+        //console.log(doesTechStackHaslanguageLevels(ts.value));
+        if (ts){
+         var haslangLevels = (ts.value == techStackConsts.dotNet || ts.value == techStackConsts.java || ts.value == techStackConsts.python) ? true : false;
+         if(! haslangLevels) llr.hide();
+         else if (ts) {
+                     for (let ll of ts.levels) {
+                         llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
+                     }
+                 }
         }
+
 
         this.onLangLevelChanged();
     }
-    doesTechStackHaslanguageLevels(techStack){
-     return techStack == techStackConsts.dotNet || techStack == techStackConsts.java || techStack == techStackConsts.python) ? true : false;
-    }
+
 
     onLangLevelChanged() {
         let bt = jq('#scanCentralBuildTypeForm > select').val();
@@ -534,15 +543,7 @@ class PipelineGenerator {
                     break;
                 case 'PHP':
                      break;
-                default:
-                   sssb = this.getHiddenFieldCheckValue('#scanCentralSkipBuildCheck');
-                   ssbc = jq('#scanCentralBuildCommandInput').val();
-                   ssbf = jq('#scanCentralBuildFileInput').val();
-                   ssbtv = jq('#scanCentralBuildToolVersionInput').val();
-                   ssve = jq('#scanCentralVirtualEnvInput').val();
-                   ssrf = jq('#scanCentralRequirementFileInput').val();
-                   break;
-       }
+        }
 
         // Auth
         jq('#username').val(un);

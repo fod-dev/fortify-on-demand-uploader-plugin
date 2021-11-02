@@ -176,7 +176,7 @@ class ScanSettings {
                     if (jqe.hasClass(scClass)) jqe.show();
                     else jqe.hide();
                 });
-
+            this.populateTechStackDropdown();
             switch (val) {
                 case 'msbuild':
                     closestRow(jq('#technologyStackForm')).show();
@@ -198,8 +198,8 @@ class ScanSettings {
                     break;
             }
         }
-
-        this.populateTechStackDropdown(techStackFilter);
+        if(techStackFilter)
+           this.populateTechStackDropdown(techStackFilter);
         this.onTechStackChanged();
     }
 
@@ -244,10 +244,16 @@ class ScanSettings {
                 llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
             }
         }
-        if(ts && (ts.value == techStackConsts.python || ts.value == techStackConsts.java || ts.value == techStackConsts.dotNet))
-           this.onLangLevelChanged();
-        else
-           jq('#languageLevelForm').hide();
+        console.log(ts);
+
+        if(ts){
+            if (ts.value == techStackConsts.python || ts.value == techStackConsts.java || ts.value == techStackConsts.dotNet)
+                   this.onLangLevelChanged();
+            else{
+                   jq('#languageLevelFormElementId').hide();
+                   jq('#languageLevelForm').hide();
+             }
+        }
     }
 
     onLangLevelChanged(){
