@@ -221,7 +221,7 @@ public class StaticScanController extends ControllerBase {
         if (!Utils.isNullOrEmpty(uploadRequest.getFrequencyId()))
             builder.addQueryParameter("entitlementFrequencyType", uploadRequest.getFrequencyId());
 
-        if (!Utils.isNullOrEmpty(uploadRequest.getOpenSourceScan())) builder.addQueryParameter("doSonatypeScan", uploadRequest.getOpenSourceScan());
+        if (!Utils.isNullOrEmpty(uploadRequest.getOpenSourceScan())) builder.addQueryParameter("doSonatypeScan", Utils.isNullOrEmpty(uploadRequest.getOpenSourceScan())?"false":uploadRequest.getOpenSourceScan());
 
         if (!Utils.isNullOrEmpty(uploadRequest.getAuditPreference()))
             builder.addQueryParameter("auditPreferenceType", uploadRequest.getAuditPreference());

@@ -244,8 +244,10 @@ class ScanSettings {
                 llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
             }
         }
-
-        this.onLangLevelChanged();
+        if(ts && (ts.value == techStackConsts.python || ts.value == techStackConsts.java || ts.value == techStackConsts.dotNet))
+           this.onLangLevelChanged();
+        else
+           jq('#languageLevelForm').hide();
     }
 
     onLangLevelChanged(){

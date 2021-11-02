@@ -268,7 +268,7 @@ class PipelineGenerator {
         llsel.find('option').first().prop('selected', true);
 
         // noinspection EqualityComparisonWithCoercionJS
-        if (ts && ts.value == techStackConsts.php) llr.hide();
+        if (ts && ! doesTechStackHaslanguageLevels(ts.value)) llr.hide();
         else if (ts) {
             for (let ll of ts.levels) {
                 llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
@@ -276,6 +276,9 @@ class PipelineGenerator {
         }
 
         this.onLangLevelChanged();
+    }
+    doesTechStackHaslanguageLevels(techStack){
+     return techStack == techStackConsts.dotNet || techStack == techStackConsts.java || techStack == techStackConsts.python) ? true : false;
     }
 
     onLangLevelChanged() {
@@ -514,14 +517,32 @@ class PipelineGenerator {
 
         ss = jq('#scanCentralBuildTypeSelect').val();
 
-        if (ss !== 'None') {
-            sssb = this.getHiddenFieldCheckValue('#scanCentralSkipBuildCheck');
-            ssbc = jq('#scanCentralBuildCommandInput').val();
-            ssbf = jq('#scanCentralBuildFileInput').val();
-            ssbtv = jq('#scanCentralBuildToolVersionInput').val();
-            ssve = jq('#scanCentralVirtualEnvInput').val();
-            ssrf = jq('#scanCentralRequirementFileInput').val();
-        } else ss = '';
+        switch(ss){
+                case 'Gradle':
+                case 'Maven':
+                     sssb = this.getHiddenFieldCheckValue('#scanCentralSkipBuildCheck');
+                     ssbc = jq('#scanCentralBuildCommandInput').val();
+                     ssbf = jq('#scanCentralBuildFileInput').val();
+                    break;
+                case 'MSBuild':
+                     ssbc = jq('#scanCentralBuildCommandInput').val();
+                     ssbf = jq('#scanCentralBuildFileInput').val();
+                     break;
+                case 'Python':
+                     ssve = jq('#scanCentralVirtualEnvInput').val();
+                     ssrf = jq('#scanCentralRequirementFileInput').val();
+                    break;
+                case 'PHP':
+                     break;
+                default:
+                   sssb = this.getHiddenFieldCheckValue('#scanCentralSkipBuildCheck');
+                   ssbc = jq('#scanCentralBuildCommandInput').val();
+                   ssbf = jq('#scanCentralBuildFileInput').val();
+                   ssbtv = jq('#scanCentralBuildToolVersionInput').val();
+                   ssve = jq('#scanCentralVirtualEnvInput').val();
+                   ssrf = jq('#scanCentralRequirementFileInput').val();
+                   break;
+       }
 
         // Auth
         jq('#username').val(un);
