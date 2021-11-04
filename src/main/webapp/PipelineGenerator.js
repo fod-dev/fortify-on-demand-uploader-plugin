@@ -226,8 +226,7 @@ class PipelineGenerator {
                     break;
             }
         }
-        if(techStackFilter)
-          this.populateTechStackDropdown(techStackFilter);
+        if (techStackFilter) this.populateTechStackDropdown(techStackFilter);
         this.onTechStackChanged();
     }
 
@@ -265,20 +264,17 @@ class PipelineGenerator {
         llsel.find('option').not(':first').remove();
         llsel.find('option').first().prop('selected', true);
 
-        if (ts){
-         var haslangLevels = (ts.value == techStackConsts.dotNet || ts.value == techStackConsts.java || ts.value == techStackConsts.python) ? true : false;
-         if(! haslangLevels) llr.hide();
-         else if (ts) {
-                     for (let ll of ts.levels) {
-                         llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
-                     }
-                 }
+        // noinspection EqualityComparisonWithCoercionJS
+        if (ts && ts.value == techStackConsts.php) llr.hide();
+        else if (ts) {
+            for (let ll of ts.levels) {
+                llsel.append(`<option value="${ll.value}">${ll.text}</option>`);
+            }
         }
 
 
         this.onLangLevelChanged();
     }
-
 
     onLangLevelChanged() {
         let bt = jq('#scanCentralBuildTypeForm > select').val();
@@ -410,9 +406,9 @@ class PipelineGenerator {
         return v && v > 0 ? v : '';
     }
 
-    getHiddenFieldCheckValue(sel) {
-        return jq(sel).prop('checked') ? 'true' : '';
-    }
+     getHiddenFieldCheckValue(sel, def) {
+         return jq(sel).prop('checked') ? 'true' : (def || '');
+     }
 
     populateHiddenFields() {
         // Auth
@@ -494,7 +490,7 @@ class PipelineGenerator {
             ap = this.getHiddenFieldSelectValue('#auditPreferenceSelect');
             ts = this.getHiddenFieldSelectValue('#technologyStackSelect');
             ll = this.getHiddenFieldSelectValue('#languageLevelSelect');
-            son = this.getHiddenFieldCheckValue('#sonatypeEnabled');
+            son = this.getHiddenFieldCheckValue('#sonatypeEnabled', 'false');
         } else if (this.overrideServerSettings) {
             relId = relVal;
 
@@ -511,7 +507,7 @@ class PipelineGenerator {
             ap = this.getHiddenFieldSelectValue('#auditPreferenceSelect');
             ts = this.getHiddenFieldSelectValue('#technologyStackSelect');
             ll = this.getHiddenFieldSelectValue('#languageLevelSelect');
-            son = this.getHiddenFieldCheckValue('#sonatypeEnabled');
+            son = this.getHiddenFieldCheckValue('#sonatypeEnabled', 'false');
         } else relId = relVal;
 
         ss = jq('#scanCentralBuildTypeSelect').val();

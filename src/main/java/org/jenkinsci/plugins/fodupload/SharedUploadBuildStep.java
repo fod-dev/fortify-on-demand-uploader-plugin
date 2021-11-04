@@ -460,14 +460,14 @@ public class SharedUploadBuildStep {
 
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
 
-                // In Freestyle, the Scan Settings are saved to FOD and those are the source of truth, so in that case the model doesn't have Tech stack
-                if (model.getIsPipeline() && releaseId > 0) technologyStack = model.getTechnologyStack();
-                else if (releaseId <= 0 && model.loadBsiToken()) technologyStack = model.getBsiToken().getTechnologyStack();
-                else {
+                if (model.getIsPipeline() || releaseId > 0) technologyStack = model.getTechnologyStack();
+                else if ( releaseId <= 0 && model.loadBsiToken()) technologyStack = model.getBsiToken().getTechnologyStack();
+
+                if (Utils.isNullOrEmpty(technologyStack)) {
                     GetStaticScanSetupResponse staticScanSetup = staticScanController.getStaticScanSettingsOld(releaseId);
 
-                    if (staticScanSetup == null) {
-                        logger.println("No scan settings defined for release " + releaseId.toString());
+                    if (staticScanSetup == null || Utils.isNullOrEmpty(staticScanSetup.getTechnologyStack())) {
+                        logger.println("No scan settings defined for release " + releaseId);
                         build.setResult(Result.FAILURE);
                         return;
                     }
@@ -495,12 +495,12 @@ public class SharedUploadBuildStep {
                     try {
                         String scsetting = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
 
-                        if(Utils.isNullOrEmpty(scsetting)) {
+                        if (Utils.isNullOrEmpty(scsetting)) {
                             logger.println("ScanCentral location not set");
                             build.setResult(Result.FAILURE);
                         }
                         scanCentralPath = new FilePath(new File(scsetting));
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         logger.println("Failed to retrieve ScanCentral location");
                         build.setResult(Result.FAILURE);
                     }
