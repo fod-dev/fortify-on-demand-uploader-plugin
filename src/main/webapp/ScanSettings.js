@@ -160,7 +160,7 @@ class ScanSettings {
     onScanCentralChanged() {
         let val = jq('#scanCentralBuildTypeForm > select').val().toLowerCase();
         let techStackFilter;
-
+        this.populateTechStackDropdown();
         if (val === 'none') {
             jq('.fode-row-sc').hide();
             jq('.fode-row-nonsc').show();
@@ -176,7 +176,6 @@ class ScanSettings {
                     if (jqe.hasClass(scClass)) jqe.show();
                     else jqe.hide();
                 });
-            this.populateTechStackDropdown();
             switch (val) {
                 case 'msbuild':
                     closestRow(jq('#technologyStackForm')).show();

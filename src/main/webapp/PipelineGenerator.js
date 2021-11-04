@@ -189,7 +189,7 @@ class PipelineGenerator {
     onScanCentralChanged() {
         let val = jq('#scanCentralBuildTypeForm > select').val().toLowerCase();
         let techStackFilter;
-
+        this.populateTechStackDropdown();
         if (val === 'none') {
             jq('.fodp-row-sc').hide();
             if (this.overrideServerSettings) jq('.fodp-row-nonsc').show();
@@ -205,7 +205,6 @@ class PipelineGenerator {
                     if (jqe.hasClass(scClass)) jqe.show();
                     else jqe.hide();
                 });
-            this.populateTechStackDropdown();
             switch (val) {
                 case 'msbuild':
                     if (this.overrideServerSettings) {
@@ -228,7 +227,7 @@ class PipelineGenerator {
             }
         }
         if(techStackFilter)
-           this.populateTechStackDropdown(techStackFilter);
+          this.populateTechStackDropdown(techStackFilter);
         this.onTechStackChanged();
     }
 
@@ -533,6 +532,9 @@ class PipelineGenerator {
                      ssrf = jq('#scanCentralRequirementFileInput').val();
                     break;
                 case 'PHP':
+                     break;
+                case 'None':
+                     ss = '';
                      break;
         }
 

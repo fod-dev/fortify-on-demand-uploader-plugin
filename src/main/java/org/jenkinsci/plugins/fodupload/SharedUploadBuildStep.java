@@ -460,8 +460,9 @@ public class SharedUploadBuildStep {
 
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
 
-                if (model.getIsPipeline() || releaseId > 0) technologyStack = model.getTechnologyStack();
-                else if (model.loadBsiToken()) technologyStack = model.getBsiToken().getTechnologyStack();
+                // In Freestyle, the Scan Settings are saved to FOD and those are the source of truth, so in that case the model doesn't have Tech stack
+                if (model.getIsPipeline() && releaseId > 0) technologyStack = model.getTechnologyStack();
+                else if (releaseId <= 0 && model.loadBsiToken()) technologyStack = model.getBsiToken().getTechnologyStack();
                 else {
                     GetStaticScanSetupResponse staticScanSetup = staticScanController.getStaticScanSettingsOld(releaseId);
 
