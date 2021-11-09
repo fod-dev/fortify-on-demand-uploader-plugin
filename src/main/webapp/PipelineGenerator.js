@@ -391,6 +391,27 @@ class PipelineGenerator {
         else jq('.fodp-row-autoProv-micro').hide()
     }
 
+    onIsApplicationTypeChanged(){
+       let v = jq('#autoProvAppType').val();
+       if(v != 2)
+         {
+             jq('.fodp-row-autoProv-is-micro').show();
+             jq('#autoProvIsMicro').prop( "checked", false );
+             jq('#autoProvMicroName').val('');
+             /*$('#scanCentralBuildTypeSelect').append(`<option id= "PHP" value="PHP">
+                                                    PHP
+                                               </option>`);*/
+         }
+       else
+         {
+             jq('.fodp-row-autoProv-is-micro').hide();
+             jq('.fodp-row-autoProv-micro').hide();
+             jq('#autoProvIsMicro').val('');
+             jq('#autoProvMicroName').val('');
+         }
+    }
+
+
     async onAuthChanged() {
         if (!this.uiLoaded) await this.init();
         else {
@@ -811,7 +832,8 @@ class PipelineGenerator {
 
         jq('#autoProvIsMicro')
             .change(_ => this.onIsMicroserviceChanged());
-
+        jq('#autoProvAppType')
+            .change(_ => this.onIsApplicationTypeChanged());
         jq('#autoProvOwnerAssignMe')
             .click(e => {
                 e.preventDefault();

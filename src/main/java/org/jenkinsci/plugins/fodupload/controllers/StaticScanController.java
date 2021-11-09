@@ -71,8 +71,11 @@ public class StaticScanController extends ControllerBase {
 
             if (Utils.isNullOrEmpty(uploadRequest.getSelectedReleaseType())) {
                 if (uploadRequest.getIsPipeline()) {
-                    if (releaseId == null || releaseId < 1) releaseId = upsertApplicationAndRelease(uploadRequest);
-                    buildPipelineRequest(builder, releaseId, uploadRequest);
+                    if(!Utils.isNullOrEmpty(uploadRequest.getBsiTokenOriginal()) && releaseId <= 0) {
+                        buildBsiRequest(builder, uploadRequest);
+                    }
+                    else if ((releaseId == null || releaseId < 1)) releaseId = upsertApplicationAndRelease(uploadRequest);
+                    if(releaseId > 0 ) buildPipelineRequest(builder, releaseId, uploadRequest);
                 } else throw new IllegalArgumentException("Invalid job model");
             } else {
                 FodEnums.SelectedReleaseType type = FodEnums.SelectedReleaseType.valueOf(uploadRequest.getSelectedReleaseType());
