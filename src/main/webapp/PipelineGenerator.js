@@ -489,11 +489,10 @@ class PipelineGenerator {
                     attr += k + appAttributeKeyValueDelimiter + a.join(appAttributeValueDelimiter);
                 }
             }
-            if(jq('#autoProvAppType').val() == 1)
-            {
-               ismic = jq('#autoProvIsMicro').prop('checked');
-               if (ismic) mic = jq('#autoProvMicroName').val();
-            }
+
+            ismic = jq('#autoProvIsMicro').prop('checked');
+            if (ismic) mic = jq('#autoProvMicroName').val();
+
             rel = jq('#autoProvRelName').val();
             sdlc = jq('#autoProvSdlc').val();
             own = numberOrNull(jq('#autoProvOwner').val());
