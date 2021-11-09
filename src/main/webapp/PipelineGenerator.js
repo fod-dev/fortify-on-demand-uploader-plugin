@@ -396,18 +396,11 @@ class PipelineGenerator {
        if(v != 2)
          {
              jq('.fodp-row-autoProv-is-micro').show();
-             jq('#autoProvIsMicro').prop( "checked", false );
-             jq('#autoProvMicroName').val('');
-             /*$('#scanCentralBuildTypeSelect').append(`<option id= "PHP" value="PHP">
-                                                    PHP
-                                               </option>`);*/
          }
        else
          {
              jq('.fodp-row-autoProv-is-micro').hide();
              jq('.fodp-row-autoProv-micro').hide();
-             jq('#autoProvIsMicro').val('');
-             jq('#autoProvMicroName').val('');
          }
     }
 
@@ -496,10 +489,11 @@ class PipelineGenerator {
                     attr += k + appAttributeKeyValueDelimiter + a.join(appAttributeValueDelimiter);
                 }
             }
-
-            ismic = jq('#autoProvIsMicro').prop('checked');
-            if (ismic) mic = jq('#autoProvMicroName').val();
-
+            if(jq('#autoProvAppType').val() == 1)
+            {
+               ismic = jq('#autoProvIsMicro').prop('checked');
+               if (ismic) mic = jq('#autoProvMicroName').val();
+            }
             rel = jq('#autoProvRelName').val();
             sdlc = jq('#autoProvSdlc').val();
             own = numberOrNull(jq('#autoProvOwner').val());
