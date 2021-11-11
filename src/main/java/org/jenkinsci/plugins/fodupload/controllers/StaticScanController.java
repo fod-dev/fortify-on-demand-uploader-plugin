@@ -311,7 +311,7 @@ public class StaticScanController extends ControllerBase {
         }
     }
 
-    public List<FodAttributeMapItem> MapAttributesToFod(Map<String, String> attributes) throws IOException {
+    public List<FodAttributeMapItem> MapAttributesToFod(Map<String, String> attributes) throws Exception {
         // Todo: this should be injected
         AttributesController attrCntr = new AttributesController(apiConnection, logger, correlationId);
         List<AttributeDefinition> fodAttr = attrCntr.getAttributeDefinitions();
@@ -320,6 +320,18 @@ public class StaticScanController extends ControllerBase {
         for (Map.Entry<String, String> a : attributes.entrySet()) {
             for (AttributeDefinition fa : fodAttr) {
                 if (a.getKey().equals(fa.getName())) {
+                    if (fa.getAttributeDataType().equalsIgnoreCase("Picklist")) {
+                        ArrayList<String> pickListAttrValueStrings = new ArrayList<>();
+                        for (AttributeDefinition.PicklistValue pv : fa.getPicklistValues()) {
+                            pickListAttrValueStrings.add(pv.getName());
+                        }
+                        if(pickListAttrValueStrings.contains(a.getValue())){
+                            result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
+                            break;
+                        }else{
+                            throw new Exception("Invalid PickList Attribute Value for picklistAttribute : " + a.getKey());
+                        }
+                    }
                     result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
                     break;
                 }
