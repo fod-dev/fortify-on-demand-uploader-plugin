@@ -329,7 +329,7 @@ public class StaticScanController extends ControllerBase {
                             result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
                             break;
                         }else{
-                            throw new Exception(String.format("Invalid PickList Attribute Value for picklistAttribute : %s",a.getKey()));
+                            throw new Exception(String.format("Invalid PickList Attribute Value for Picklist Attribute : %s",a.getKey()));
                         }
                     }
                     result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
