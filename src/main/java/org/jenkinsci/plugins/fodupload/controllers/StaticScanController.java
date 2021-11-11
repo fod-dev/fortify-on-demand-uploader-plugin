@@ -16,6 +16,7 @@ import org.jenkinsci.plugins.fodupload.models.response.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StaticScanController extends ControllerBase {
 
@@ -316,6 +317,7 @@ public class StaticScanController extends ControllerBase {
         AttributesController attrCntr = new AttributesController(apiConnection, logger, correlationId);
         List<AttributeDefinition> fodAttr = attrCntr.getAttributeDefinitions();
         List<FodAttributeMapItem> result = new ArrayList<>();
+        List<String> invalidPickListAttributes  = new ArrayList<>();
 
         for (Map.Entry<String, String> a : attributes.entrySet()) {
             for (AttributeDefinition fa : fodAttr) {
@@ -325,19 +327,21 @@ public class StaticScanController extends ControllerBase {
                         for (AttributeDefinition.PicklistValue pv : fa.getPicklistValues()) {
                             pickListAttrValueStrings.add(pv.getName());
                         }
-                        if(pickListAttrValueStrings.contains(a.getValue())){
+                        if(pickListAttrValueStrings.contains(a.getValue()))
                             result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
-                            break;
-                        }else{
-                            throw new Exception(String.format("Invalid PickList Attribute Value for picklistAttribute : %s",a.getKey()));
-                        }
+                        else
+                            invalidPickListAttributes.add(a.getKey());
+
+                        break;
                     }
                     result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
                     break;
                 }
             }
         }
-
+        if(invalidPickListAttributes.size() > 0){
+            throw new Exception(String.format("Invalid PickList Attribute Values for the following Picklist Attribute/s : %s",invalidPickListAttributes.stream().collect(Collectors.joining(","))));
+        }
         return result;
     }
 
