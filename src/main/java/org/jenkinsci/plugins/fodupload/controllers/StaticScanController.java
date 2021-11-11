@@ -331,7 +331,6 @@ public class StaticScanController extends ControllerBase {
                             result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
                         else
                             invalidPickListAttributes.add(a.getKey());
-
                         break;
                     }
                     result.add(new FodAttributeMapItem(a.getKey(), a.getValue(), fa));
