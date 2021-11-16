@@ -40,19 +40,14 @@
 
     <developers>
         <developer>
-            <id>jamesmcbride</id>
-            <name>James McBride</name>
-            <email>james.mcbride@microfocus.com</email>
+            <id>abec</id>
+            <name>Alberto Bec</name>
+            <email>alberto.bec@microfocus.com</email>
         </developer>
         <developer>
-            <id>vetocohen</id>
-            <name>Vodrie Cohen</name>
-            <email>vodrie.cohen@microfocus.com</email>
-        </developer>
-        <developer>
-            <id>timsotack</id>
-            <name>Tim Sotack</name>
-            <email>tim.sotack@microfocus.com</email>
+            <id>aishkotni</id>
+            <name>Aishwarya Kotni</name>
+            <email>aishwarya.kotni@microfocus.com</email>
         </developer>
     </developers>
 
