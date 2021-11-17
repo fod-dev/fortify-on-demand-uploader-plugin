@@ -249,6 +249,8 @@ function partitionArray(arr, elementsPerPartition) {
 }
 
 function numberOrNull(str) {
+    if (typeof(str) === "number") return str;
+
     let res = Number(str);
 
     return Number.isInteger(res) ? res : null;
