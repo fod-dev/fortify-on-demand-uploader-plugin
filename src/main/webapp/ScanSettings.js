@@ -1,10 +1,5 @@
 const fodeRowSelector = '.fode-field-row, .fode-field-row-verr';
 
-const _auditPrefOption = {
-    automated: '<option value="2">Automated</option>',
-    manual: '<option value="1">Manual</option>'
-}
-
 class ScanSettings {
 
     constructor() {
@@ -48,7 +43,6 @@ class ScanSettings {
     async onAssessmentChanged(skipAuditPref) {
         let atval = jq('#ddAssessmentType').val();
         let entsel = jq('#entitlementSelectList');
-        let apsel = jq('#auditPreferenceSelectList');
         let at = this.assessments[atval];
 
         entsel.find('option,optgroup').remove();
@@ -73,12 +67,6 @@ class ScanSettings {
             }
         }
 
-        if (at && at.name === 'Static+ Assessment') apsel.prop('disabled', false);
-        else {
-            apsel.val('2');
-            apsel.prop('disabled', true);
-        }
-
         await this.onEntitlementChanged(skipAuditPref);
         // ToDo: set to unselected if selected value doesn't exist
     }
@@ -90,9 +78,7 @@ class ScanSettings {
         jq('#entitlementId').val(entitlementId);
         jq('#frequencyId').val(frequencyId);
         jq('#purchaseEntitlementsForm input').prop('checked', (entitlementId <= 0));
-        if (skipAuditPref !== true) {
-            await this.loadAuditPrefOptions(jq('#ddAssessmentType').val(), frequencyId);
-        }
+        if (skipAuditPref !== true) await this.loadAuditPrefOptions(jq('#ddAssessmentType').val(), frequencyId);
     }
 
     async loadAuditPrefOptions(assessmentType, frequencyId) {
@@ -136,7 +122,7 @@ class ScanSettings {
             apSel.prop('disabled', false);
         }
 
-        apCont.removeClass('spinner');
+        if (setSpinner) apCont.removeClass('spinner');
     }
 
     async loadEntitlementSettings(releaseChangedPayload) {
