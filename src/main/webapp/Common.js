@@ -28,6 +28,11 @@ const _scanCentralBuildTypes = {
     "Python": "Python"
 };
 
+const _auditPrefOption = {
+    automated: '<option value="2">Automated</option>',
+    manual: '<option value="1">Manual</option>'
+}
+
 function dispatchEvent(type, payload) {
     document.dispatchEvent(new CustomEvent(type, {detail: payload}));
 }
