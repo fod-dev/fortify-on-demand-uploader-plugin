@@ -10,6 +10,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
@@ -31,6 +32,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -483,7 +485,19 @@ public class SharedUploadBuildStep {
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
                 File payload;
 
-                if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
+                if (model.getIsPipeline() && model.getTargetIsScanCentralPackage()) {
+                    payload = new File(workspaceModified.toURI());
+
+                    if (!payload.exists()) {
+                        logger.println("ScanCentral Package file not found");
+                        build.setResult(Result.FAILURE);
+                        return;
+                    } else if(!FilenameUtils.getExtension(payload.getName()).toLowerCase(Locale.ROOT).equals("zip")) {
+                        logger.println("ScanCentral Package provided is not a zip file");
+                        build.setResult(Result.FAILURE);
+                        return;
+                    }
+                } else if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
 
                     if (ValidationUtils.isScanCentralRecommended(technologyStack)) {
                         logger.println("\nFortify recommends using ScanCentral Client to package code for comprehensive scan results.\n");
@@ -590,6 +604,9 @@ public class SharedUploadBuildStep {
             build.setResult(Result.FAILURE);
         } catch (IllegalArgumentException iae) {
             logger.println(iae.getMessage());
+            build.setResult(Result.FAILURE);
+        } catch (InterruptedException e) {
+            logger.println(e.getMessage());
             build.setResult(Result.FAILURE);
         } finally {
             if (apiConnection != null) {
