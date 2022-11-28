@@ -85,6 +85,7 @@ public class FortifyStaticAssessment extends FortifyStep {
     private String sdlcStatus;
     private String microserviceName;
     private Boolean isMicroservice;
+    private Boolean targetIsScanCentralPackage;
 
     private SharedUploadBuildStep commonBuildStep;
 
@@ -369,10 +370,19 @@ public class FortifyStaticAssessment extends FortifyStep {
     }
 
     @DataBoundSetter
+    public void setTargetIsScanCentralPackage(Boolean targetIsScanCentralPackage) {
+        this.targetIsScanCentralPackage = targetIsScanCentralPackage;
+    }
+
+    @SuppressWarnings("unused")
+    public Boolean getTargetIsScanCentralPackage() {
+        return targetIsScanCentralPackage;
+    }
+
+    @DataBoundSetter
     public void setIsMicroservice(Boolean isMicroservice) {
         this.isMicroservice = isMicroservice;
     }
-
 
     @SuppressWarnings("unused")
     public String getAssessmentType() {
@@ -499,7 +509,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 businessCriticality,
                 sdlcStatus,
                 microserviceName,
-                isMicroservice);
+                isMicroservice,
+                targetIsScanCentralPackage);
 
         return true;
     }
@@ -568,7 +579,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                 businessCriticality,
                 sdlcStatus,
                 microserviceName,
-                isMicroservice);
+                isMicroservice,
+                targetIsScanCentralPackage);
 
         commonBuildStep.perform(build, workspace, launcher, listener, correlationId);
         CrossBuildAction crossBuildAction = build.getAction(CrossBuildAction.class);

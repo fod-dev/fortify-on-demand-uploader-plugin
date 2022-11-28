@@ -34,6 +34,7 @@ public class JobModel {
     private String scanCentralRequirementFile;
 
     private Boolean isPipeline;
+    private Boolean targetIsScanCentralPackage;
     private String assessmentType;
     private String entitlementId;
     private String frequencyId;
@@ -95,6 +96,7 @@ public class JobModel {
                     String scanCentralVirtualEnv,
                     String scanCentralRequirementFile,
                     Boolean isPipeline,
+                    Boolean targetIsScanCentralPackage,
                     String assessmentType,
                     String entitlementId,
                     String frequencyId,
@@ -133,6 +135,7 @@ public class JobModel {
         this.scanCentralVirtualEnv = scanCentralVirtualEnv;
         this.scanCentralRequirementFile = scanCentralRequirementFile;
         this.isPipeline = isPipeline;
+        this.targetIsScanCentralPackage = targetIsScanCentralPackage;
         this.assessmentType = assessmentType;
         this.entitlementId = entitlementId;
         this.frequencyId = frequencyId;
@@ -239,8 +242,13 @@ public class JobModel {
     public String getScanCentralRequirementFile() {
         return scanCentralRequirementFile;
     }
+
     public Boolean getIsPipeline() {
         return isPipeline;
+    }
+
+    public Boolean getTargetIsScanCentralPackage() {
+        return isPipeline && targetIsScanCentralPackage;
     }
 
     public String getAssessmentType() {

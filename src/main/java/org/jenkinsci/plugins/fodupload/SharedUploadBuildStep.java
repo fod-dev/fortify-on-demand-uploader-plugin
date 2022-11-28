@@ -93,7 +93,7 @@ public class SharedUploadBuildStep {
                 scanCentralBuildToolVersion,
                 scanCentralVirtualEnv,
                 scanCentralRequirementFile,
-                false, null, null, null, null, null, null, null,
+                false, false, null, null, null, null, null, null, null,
                 false, null, null, null, null, null, null, null, null, null);
 
         authModel = new AuthenticationModel(overrideGlobalConfig,
@@ -137,7 +137,8 @@ public class SharedUploadBuildStep {
                                  String businessCriticality,
                                  String sdlcStatus,
                                  String microserviceName,
-                                 Boolean isMicroservice) {
+                                 Boolean isMicroservice,
+                                 Boolean targetIsScanCentralPackage) {
 
         model = new JobModel(releaseId,
                 bsiToken,
@@ -159,6 +160,7 @@ public class SharedUploadBuildStep {
                 scanCentralVirtualEnv,
                 scanCentralRequirementFile,
                 true,
+                targetIsScanCentralPackage,
                 assessmentType,
                 entitlementId,
                 frequencyId,
@@ -502,13 +504,15 @@ public class SharedUploadBuildStep {
                     FilePath scanCentralPath = null;
 
                     try {
+                        String scanCentralEnv = System.getenv("FOD-SCANCENTRAL");
                         String scsetting = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
 
-                        if (Utils.isNullOrEmpty(scsetting)) {
+                        if (!Utils.isNullOrEmpty(scanCentralEnv)) scanCentralPath = new FilePath(new File(scanCentralEnv));
+                        else if (!Utils.isNullOrEmpty(scsetting)) scanCentralPath = new FilePath(new File(scsetting));
+                        else {
                             logger.println("ScanCentral location not set");
                             build.setResult(Result.FAILURE);
                         }
-                        scanCentralPath = new FilePath(new File(scsetting));
                     } catch (Exception e) {
                         logger.println("Failed to retrieve ScanCentral location");
                         build.setResult(Result.FAILURE);
