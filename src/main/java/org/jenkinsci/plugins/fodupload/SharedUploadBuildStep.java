@@ -486,14 +486,15 @@ public class SharedUploadBuildStep {
                 File payload;
 
                 if (model.getIsPipeline() && model.getTargetIsScanCentralPackage()) {
+                    logger.println("Setting payload to be ScanCentral Package " + workspaceModified.toURI());
                     payload = new File(workspaceModified.toURI());
 
-                    if (!payload.exists()) {
-                        logger.println("ScanCentral Package file not found");
+                    if (!FilenameUtils.getExtension(payload.getName()).toLowerCase(Locale.ROOT).equals("zip")) {
+                        logger.println("ScanCentral Package provided is not a zip file");
                         build.setResult(Result.FAILURE);
                         return;
-                    } else if(!FilenameUtils.getExtension(payload.getName()).toLowerCase(Locale.ROOT).equals("zip")) {
-                        logger.println("ScanCentral Package provided is not a zip file");
+                    } else if (!payload.exists()) {
+                        logger.println("ScanCentral Package file not found");
                         build.setResult(Result.FAILURE);
                         return;
                     }
