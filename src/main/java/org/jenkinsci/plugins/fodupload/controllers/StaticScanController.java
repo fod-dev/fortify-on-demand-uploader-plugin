@@ -7,7 +7,7 @@ import hudson.util.IOUtils;
 import okhttp3.*;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.fodupload.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.Json;
 import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.models.*;
@@ -138,7 +138,7 @@ public class StaticScanController extends ControllerBase {
 
                 println(getLogTimestamp() + " Uploading fragment " + fragmentNumber);
                 // Get the response
-                Response response = apiConnection.getClient().newCall(request).execute();
+                Response response = apiConnection.getClient().execute(request);
 
                 if (response.code() == HttpStatus.SC_FORBIDDEN || response.code() == HttpStatus.SC_UNAUTHORIZED) {  // got logged out during polling so log back in
                     String raw = apiConnection.getRawBody(response);
@@ -395,7 +395,7 @@ public class StaticScanController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().newCall(request).execute();
+        Response response = apiConnection.getClient().execute(request);
 
         if (!response.isSuccessful()) {
             return null;

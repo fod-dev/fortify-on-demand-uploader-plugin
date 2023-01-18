@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
+import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.BsiToken;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
@@ -157,7 +158,7 @@ public class SharedPollingBuildStep {
         if (Utils.isNullOrEmpty(tenantId))
             return FormValidation.error("Tenant ID is null.");
 
-        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant");
+        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant", false, null);
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
     }
 
@@ -185,12 +186,12 @@ public class SharedPollingBuildStep {
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public void perform(Run<?, ?> run,
-                        FilePath filePath,
+                        FilePath workspace,
                         Launcher launcher,
                         TaskListener taskListener) throws InterruptedException, IOException {
 
         final PrintStream logger = taskListener.getLogger();
-
+        boolean isRemoteAgent = workspace.isRemote();
         
         // check to see if sensitive fields are encrypte. If not halt scan and recommend encryption.
         if(authModel != null)
@@ -248,7 +249,7 @@ public class SharedPollingBuildStep {
             return;
         }
 
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher);
 
         try {
 

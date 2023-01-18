@@ -23,9 +23,11 @@
  */
 package org.jenkinsci.plugins.fodupload;
 
+import hudson.Launcher;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
-//import org.jenkinsci.plugins.fodupload.FodApiConnection;
+//import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 //import org.jenkinsci.plugins.fodupload.models.JobModel;
@@ -40,7 +42,7 @@ import static org.jenkinsci.plugins.fodupload.Utils.isValidUrl;
 public class ApiConnectionFactory {
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    public static FodApiConnection createApiConnection(AuthenticationModel model) throws FormValidation {
+    public static FodApiConnection createApiConnection(AuthenticationModel model, boolean executeOnRemoteAgent, Launcher launcher) throws FormValidation {
         FodApiConnection apiConnection = null;
         if (GlobalConfiguration.all() != null && GlobalConfiguration.all().get(FodGlobalDescriptor.class) != null) {
             if (model.getOverrideGlobalConfig()) {
@@ -56,7 +58,8 @@ public class ApiConnectionFactory {
                         baseUrl,
                         apiUrl,
                         FodEnums.GrantType.PASSWORD,
-                        "api-tenant");
+                        "api-tenant",
+                        executeOnRemoteAgent, launcher);
 
             } else {
                 apiConnection = GlobalConfiguration.all().get(FodGlobalDescriptor.class).createFodApiConnection();

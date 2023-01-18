@@ -7,7 +7,7 @@ import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
-import org.jenkinsci.plugins.fodupload.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.models.AuditPreferenceOptionsModel;
 import org.jenkinsci.plugins.fodupload.models.FodApiFilterList;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
@@ -68,7 +68,7 @@ public class ReleaseController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().newCall(request).execute();
+        Response response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {  // got logged out during polling so log back in
             // Re-authenticate
@@ -120,13 +120,13 @@ public class ReleaseController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().newCall(request).execute();
+        Response response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
             // Re-authenticate
             apiConnection.authenticate();
             request = apiConnection.reauthenticateRequest(request);
-            response = apiConnection.getClient().newCall(request).execute();
+            response = apiConnection.getClient().execute(request);
 
             if (Utils.isUnauthorizedResponse(response)) {
                 return null;
@@ -178,13 +178,13 @@ public class ReleaseController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().newCall(request).execute();
+        Response response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
             // Re-authenticate
             apiConnection.authenticate();
             request = apiConnection.reauthenticateRequest(request);
-            response = apiConnection.getClient().newCall(request).execute();
+            response = apiConnection.getClient().execute(request);
 
             // if response is still unauthorized, even after re-authentication, return null to the caller, to signal polling failure.
             if (Utils.isUnauthorizedResponse(response)) {
@@ -236,7 +236,7 @@ public class ReleaseController extends ControllerBase {
                 .get()
                 .build();
 
-        Response response = apiConnection.getClient().newCall(request).execute();
+        Response response = apiConnection.getClient().execute(request);
 
         if (response.code() == org.apache.http.HttpStatus.SC_FORBIDDEN) {  // got logged out during polling so log back in
             // Re-authenticate

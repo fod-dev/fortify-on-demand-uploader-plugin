@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
+import org.jenkinsci.plugins.fodupload.FodApi.IHttpClient;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class TokenCacheManager {
         this.tokens = new HashMap<>();
     }
 
-    public synchronized String getToken(OkHttpClient client, String apiUrl, FodEnums.GrantType grantType, String scope, String id, String secret) throws IOException {
+    public synchronized String getToken(IHttpClient client, String apiUrl, FodEnums.GrantType grantType, String scope, String id, String secret) throws IOException {
         String key = buildCacheKey(apiUrl, grantType, scope, id, secret);
         clearCache();
 
@@ -48,7 +49,7 @@ public class TokenCacheManager {
         }
     }
 
-    private Token retrieveToken(OkHttpClient client, String apiUrl, FodEnums.GrantType grantType, String scope, String id, String secret) throws IOException {
+    private Token retrieveToken(IHttpClient client, String apiUrl, FodEnums.GrantType grantType, String scope, String id, String secret) throws IOException {
         RequestBody formBody = null;
         if (grantType == FodEnums.GrantType.CLIENT_CREDENTIALS) {
             formBody = new FormBody.Builder()
@@ -72,7 +73,7 @@ public class TokenCacheManager {
                 .url(apiUrl + "/oauth/token")
                 .post(formBody)
                 .build();
-        Response response = client.newCall(request).execute();
+        Response response = client.execute(request);
 
         if (!response.isSuccessful())
             throw new IOException("Unexpected code " + response);

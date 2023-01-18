@@ -12,6 +12,7 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
@@ -247,7 +248,7 @@ public class SharedUploadBuildStep {
             return FormValidation.error("Personal Access Token is empty!");
         if (Utils.isNullOrEmpty(tenantId))
             return FormValidation.error("Tenant ID is null.");
-        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant");
+        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant", false, null);
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
 
     }
@@ -327,13 +328,13 @@ public class SharedUploadBuildStep {
 
     @SuppressWarnings("unused")
     public static GenericListResponse<ApplicationApiResponse> customFillUserSelectedApplicationList(String searchTerm, int offset, int limit, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
         ApplicationsController applicationController = new ApplicationsController(apiConnection, null, null);
         return applicationController.getApplicationList(searchTerm, offset, limit);
     }
 
     public static org.jenkinsci.plugins.fodupload.models.Result<ApplicationApiResponse> customFillUserApplicationById(int applicationId, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
         ApplicationsController applicationsController = new ApplicationsController(apiConnection, null, null);
         org.jenkinsci.plugins.fodupload.models.Result<ApplicationApiResponse> result = applicationsController.getApplicationById(applicationId);
 
@@ -341,19 +342,19 @@ public class SharedUploadBuildStep {
     }
 
     public static List<MicroserviceApiResponse> customFillUserSelectedMicroserviceList(int applicationId, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
         ApplicationsController applicationController = new ApplicationsController(apiConnection, null, null);
         return applicationController.getMicroserviceListByApplication(applicationId);
     }
 
     public static GenericListResponse<ReleaseApiResponse> customFillUserSelectedReleaseList(int applicationId, int microserviceId, String searchTerm, Integer offset, Integer limit, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
         ApplicationsController applicationController = new ApplicationsController(apiConnection, null, null);
         return applicationController.getReleaseListByApplication(applicationId, microserviceId, searchTerm, offset, limit);
     }
 
     public static org.jenkinsci.plugins.fodupload.models.Result<ReleaseApiResponse> customFillUserReleaseById(int releaseId, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
         ApplicationsController applicationsController = new ApplicationsController(apiConnection, null, null);
         org.jenkinsci.plugins.fodupload.models.Result<ReleaseApiResponse> result = applicationsController.getReleaseById(releaseId);
 
@@ -396,6 +397,7 @@ public class SharedUploadBuildStep {
 
         final PrintStream logger = listener.getLogger();
         FodApiConnection apiConnection = null;
+        boolean isRemoteAgent = workspace.isRemote();
 
         try {
             taskListener.set(listener);
@@ -455,7 +457,7 @@ public class SharedUploadBuildStep {
 
             String technologyStack = null;
 
-            apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel());
+            apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher);
             if (apiConnection != null) {
                 apiConnection.authenticate();
 

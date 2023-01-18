@@ -5,9 +5,8 @@ import com.google.gson.reflect.TypeToken;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.jenkinsci.plugins.fodupload.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 // import org.jenkinsci.plugins.fodupload.models.response.GenericListResponse;
 import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
@@ -49,13 +48,13 @@ public class StaticScanSummaryController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().newCall(request).execute();
+        Response response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
             // Re-authenticate
             apiConnection.authenticate();
             request = apiConnection.reauthenticateRequest(request);
-            response = apiConnection.getClient().newCall(request).execute();
+            response = apiConnection.getClient().execute(request);
 
             if (Utils.isUnauthorizedResponse(response)) {
                 return null;
