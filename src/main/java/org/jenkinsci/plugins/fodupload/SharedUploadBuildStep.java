@@ -1,11 +1,13 @@
 package org.jenkinsci.plugins.fodupload;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.ctc.wstx.dtd.ContentSpec;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.*;
 import hudson.security.ACL;
+import hudson.slaves.WorkspaceList;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.GlobalConfiguration;
@@ -27,14 +29,13 @@ import org.kohsuke.stapler.verb.POST;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.jenkinsci.plugins.fodupload.Utils.FOD_URL_ERROR_MESSAGE;
 import static org.jenkinsci.plugins.fodupload.Utils.isValidUrl;
@@ -400,6 +401,8 @@ public class SharedUploadBuildStep {
 
         final PrintStream logger = listener.getLogger();
         FodApiConnection apiConnection = null;
+        File payload = null;
+        boolean payloadIsTemp = false;
 
         try {
             taskListener.set(listener);
@@ -483,20 +486,68 @@ public class SharedUploadBuildStep {
                 }
 
                 FilePath workspaceModified = new FilePath(workspace, model.getSrcLocation());
-                File payload;
 
                 if (model.getIsPipeline() && model.getTargetIsScanCentralPackage()) {
                     logger.println("Setting payload to be ScanCentral Package " + workspaceModified.toURI());
-                    payload = new File(workspaceModified.toURI());
 
-                    if (!FilenameUtils.getExtension(payload.getName()).toLowerCase(Locale.ROOT).equals("zip")) {
-                        logger.println("ScanCentral Package provided is not a zip file");
-                        build.setResult(Result.FAILURE);
-                        return;
-                    } else if (!payload.exists()) {
-                        logger.println("ScanCentral Package file not found");
-                        build.setResult(Result.FAILURE);
-                        return;
+                    if (workspaceModified.isRemote()) {
+                        if (!FilenameUtils.getExtension(workspaceModified.getName()).toLowerCase(Locale.ROOT).equals("zip")) {
+                            logger.println("ScanCentral Package provided is not a zip file");
+                            build.setResult(Result.FAILURE);
+                            return;
+                        } else if (!workspaceModified.exists()) {
+                            logger.println("ScanCentral Package file not found");
+                            build.setResult(Result.FAILURE);
+                            return;
+                        }
+                        logger.println("Fetching remote file: " + workspaceModified.toURI());
+                        payloadIsTemp = true;
+                        payload = Utils.FetchRemoteFile(workspaceModified, ".zip");
+                        logger.println("Fetched remote file: " + payload.toURI());
+                    } else {
+                        payload = new File(workspaceModified.toURI());
+
+                        if (!FilenameUtils.getExtension(payload.getName()).toLowerCase(Locale.ROOT).equals("zip")) {
+                            logger.println("ScanCentral Package provided is not a zip file");
+                            build.setResult(Result.FAILURE);
+                            return;
+                        } else if (!payload.exists()) {
+                            logger.println("ScanCentral Package file not found");
+
+                            // <editor-fold desc="Debug logging">
+                            try {
+                                logger.println("DEBUG Workspace isRemote: " + workspaceModified.isRemote());
+                                FilePath wsparent = workspaceModified.getParent();
+                                File plparent = payload.getParentFile();
+
+                                if (plparent.exists() && plparent.isDirectory()) {
+                                    logger.println("DEBUG Payload parent dir: " + wsparent.toURI() + "\n\t" + String.join("\n\t", plparent.list()));
+                                } else logger.println("DEBUG Payload parent dir not found: " + plparent.toURI());
+
+                                if (wsparent.exists() && wsparent.isDirectory()) {
+                                    List<String> contents = wsparent.list().stream().map(p -> p.getBaseName()).collect(Collectors.toList());
+
+                                    logger.println("DEBUG Workspace parent dir: " + wsparent.toURI() + "\n\t" + String.join("\n\t", contents));
+
+                                    if (workspaceModified.isRemote() && workspaceModified.exists() && !workspaceModified.isDirectory()) {
+                                        logger.println("DEBUG Attempting remote file fetch");
+                                        File fetched = Utils.FetchRemoteFile(workspaceModified, ".zip");
+
+                                        if (fetched.exists()) {
+                                            logger.println("DEBUG Payload fetched");
+                                        } else logger.println("DEBUG Payload fetch failed");
+                                    }
+
+                                } else logger.println("DEBUG Workspace parent dir not found: " + wsparent.toURI());
+                            } catch (Exception e) {
+                                List<String> stackTrace = Arrays.stream(e.getStackTrace()).map(st -> st.toString()).collect(Collectors.toList());
+                                logger.println("DEBUG Exception (" + e.getClass() + "): " + e.getMessage() + "\n" + String.join("\n", stackTrace));
+                            }
+                            // </editor-fold>
+
+                            build.setResult(Result.FAILURE);
+                            return;
+                        }
                     }
                 } else if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
 
@@ -610,6 +661,7 @@ public class SharedUploadBuildStep {
             logger.println(e.getMessage());
             build.setResult(Result.FAILURE);
         } finally {
+            if(payloadIsTemp && payload != null && payload.exists()) payload.delete();
             if (apiConnection != null) {
                 try {
                     apiConnection.retireToken();

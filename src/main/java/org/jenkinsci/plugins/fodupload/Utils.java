@@ -7,10 +7,7 @@ import hudson.security.ACL;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Consumer;
@@ -303,5 +300,25 @@ public class Utils {
                 printline.accept(i.getKey() + ": " + i.getValue());
             }
         }
+    }
+
+    public static File FetchRemoteFile(FilePath remote, String extension) throws IOException, InterruptedException {
+        if(!remote.isRemote()) throw new IOException("File is not remote");
+        if(remote.isDirectory()) throw new IOException("Remote is a directory");
+
+        File local = File.createTempFile("remotefetch", extension);
+        InputStream inStream = remote.read();
+        OutputStream outStream = new FileOutputStream(local);
+
+        byte[] buffer = new byte[8 * 1024];
+        int bytesRead;
+
+        while ((bytesRead = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, bytesRead);
+        }
+
+        inStream.close();
+        outStream.close();
+        return local;
     }
 }
