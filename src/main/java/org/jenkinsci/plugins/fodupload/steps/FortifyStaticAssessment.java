@@ -464,7 +464,7 @@ public class FortifyStaticAssessment extends FortifyStep {
 
             if (errors.isEmpty()) {
                 // can I construct the api?
-                errors = ValidateModel(api, log);
+                // errors = ValidateModel(api, log);
             }
         } catch (FormValidation e) {
             throw new RuntimeException(e);

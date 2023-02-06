@@ -84,10 +84,9 @@ public class FodApiConnection {
                 .addHeader("Authorization", "Bearer " + token)
                 .get()
                 .build();
-        Response response = client.execute(request);
+        ResponseContent response = client.execute(request);
 
         if (response.isSuccessful()) {
-            response.body().close();
             token = null;
         } else {
             throw new IOException(response.toString());
@@ -119,13 +118,12 @@ public class FodApiConnection {
                 .url(apiUrl + "/oauth/token")
                 .post(formBody)
                 .build();
-        Response response = client.execute(request);
+        ResponseContent response = client.execute(request);
 
         if (!response.isSuccessful())
             throw new IOException("Unexpected code " + response);
 
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         // Parse the Response
         JsonParser parser = new JsonParser();
@@ -175,7 +173,7 @@ public class FodApiConnection {
         return HttpUrl.parse(getApiUrl()).newBuilder();
     }
 
-    public Response request(Request request) throws IOException {
+    public ResponseContent request(Request request) throws IOException {
         request = request.newBuilder()
                 .addHeader("Authorization", "Bearer " + getTokenFromCache())
                 .build();
@@ -184,42 +182,17 @@ public class FodApiConnection {
     }
 
     public <T> T requestTyped(Request request, Type t) throws IOException {
-        Response res = this.request(request);
+        ResponseContent res = this.request(request);
         return this.parseResponse(res, t);
     }
 
-    public <T> T parseResponse(Response response, Type t) throws IOException {
-        ResponseBody body = response.body();
-        if (body == null)
+    public <T> T parseResponse(ResponseContent response, Type t) throws IOException {
+        String content = response.bodyContent();
+
+        if (content == null)
             throw new IOException("Unexpected body to be null");
 
-        InputStream stream = body.byteStream();
-        try {
-            String content = IOUtils.toString(stream, "utf-8");
-            return Json.getInstance().fromJson(content, t);
-        } finally {
-            stream.close();
-            body.close();
-        }
-    }
-
-    public String getRawBody(Response response) {
-        ResponseBody body = response.body();
-        if (body == null) return null;
-
-        InputStream stream = body.byteStream();
-        String content = null;
-
-        try {
-            content = IOUtils.toString(stream, "utf-8");
-
-            stream.close();
-            body.close();
-        } catch (Exception e) {
-
-        }
-
-        return content;
+        return Json.getInstance().fromJson(content, t);
     }
 
     /**

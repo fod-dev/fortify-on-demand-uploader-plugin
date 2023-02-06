@@ -62,7 +62,7 @@ public class ApiConnectionFactory {
                         executeOnRemoteAgent, launcher);
 
             } else {
-                apiConnection = GlobalConfiguration.all().get(FodGlobalDescriptor.class).createFodApiConnection();
+                apiConnection = GlobalConfiguration.all().get(FodGlobalDescriptor.class).createFodApiConnection(executeOnRemoteAgent, launcher);
             }
         }
         return apiConnection;

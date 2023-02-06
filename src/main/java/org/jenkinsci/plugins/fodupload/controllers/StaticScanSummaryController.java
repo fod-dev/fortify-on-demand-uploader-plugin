@@ -8,6 +8,7 @@ import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 // import org.jenkinsci.plugins.fodupload.models.response.GenericListResponse;
+import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.models.response.ScanSummaryDTO;
 
@@ -48,7 +49,7 @@ public class StaticScanSummaryController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
             // Re-authenticate
@@ -62,8 +63,7 @@ public class StaticScanSummaryController extends ControllerBase {
         }
 
         // Read the results and close the response
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         Gson gson = new Gson();
         // Create a type of ScanSummaryDTO to play nice with gson.

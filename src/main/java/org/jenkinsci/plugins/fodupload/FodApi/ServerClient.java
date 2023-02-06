@@ -2,7 +2,6 @@ package org.jenkinsci.plugins.fodupload.FodApi;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 
 import java.io.IOException;
 
@@ -13,7 +12,7 @@ class ServerClient implements IHttpClient {
         _client = client;
     }
 
-    public Response execute(Request request) throws IOException {
-        return _client.newCall(request).execute();
+    public ResponseContent execute(Request request) throws IOException {
+        return Utils.ResponseContentFromOkHttp3(_client.newCall(request).execute());
     }
 }

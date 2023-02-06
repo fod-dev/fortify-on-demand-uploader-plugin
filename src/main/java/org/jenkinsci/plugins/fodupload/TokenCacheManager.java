@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import okhttp3.*;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.fodupload.FodApi.IHttpClient;
+import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class TokenCacheManager {
     }
 
     private void clearCache() {
-        for (Map.Entry<String,Token> token : tokens.entrySet()) {
+        for (Map.Entry<String, Token> token : tokens.entrySet()) {
             if (isCloseToExpiry(token.getValue())) {
                 tokens.remove(token.getKey());
             }
@@ -73,29 +74,23 @@ public class TokenCacheManager {
                 .url(apiUrl + "/oauth/token")
                 .post(formBody)
                 .build();
-        Response response = client.execute(request);
+        ResponseContent response = client.execute(request);
 
         if (!response.isSuccessful())
             throw new IOException("Unexpected code " + response);
 
-        ResponseBody body = response.body();
-        if (body == null)
+        String content = response.bodyContent();
+
+        if (content == null || content.isEmpty())
             throw new IOException("Unexpected body to be null");
 
-        InputStream stream = body.byteStream();
-        try {
-            String content = IOUtils.toString(stream, "utf-8");
-            JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(content).getAsJsonObject();
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(content).getAsJsonObject();
+        Calendar expiryTime = Calendar.getInstance();
 
-            Calendar expiryTime = Calendar.getInstance();
-            expiryTime.add(Calendar.SECOND, obj.get("expires_in").getAsInt());
-            return new Token(obj.get("access_token").getAsString(), expiryTime);
-        }
-        finally {
-            stream.close();
-            body.close();
-        }
+        expiryTime.add(Calendar.SECOND, obj.get("expires_in").getAsInt());
+
+        return new Token(obj.get("access_token").getAsString(), expiryTime);
     }
 
     private Boolean isCloseToExpiry(Token token) {

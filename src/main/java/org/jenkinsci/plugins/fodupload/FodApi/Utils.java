@@ -4,7 +4,9 @@ import hudson.ProxyConfiguration;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +39,13 @@ class Utils {
 
         proxyClient.proxyAuthenticator(proxyAuthenticator);
         return proxyClient.build();
+    }
+
+    static ResponseContent ResponseContentFromOkHttp3(Response response) throws IOException {
+        ResponseContent resp = new ResponseContent(response.body().byteStream(), response.isSuccessful(), response.code(), response.message());
+
+        resp.parseBody();
+        return resp;
     }
 
 }

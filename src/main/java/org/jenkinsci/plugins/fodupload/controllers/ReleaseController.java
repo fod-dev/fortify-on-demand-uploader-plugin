@@ -8,6 +8,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.models.AuditPreferenceOptionsModel;
 import org.jenkinsci.plugins.fodupload.models.FodApiFilterList;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
@@ -68,7 +69,7 @@ public class ReleaseController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {  // got logged out during polling so log back in
             // Re-authenticate
@@ -76,8 +77,7 @@ public class ReleaseController extends ControllerBase {
         }
 
         // Read the results and close the response
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         Gson gson = new Gson();
         // Create a type of GenericList<ReleaseDTO> to play nice with gson.
@@ -120,7 +120,7 @@ public class ReleaseController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
             // Re-authenticate
@@ -133,8 +133,7 @@ public class ReleaseController extends ControllerBase {
             }
         }
         // Read the results and close the response
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         Gson gson = new Gson();
         // Create a type of GenericList<ScanSummary> to play nice with gson.
@@ -178,7 +177,7 @@ public class ReleaseController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.getClient().execute(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
             // Re-authenticate
@@ -192,8 +191,7 @@ public class ReleaseController extends ControllerBase {
             }
         }
         // Read the results and close the response
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         Gson gson = new Gson();
         // Create a type of GenericList<ScanSummary> to play nice with gson.
@@ -236,7 +234,7 @@ public class ReleaseController extends ControllerBase {
                 .get()
                 .build();
 
-        Response response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.getClient().execute(request);
 
         if (response.code() == org.apache.http.HttpStatus.SC_FORBIDDEN) {  // got logged out during polling so log back in
             // Re-authenticate
@@ -244,8 +242,7 @@ public class ReleaseController extends ControllerBase {
         }
 
         // Read the results and close the response
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         if (!Utils.isNullOrEmpty(content)) // check if any content is returned
         {

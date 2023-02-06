@@ -8,6 +8,7 @@ import okhttp3.*;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.Json;
 import org.jenkinsci.plugins.fodupload.Utils;
 import org.jenkinsci.plugins.fodupload.models.*;
@@ -138,10 +139,10 @@ public class StaticScanController extends ControllerBase {
 
                 println(getLogTimestamp() + " Uploading fragment " + fragmentNumber);
                 // Get the response
-                Response response = apiConnection.getClient().execute(request);
+                ResponseContent response = apiConnection.getClient().execute(request);
 
                 if (response.code() == HttpStatus.SC_FORBIDDEN || response.code() == HttpStatus.SC_UNAUTHORIZED) {  // got logged out during polling so log back in
-                    String raw = apiConnection.getRawBody(response);
+                    String raw = response.bodyContent();
 
                     if (Utils.isNullOrEmpty(raw)) println(getLogTimestamp() + " Uploading fragment failed, reauthenticating");
                     else println(getLogTimestamp() + " Uploading fragment failed, reauthenticating \n" + raw);
@@ -158,7 +159,7 @@ public class StaticScanController extends ControllerBase {
                 }
 
                 if (response.code() != 202) {
-                    String responseJsonStr = IOUtils.toString(response.body().byteStream(), "utf-8");
+                    String responseJsonStr = response.bodyContent();
 
                     Gson gson = new Gson();
                     // final response has 200, try to deserialize it
@@ -190,7 +191,6 @@ public class StaticScanController extends ControllerBase {
                         return scanResults; // if there is an error, get out of loop and mark build unstable
                     }
                 }
-                response.body().close();
 
             } // end while
             println(getLogTimestamp() + " Payload upload complete");
@@ -307,7 +307,7 @@ public class StaticScanController extends ControllerBase {
 
         println("Submitting application and release model");
 
-        Response response = apiConnection.request(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (response.code() < 300) {
             PostReleaseWithUpsertApplicationResponseModel result = apiConnection.parseResponse(response, new TypeToken<PostReleaseWithUpsertApplicationResponseModel>() {
@@ -318,7 +318,7 @@ public class StaticScanController extends ControllerBase {
                 return result.getReleaseId();
             } else throw new Exception("Failed to create application and/or release: \n" + String.join("\n", result.getErrors()));
         } else {
-            throw new Exception("Failed to create application and/or release: \n" + apiConnection.getRawBody(response));
+            throw new Exception("Failed to create application and/or release: \n" + response.bodyContent());
         }
     }
 
@@ -395,14 +395,13 @@ public class StaticScanController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        Response response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.getClient().execute(request);
 
         if (!response.isSuccessful()) {
             return null;
         }
 
-        String content = IOUtils.toString(response.body().byteStream(), "utf-8");
-        response.body().close();
+        String content = response.bodyContent();
 
         Gson gson = new Gson();
         Type t = new TypeToken<GetStaticScanSetupResponse>() {
@@ -437,13 +436,13 @@ public class StaticScanController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .put(RequestBody.create(MediaType.parse("application/json"), requestContent))
                 .build();
-        Response response = apiConnection.request(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (response.code() < 300) {
             return apiConnection.parseResponse(response, new TypeToken<PutStaticScanSetupResponse>() {
             }.getType());
         } else {
-            String rawBody = apiConnection.getRawBody(response);
+            String rawBody = response.bodyContent();
             List<String> errors = Utils.unexpectedServerResponseErrors();
 
             if(!rawBody.isEmpty()) errors.add("Raw API response:\n"+rawBody);

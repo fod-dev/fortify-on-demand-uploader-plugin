@@ -26,6 +26,7 @@ import net.sf.json.JSONObject;
 import okhttp3.Response;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.http.HttpStatus;
+import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.IFodEnum;
@@ -234,7 +235,7 @@ public class Utils {
         return s != null ? decrypt(s.getSecret()) : id;
     }
 
-    public static Boolean isUnauthorizedResponse(Response response) {
+    public static Boolean isUnauthorizedResponse(ResponseContent response) {
         return response.code() == HttpStatus.SC_FORBIDDEN || response.code() == HttpStatus.SC_UNAUTHORIZED;
     }
 

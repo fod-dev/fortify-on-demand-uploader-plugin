@@ -6,5 +6,5 @@ import okhttp3.Response;
 import java.io.IOException;
 
 public interface IHttpClient {
-    Response execute(Request request) throws IOException;
+    ResponseContent execute(Request request) throws IOException;
 }

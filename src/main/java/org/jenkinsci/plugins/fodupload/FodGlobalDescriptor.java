@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.fodupload;
 
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import hudson.Extension;
+import hudson.Launcher;
 import hudson.Util;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
@@ -264,7 +265,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
         if (!Utils.isCredential(clientSecret))
             return FormValidation.error("Secret Key is empty or needs to be resaved!");
 
-        testApi = new FodApiConnection(clientId, plainTextClientSecret, baseUrl, apiUrl, GrantType.CLIENT_CREDENTIALS, "api-tenant");
+        testApi = new FodApiConnection(clientId, plainTextClientSecret, baseUrl, apiUrl, GrantType.CLIENT_CREDENTIALS, "api-tenant", false, null);
         return testConnection(testApi);
     }
     // Form validation
@@ -292,7 +293,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
         if (Utils.isNullOrEmpty(tenantId))
             return FormValidation.error("Tenant ID is null.");
 
-        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
+        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant", false, null);
         return testConnection(testApi);
 
     }
@@ -327,7 +328,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
         return doFillStringCredentialsItems();
     }
 
-    FodApiConnection createFodApiConnection() {
+    FodApiConnection createFodApiConnection(boolean executeOnRemoteAgent, Launcher launcher) {
 
         if (!Utils.isNullOrEmpty(globalAuthType)) {
 
@@ -340,7 +341,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
                     throw new IllegalArgumentException("Client ID is null.");
                 if (Utils.isNullOrEmpty(clientSecret))
                     throw new IllegalArgumentException("Client Secret is null.");
-                return new FodApiConnection(clientId, Utils.retrieveSecretDecryptedValue(clientSecret), baseUrl, apiUrl, GrantType.CLIENT_CREDENTIALS, "api-tenant");
+                return new FodApiConnection(clientId, Utils.retrieveSecretDecryptedValue(clientSecret), baseUrl, apiUrl, GrantType.CLIENT_CREDENTIALS, "api-tenant", executeOnRemoteAgent, launcher);
             } else if (globalAuthType.equals("personalAccessTokenType")) {
                 if (Utils.isNullOrEmpty(username))
                     throw new IllegalArgumentException("Username is null.");
@@ -348,7 +349,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
                     throw new IllegalArgumentException("Personal Access Token is null.");
                 if (Utils.isNullOrEmpty(tenantId))
                     throw new IllegalArgumentException("Tenant ID is null.");
-                return new FodApiConnection(tenantId + "\\" + username, Utils.retrieveSecretDecryptedValue(personalAccessToken), baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant");
+                return new FodApiConnection(tenantId + "\\" + username, Utils.retrieveSecretDecryptedValue(personalAccessToken), baseUrl, apiUrl, GrantType.PASSWORD, "api-tenant", executeOnRemoteAgent, launcher);
             } else {
                 throw new IllegalArgumentException("Invalid authentication type");
             }
