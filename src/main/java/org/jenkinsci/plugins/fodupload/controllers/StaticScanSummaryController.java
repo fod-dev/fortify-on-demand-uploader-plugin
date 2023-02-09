@@ -25,14 +25,10 @@ public class StaticScanSummaryController extends ControllerBase {
     /**
      * @param releaseId releaseId is used in url query string
      * @param scanId    scanId is used in url query string
-     * at_return ScanSummaryDTO
+     *                  at_return ScanSummaryDTO
      * @throws java.io.IOException in some circumstances
      */
     public ScanSummaryDTO getReleaseScanSummary(final int releaseId, final int scanId) throws IOException {
-
-        if (apiConnection.getToken() == null)
-            apiConnection.authenticate();
-
         HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                 .addPathSegments(String.format("/api/v3/releases/%d/scans/%d", releaseId, scanId));
         println("--------------------------");
@@ -44,22 +40,14 @@ public class StaticScanSummaryController extends ControllerBase {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
                 .addHeader("Accept", "application/json")
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        ResponseContent response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
-            // Re-authenticate
-            apiConnection.authenticate();
-            request = apiConnection.reauthenticateRequest(request);
-            response = apiConnection.getClient().execute(request);
-
-            if (Utils.isUnauthorizedResponse(response)) {
-                return null;
-            }
+            return null;
         }
 
         // Read the results and close the response

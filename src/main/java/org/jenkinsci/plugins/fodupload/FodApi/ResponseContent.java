@@ -22,22 +22,10 @@ public class ResponseContent implements Serializable { //, AutoCloseable {
         _message = message;
     }
 
-    private String getRawBody(InputStream stream) throws IOException {
-        if (stream == null) return null;
-
-        String content = null;
-
-        content = IOUtils.toString(stream, "utf-8");
-
-        return content;
-    }
-
     public void parseBody() throws IOException {
         if (!_bodyParsed) {
             _bodyParsed = true;
-            if (_body == null) return;
-
-            _bodyContent = IOUtils.toString(_body, "utf-8");
+            _bodyContent = Utils.getRawBody(_body);
             _body.close();
         }
     }

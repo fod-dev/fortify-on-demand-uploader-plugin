@@ -300,4 +300,8 @@ public class Utils {
 
         return false;
     }
+
+    public static String getLogTimestampFormat(){
+        return "yyyy-MM-dd HH:mm:ss.SSS";
+    }
 }

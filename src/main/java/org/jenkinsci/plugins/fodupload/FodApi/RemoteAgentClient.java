@@ -3,8 +3,6 @@ package org.jenkinsci.plugins.fodupload.FodApi;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.remoting.VirtualChannel;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import java.io.IOException;
 
@@ -41,11 +39,11 @@ class RemoteAgentClient implements IHttpClient {
         _proxy = proxy;
     }
 
-    public ResponseContent execute(Request request) throws IOException {
+    public ResponseContent execute(HttpRequest request) throws IOException {
         RemoteProxyCallable callable = new RemoteProxyCallable(request, _connectionTimeout, _writeTimeout, _readTimeout, _proxy);
 
         try {
-            return Utils.ResponseContentFromOkHttp3(_channel.call(callable));
+            return _channel.call(callable);
         } catch (InterruptedException e) {
             throw new IOException("Remote agent http call failed", e);
         }

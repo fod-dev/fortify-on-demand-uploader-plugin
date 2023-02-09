@@ -6,16 +6,14 @@ import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import jenkins.model.Jenkins;
 import okhttp3.*;
-import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.fodupload.Json;
 import org.jenkinsci.plugins.fodupload.TokenCacheManager;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.GrantType;
+import org.jenkinsci.plugins.fodupload.models.JobModel;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Type;
-import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
 
 public class FodApiConnection {
 
@@ -38,6 +36,8 @@ public class FodApiConnection {
 
     private ProxyConfiguration proxy = null;
 
+    private Launcher _launcher = null;
+
     /**
      * Constructor that encapsulates the apiConnection
      *
@@ -59,31 +59,20 @@ public class FodApiConnection {
         if (instance != null)
             proxy = instance.proxy;
 
-        if (executeOnRemoteAgent) client = new RemoteAgentClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, launcher);
+        // ToDo: implement optional env var for proxy
+        if (executeOnRemoteAgent) {
+            _launcher = launcher;
+            client = new RemoteAgentClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher);
+        }
         else client = new ServerClient(Utils.CreateOkHttpClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy));
-    }
-
-    /**
-     * Used for authenticating in the case of a time out using the saved apiConnection credentials.
-     *
-     * @throws java.io.IOException in some circumstances
-     * @deprecated Use the {@link FodApiConnection#request(Request)} method instead
-     */
-    @Deprecated
-    public void authenticate() throws IOException {
-        this.token = retrieveToken();
     }
 
     /**
      * Retire the current token. Unclear if this actually does anything on the backend.
      */
     public void retireToken() throws IOException {
-
-        Request request = new Request.Builder()
-                .url(apiUrl + "/oauth/retireToken")
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
-                .build();
+        HttpRequest request = HttpRequest.Get(apiUrl + "/oauth/retireToken")
+                .addHeader("Authorization", "Bearer " + token);
         ResponseContent response = client.execute(request);
 
         if (response.isSuccessful()) {
@@ -94,30 +83,32 @@ public class FodApiConnection {
 
     }
 
+    public String testConnection() throws IOException {
+        // ToDo: do something else here
+        this.token = retrieveToken();
+
+        if (token == null) return "Unable to retrieve authentication token.";
+        else if (token.isEmpty()) return "Invalid connection information. Please check your credentials and try again.";
+
+        return null;
+    }
+
     private String retrieveToken() throws IOException {
-        RequestBody formBody = null;
+        FormBodyRequest request = new FormBodyRequest(apiUrl + "/oauth/token", HttpRequest.Verb.Post);
+
         if (grantType == GrantType.CLIENT_CREDENTIALS) {
-            formBody = new FormBody.Builder()
-                    .add("scope", scope)
-                    .add("grant_type", "client_credentials")
-                    .add("client_id", id)
-                    .add("client_secret", secret)
-                    .build();
+            request.addValue("scope", scope)
+                    .addValue("grant_type", "client_credentials")
+                    .addValue("client_id", id)
+                    .addValue("client_secret", secret);
         } else if (grantType == GrantType.PASSWORD) {
-            formBody = new FormBody.Builder()
-                    .add("scope", scope)
-                    .add("grant_type", "password")
-                    .add("username", id)
-                    .add("password", secret)
-                    .build();
+            request.addValue("scope", scope)
+                    .addValue("grant_type", "password")
+                    .addValue("username", id)
+                    .addValue("password", secret);
         } else {
             throw new IOException("Invalid Grant Type");
         }
-
-        Request request = new Request.Builder()
-                .url(apiUrl + "/oauth/token")
-                .post(formBody)
-                .build();
         ResponseContent response = client.execute(request);
 
         if (!response.isSuccessful())
@@ -133,15 +124,6 @@ public class FodApiConnection {
 
     private String getTokenFromCache() throws IOException {
         return tokenCacheManager.getToken(client, apiUrl, grantType, scope, id, secret);
-    }
-
-    /**
-     * @deprecated Use the {@link FodApiConnection#request(Request)} method instead
-     * at_return
-     */
-    @Deprecated
-    public String getToken() {
-        return token;
     }
 
     public String getId() {
@@ -160,29 +142,30 @@ public class FodApiConnection {
         return apiUrl;
     }
 
-    /**
-     * @deprecated Use the {@link FodApiConnection#request(Request)} method instead
-     * at_return
-     */
-    @Deprecated
-    public IHttpClient getClient() {
-        return client;
-    }
-
     public HttpUrl.Builder urlBuilder() {
         return HttpUrl.parse(getApiUrl()).newBuilder();
     }
 
     public ResponseContent request(Request request) throws IOException {
-        request = request.newBuilder()
-                .addHeader("Authorization", "Bearer " + getTokenFromCache())
-                .build();
+        if (client instanceof ServerClient) return ((ServerClient) client).execute(request);
+        else return request(Utils.OkHttpRequestToHttpRequest(request));
+    }
+
+    public ResponseContent request(HttpRequest request) throws IOException {
+        request.setHeader("Authorization", "Bearer " + getTokenFromCache());
 
         return client.execute(request);
     }
 
     public <T> T requestTyped(Request request, Type t) throws IOException {
         ResponseContent res = this.request(request);
+
+        return this.parseResponse(res, t);
+    }
+
+    public <T> T requestTyped(HttpRequest request, Type t) throws IOException {
+        ResponseContent res = this.request(request);
+
         return this.parseResponse(res, t);
     }
 
@@ -195,14 +178,13 @@ public class FodApiConnection {
         return Json.getInstance().fromJson(content, t);
     }
 
-    /**
-     * @deprecated Use the {@link FodApiConnection#request(Request)} method instead
-     * at_return
-     */
-    public Request reauthenticateRequest(Request request) {
-        return request.newBuilder()
-                .header("Authorization", "Bearer " + getToken())
-                .build();
+    public ScanPayloadUpload getScanPayloadUploadInstance(JobModel uploadRequest, String correlationId, String fragUrl, PrintStream logger) throws IOException {
+        if (this.client instanceof ServerClient) {
+            return new ScanPayloadUploadLocal(((ServerClient) this.client).client(), getTokenFromCache(), uploadRequest, correlationId, fragUrl, logger);
+        } else {
+            return new ScanPayloadUploadRemote(uploadRequest, correlationId, fragUrl, getTokenFromCache(), CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher, logger);
+        }
     }
+
 }
 

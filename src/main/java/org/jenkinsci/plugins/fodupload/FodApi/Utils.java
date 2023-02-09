@@ -1,22 +1,30 @@
 package org.jenkinsci.plugins.fodupload.FodApi;
 
 import hudson.ProxyConfiguration;
-import okhttp3.Authenticator;
-import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
+import okhttp3.*;
+import okio.Buffer;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 class Utils {
 
-    /**
-     * Creates a okHttp client to connect with.
-     * <p>
-     * at_return returns a client object
-     */
+    static String getRawBody(InputStream stream) throws IOException {
+        if (stream == null) return null;
+
+        String content = null;
+
+        content = IOUtils.toString(stream, "utf-8");
+
+        return content;
+    }
+
     static OkHttpClient CreateOkHttpClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy) {
         OkHttpClient.Builder baseClient = new OkHttpClient().newBuilder()
                 .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
@@ -48,4 +56,84 @@ class Utils {
         return resp;
     }
 
+    static HttpRequest OkHttpRequestToHttpRequest(Request request) throws IOException {
+        HttpRequest.Verb verb;
+
+        try {
+            verb = HttpRequest.Verb.valueOf(request.method());
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Unsupported http verb");
+        }
+
+        if (request.body() == null) {
+            return new StringBodyRequest(request.url().toString(), verb, null, null);
+        }
+
+        if (request.body().contentType() == null) throw new IOException("Content-Type not provided");
+
+        String contentType = request.body().contentType().type();
+        String subType = request.body().contentType().subtype();
+        Charset charset = request.body().contentType().charset(StandardCharsets.UTF_8);
+
+        if (charset != StandardCharsets.UTF_8) throw new IOException("Unsupported charset: " + charset.name());
+
+        if ((contentType != null && contentType.equals("text")) || (subType != null && subType.equals("json"))) {
+            Buffer buffer = new Buffer();
+
+            request.body().writeTo(buffer);
+            String body = buffer.readUtf8();
+
+            return new StringBodyRequest(request.url().toString(), verb, request.body().contentType().toString(), body);
+        }
+
+        throw new IOException("Unsupported Content-Type: " + request.body().contentType().toString());
+    }
+
+    static <T extends HttpRequest> Request HttpRequestToOkHttpRequest(T request) {
+        Request.Builder r = new Request.Builder()
+                .url(request.url());
+
+        for (Map.Entry<String, String> h : request.headers()) {
+            r = r.addHeader(h.getKey(), h.getValue());
+        }
+
+        switch (request.verb()) {
+            case Get:
+                r = r.get();
+                break;
+            case Post:
+                r = r.post(getOkHttpRequestBody(request));
+                break;
+            case Put:
+                r = r.put(getOkHttpRequestBody(request));
+                break;
+            case Patch:
+                r = r.patch(getOkHttpRequestBody(request));
+                break;
+            case Delete:
+                r = r.delete();
+                break;
+        }
+
+        return r.build();
+    }
+
+    private static <T extends HttpRequest> RequestBody getOkHttpRequestBody(T request) {
+        if (request instanceof FormBodyRequest) {
+            FormBodyRequest r = (FormBodyRequest) request;
+            FormBody.Builder b = new FormBody.Builder();
+
+            for (Map.Entry<String, String> e : r.body()) {
+                b.add(e.getKey(), e.getValue());
+            }
+
+            return b.build();
+        } else if (request instanceof StringBodyRequest) {
+            StringBodyRequest r = (StringBodyRequest) request;
+
+            return RequestBody.create(MediaType.parse(r.contentType()), r.body());
+        }
+
+        return null;
+    }
 }

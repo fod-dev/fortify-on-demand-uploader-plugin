@@ -1,22 +1,23 @@
 package org.jenkinsci.plugins.fodupload.FodApi;
 
 import hudson.ProxyConfiguration;
+import javafx.util.Pair;
 import jenkins.security.MasterToSlaveCallable;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.RequestBody;
 
 import java.io.IOException;
 
-class RemoteProxyCallable extends MasterToSlaveCallable<Response, IOException> {
+class RemoteProxyCallable extends MasterToSlaveCallable<ResponseContent, IOException> {
     private int _connectionTimeout;
     private int _writeTimeout;
     private int _readTimeout;
     private ProxyConfiguration _proxy;
 
-    private Request _request;
+    private HttpRequest _request;
 
-    RemoteProxyCallable(Request request, int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy) {
+    RemoteProxyCallable(HttpRequest request, int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy) {
         _connectionTimeout = connectionTimeout;
         _writeTimeout = writeTimeout;
         _readTimeout = readTimeout;
@@ -25,9 +26,11 @@ class RemoteProxyCallable extends MasterToSlaveCallable<Response, IOException> {
     }
 
     @Override
-    public Response call() throws IOException {
+    public ResponseContent call() throws IOException {
         OkHttpClient client = Utils.CreateOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
 
-        return client.newCall(_request).execute();
+        return Utils.ResponseContentFromOkHttp3(client.newCall(Utils.HttpRequestToOkHttpRequest(_request)).execute());
     }
+
+
 }

@@ -40,15 +40,10 @@ public class ReleaseController extends ControllerBase {
      *
      * @param releaseId release to get
      * @param fields    fields to return
-     * at_return ReleaseDTO object with given fields
+     *                  at_return ReleaseDTO object with given fields
      * @throws java.io.IOException in some circumstances
      */
     public ReleaseDTO getRelease(final int releaseId, final String fields) throws IOException {
-
-        // TODO: Remove every method authenticating the connection, leave that to the user
-        if (apiConnection.getToken() == null)
-            apiConnection.authenticate();
-
         FodApiFilterList filters = new FodApiFilterList().addFilter("releaseId", releaseId);
 
         // TODO: Investigate why the endpoint for a release wasn't used
@@ -64,16 +59,14 @@ public class ReleaseController extends ControllerBase {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
                 .addHeader("Accept", "application/json")
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        ResponseContent response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (Utils.isUnauthorizedResponse(response)) {  // got logged out during polling so log back in
-            // Re-authenticate
-            apiConnection.authenticate();
+            return null;
         }
 
         // Read the results and close the response
@@ -95,15 +88,10 @@ public class ReleaseController extends ControllerBase {
      *
      * @param releaseId release to get
      * @param scanId    scanId to find specific scan result
-     * at_return ScanSummaryDTO object
+     *                  at_return ScanSummaryDTO object
      * @throws java.io.IOException in some circumstances
      */
     public ScanSummaryDTO getRelease(final int releaseId, final int scanId) throws IOException {
-
-        // TODO: Remove every method authenticating the connection, leave that to the user
-        if (apiConnection.getToken() == null)
-            apiConnection.authenticate();
-
         // TODO: Investigate why the endpoint for a release wasn't used
         HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                 .addPathSegments(String.format("/api/v3/releases/%d/scans", releaseId))
@@ -115,22 +103,14 @@ public class ReleaseController extends ControllerBase {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
                 .addHeader("Accept", "application/json")
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        ResponseContent response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
-            // Re-authenticate
-            apiConnection.authenticate();
-            request = apiConnection.reauthenticateRequest(request);
-            response = apiConnection.getClient().execute(request);
-
-            if (Utils.isUnauthorizedResponse(response)) {
-                return null;
-            }
+            return null;
         }
         // Read the results and close the response
         String content = response.bodyContent();
@@ -155,15 +135,10 @@ public class ReleaseController extends ControllerBase {
      *
      * @param releaseId release to get
      * @param scanId    scanId to find specific scan result
-     * at_return ScanSummaryDTO object
+     *                  at_return ScanSummaryDTO object
      * @throws java.io.IOException in some circumstances
      */
     public PollingSummaryDTO getReleaseByScanId(final int releaseId, final int scanId) throws IOException {
-
-        // TODO: Remove every method authenticating the connection, leave that to the user
-        if (apiConnection.getToken() == null)
-            apiConnection.authenticate();
-
         // TODO: Investigate why the endpoint for a release wasn't used
         HttpUrl.Builder builder = HttpUrl.parse(apiConnection.getApiUrl()).newBuilder()
                 .addPathSegments(String.format("/api/v3/releases/%d/scans/%s/polling-summary", releaseId, scanId));
@@ -172,24 +147,16 @@ public class ReleaseController extends ControllerBase {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
                 .addHeader("Accept", "application/json")
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
-        ResponseContent response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (Utils.isUnauthorizedResponse(response)) {
-            // Re-authenticate
-            apiConnection.authenticate();
-            request = apiConnection.reauthenticateRequest(request);
-            response = apiConnection.getClient().execute(request);
-
-            // if response is still unauthorized, even after re-authentication, return null to the caller, to signal polling failure.
-            if (Utils.isUnauthorizedResponse(response)) {
-                return null;
-            }
+            return null;
         }
+
         // Read the results and close the response
         String content = response.bodyContent();
 
@@ -208,7 +175,7 @@ public class ReleaseController extends ControllerBase {
      * Get Assessment Type from bsi url
      *
      * @param model JobModel
-     * at_return returns assessment type obj
+     *              at_return returns assessment type obj
      */
     ReleaseAssessmentTypeDTO getAssessmentType(final JobModel model) throws IOException, URISyntaxException {
 
@@ -224,21 +191,16 @@ public class ReleaseController extends ControllerBase {
                 .addQueryParameter("filters", filters.toString())
                 .build().toString();
 
-        if (apiConnection.getToken() == null)
-            apiConnection.authenticate();
-
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + apiConnection.getToken())
                 .addHeader("Accept", "application/json")
                 .get()
                 .build();
 
-        ResponseContent response = apiConnection.getClient().execute(request);
+        ResponseContent response = apiConnection.request(request);
 
         if (response.code() == org.apache.http.HttpStatus.SC_FORBIDDEN) {  // got logged out during polling so log back in
-            // Re-authenticate
-            apiConnection.authenticate();
+            return null;
         }
 
         // Read the results and close the response
@@ -335,7 +297,7 @@ public class ReleaseController extends ControllerBase {
 
         if (items != null && items.size() > 0) {
             for (ScanOption option : items) {
-                if(option.getName().equals("AuditPreference")) {
+                if (option.getName().equals("AuditPreference")) {
                     if (option.getOptions() != null && option.getOptions().size() > 0) {
                         boolean automated = false;
                         boolean manual = false;

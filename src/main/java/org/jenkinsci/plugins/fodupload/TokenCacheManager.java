@@ -2,14 +2,13 @@ package org.jenkinsci.plugins.fodupload;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import okhttp3.*;
-import org.apache.commons.io.IOUtils;
+import org.jenkinsci.plugins.fodupload.FodApi.FormBodyRequest;
+import org.jenkinsci.plugins.fodupload.FodApi.HttpRequest;
 import org.jenkinsci.plugins.fodupload.FodApi.IHttpClient;
 import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,29 +50,22 @@ public class TokenCacheManager {
     }
 
     private Token retrieveToken(IHttpClient client, String apiUrl, FodEnums.GrantType grantType, String scope, String id, String secret) throws IOException {
-        RequestBody formBody = null;
+        FormBodyRequest request = new FormBodyRequest(apiUrl + "/oauth/token", HttpRequest.Verb.Post);
+
         if (grantType == FodEnums.GrantType.CLIENT_CREDENTIALS) {
-            formBody = new FormBody.Builder()
-                    .add("scope", scope)
-                    .add("grant_type", "client_credentials")
-                    .add("client_id", id)
-                    .add("client_secret", secret)
-                    .build();
+            request.addValue("scope", scope)
+                    .addValue("grant_type", "client_credentials")
+                    .addValue("client_id", id)
+                    .addValue("client_secret", secret);
         } else if (grantType == FodEnums.GrantType.PASSWORD) {
-            formBody = new FormBody.Builder()
-                    .add("scope", scope)
-                    .add("grant_type", "password")
-                    .add("username", id)
-                    .add("password", secret)
-                    .build();
+            request.addValue("scope", scope)
+                    .addValue("grant_type", "password")
+                    .addValue("username", id)
+                    .addValue("password", secret);
         } else {
             throw new IOException("Invalid Grant Type");
         }
 
-        Request request = new Request.Builder()
-                .url(apiUrl + "/oauth/token")
-                .post(formBody)
-                .build();
         ResponseContent response = client.execute(request);
 
         if (!response.isSuccessful())

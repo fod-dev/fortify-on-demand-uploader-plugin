@@ -273,7 +273,6 @@ public class SharedPollingBuildStep {
 
             BsiToken token = releaseIdNum == 0 ? tokenParser.parseBsiToken(this.getBsiToken()) : null;
             if (apiConnection != null) {
-                apiConnection.authenticate();
                 ScanStatusPoller poller = new ScanStatusPoller(apiConnection, this.getPollingInterval(), logger);
                 PollReleaseStatusResult result = poller.pollReleaseStatus(releaseIdNum == 0 ? token.getReleaseId() : releaseIdNum, scanId, correlationId);
 

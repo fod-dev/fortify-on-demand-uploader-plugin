@@ -459,8 +459,6 @@ public class SharedUploadBuildStep {
 
             apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher);
             if (apiConnection != null) {
-                apiConnection.authenticate();
-
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
 
                 if (releaseId <= 0 && model.loadBsiToken())

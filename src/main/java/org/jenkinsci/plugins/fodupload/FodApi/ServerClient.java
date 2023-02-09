@@ -12,7 +12,15 @@ class ServerClient implements IHttpClient {
         _client = client;
     }
 
+    public ResponseContent execute(HttpRequest request) throws IOException {
+        return Utils.ResponseContentFromOkHttp3(_client.newCall(Utils.HttpRequestToOkHttpRequest(request)).execute());
+    }
+
     public ResponseContent execute(Request request) throws IOException {
         return Utils.ResponseContentFromOkHttp3(_client.newCall(request).execute());
+    }
+
+    OkHttpClient client(){
+        return _client;
     }
 }
