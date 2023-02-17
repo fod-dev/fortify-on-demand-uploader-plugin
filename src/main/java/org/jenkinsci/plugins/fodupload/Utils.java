@@ -160,24 +160,21 @@ public class Utils {
      * at_return a File object
      * @throws IOException no files
      */
-    public static File createZipFile(String techStack, FilePath workspace, PrintStream logger) throws IOException {
+    public static File createZipFile(String techStack, FilePath payload, PrintStream logger) throws IOException {
         logger.println("Begin Create Zip.");
-        logger.println("Source file directory: " + workspace);
+        logger.println("Source file directory: " + payload);
+        File tempZip = File.createTempFile("fodupload", ".zip");
 
-        String tempDir = System.getProperty("java.io.tmpdir");
-        File dir = new File(tempDir);
-
-
-        File tempZip = File.createTempFile("fodupload", ".zip", dir);
         try (FileOutputStream fos = new FileOutputStream(tempZip)) {
             final Pattern pattern = Pattern.compile(Utils.getFileExpressionPatternString(techStack),
                     Pattern.CASE_INSENSITIVE);
-            workspace.zip(fos, new RegexFileFilter(pattern));
+            // Is this local when in remote
+            payload.zip(fos, new RegexFileFilter(pattern));
             logger.println("Temporary file created at: " + tempZip.getAbsolutePath());
-
         } catch (Exception e) {
             logger.println(e.getMessage());
         }
+
         logger.println("End Create Zip.");
         return tempZip;
     }

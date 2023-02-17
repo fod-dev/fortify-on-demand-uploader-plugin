@@ -147,7 +147,13 @@ public class FodApiConnection {
     }
 
     public ResponseContent request(Request request) throws IOException {
-        if (client instanceof ServerClient) return ((ServerClient) client).execute(request);
+        if (client instanceof ServerClient) {
+            Request req = request.newBuilder()
+                    .addHeader("Authorization", "Bearer " + getTokenFromCache())
+                    .build();
+
+            return ((ServerClient) client).execute(req);
+        }
         else return request(Utils.OkHttpRequestToHttpRequest(request));
     }
 

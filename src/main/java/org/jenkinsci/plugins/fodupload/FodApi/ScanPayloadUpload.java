@@ -33,7 +33,8 @@ class ScanPayloadUploadImpl {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(org.jenkinsci.plugins.fodupload.Utils.getLogTimestampFormat());
         PostStartScanResponse scanStartedResponse = null;
         StartScanResponse scanResults = new StartScanResponse();
-        File uploadFile = uploadRequest.getPayload();
+        // Test this serverside as well
+        File uploadFile = new File(uploadRequest.getPayload().getRemote());
 
         try (FileInputStream fs = new FileInputStream(uploadFile)) {
             byte[] readByteArray = new byte[CHUNK_SIZE];
@@ -177,7 +178,7 @@ class ScanPayloadUploadRemote extends MasterToSlaveCallable<StartScanResponse, I
     private int _writeTimeout;
     private int _readTimeout;
     private ProxyConfiguration _proxy;
-    private VirtualChannel _channel;
+    private transient VirtualChannel _channel;
     private RemoteOutputStream _logger;
 
     ScanPayloadUploadRemote(JobModel uploadRequest, String correlationId, String fragUrl,

@@ -364,7 +364,7 @@ public class FodGlobalDescriptor extends GlobalConfiguration {
         try {
             String error = testApi.testConnection();
 
-            if (!error.isEmpty()) return FormValidation.error(error);
+            if (error != null && !error.isEmpty()) return FormValidation.error(error);
             return FormValidation.ok("Successfully authenticated to Fortify on Demand.");
         } catch (IOException e) {
             return FormValidation.error("Unable to authenticate with Fortify on Demand. Error Message: " + e.getMessage());
