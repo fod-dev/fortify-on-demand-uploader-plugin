@@ -4,15 +4,16 @@ import java.io.Serializable;
 import java.util.*;
 
 public abstract class HttpRequest implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final String _url;
     private final List<Map.Entry<String, String>> _headers;
     private final Verb _verb;
 
-    public static HttpRequest Json(String url, Verb verb, String body) {
+    public static HttpRequest json(String url, Verb verb, String body) {
         return new StringBodyRequest(url, verb, "application/json", body);
     }
 
-    public static HttpRequest Get(String url) {
+    public static HttpRequest get(String url) {
         return new StringBodyRequest(url, Verb.Get, null, null);
     }
 

@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
-public class ResponseContent implements Serializable { //, AutoCloseable {
+public class ResponseContent implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final transient InputStream _body;
     private final boolean _isSuccessful;
     private final int _code;

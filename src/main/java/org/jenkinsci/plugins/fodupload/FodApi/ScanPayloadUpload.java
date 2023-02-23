@@ -48,7 +48,6 @@ class ScanPayloadUploadImpl {
             log.println("TOTAL FILE SIZE = " + uploadFile.length());
             log.println("CHUNK_SIZE = " + CHUNK_SIZE);
 
-            //ToDo: Pull this into a class that can do this in remote
             while ((byteCount = fs.read(readByteArray)) != -1) {
 
                 if (byteCount < CHUNK_SIZE) {
@@ -170,6 +169,7 @@ class ScanPayloadUploadLocal implements ScanPayloadUpload {
 }
 
 class ScanPayloadUploadRemote extends MasterToSlaveCallable<StartScanResponse, IOException> implements ScanPayloadUpload {
+    private static final long serialVersionUID = 1L;
     private JobModel _uploadRequest;
     private String _correlationId;
     private String _fragUrl;

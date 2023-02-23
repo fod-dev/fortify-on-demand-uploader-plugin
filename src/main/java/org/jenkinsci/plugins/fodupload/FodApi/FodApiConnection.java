@@ -71,7 +71,7 @@ public class FodApiConnection {
      * Retire the current token. Unclear if this actually does anything on the backend.
      */
     public void retireToken() throws IOException {
-        HttpRequest request = HttpRequest.Get(apiUrl + "/oauth/retireToken")
+        HttpRequest request = HttpRequest.get(apiUrl + "/oauth/retireToken")
                 .addHeader("Authorization", "Bearer " + token);
         ResponseContent response = client.execute(request);
 

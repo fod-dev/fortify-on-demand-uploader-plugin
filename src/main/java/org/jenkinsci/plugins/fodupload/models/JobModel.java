@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JobModel implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     private transient static final BsiTokenParser tokenParser = new BsiTokenParser();
 
     private String releaseId;

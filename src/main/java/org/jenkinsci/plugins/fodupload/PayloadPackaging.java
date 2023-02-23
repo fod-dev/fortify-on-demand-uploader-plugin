@@ -57,16 +57,19 @@ class PayloadPackagingImpl {
             }
         } else {
             File scanCentralPath;
+            String scEnv = null;
+            String scPath = null;
 
             try {
-                String scEnv = System.getenv("FOD-SCANCENTRAL");
-                String scPath = Utils.isNullOrEmpty(scEnv) ? globalSCPath : scEnv;
+                scEnv = System.getenv("FOD_SCANCENTRAL");
+                scPath = Utils.isNullOrEmpty(scEnv) ? globalSCPath : scEnv;
 
-                if (Utils.isNullOrEmpty(scPath)) throw new IOException("ScanCentral location not set");
+                if (Utils.isNullOrEmpty(scPath))
+                    throw new IOException(String.format("ScanCentral location not set%nFOD_SCANCENTRAL: %s%nGlobal Config: %s", scEnv, globalSCPath));
 
                 scanCentralPath = new File(scPath);
             } catch (Exception e) {
-                throw new IOException("Failed to retrieve ScanCentral location", e);
+                throw new IOException(String.format("Failed to retrieve ScanCentral location%nFOD_SCANCENTRAL: %s%nGlobal Config: %s", scEnv, globalSCPath), e);
             }
 
             logger.println("Scan Central Path : " + scanCentralPath);
@@ -111,8 +114,11 @@ class PayloadPackagingImpl {
 
             String versionLine = null;
             String scanCentralVersion = null;
+            StringBuilder scoutput = new StringBuilder();
 
             while ((versionLine = stdInputVersion.readLine()) != null) {
+                scoutput.append("\n");
+                scoutput.append(versionLine);
                 logger.println(versionLine);
                 if (versionLine.contains("version")) {
                     Pattern versionPattern = Pattern.compile("(version: *?)(.*)");
@@ -125,12 +131,13 @@ class PayloadPackagingImpl {
                         ComparableVersion userScanCentralVersion = new ComparableVersion(scanCentralVersion);
 
                         if (userScanCentralVersion.compareTo(minScanCentralVersion) < 0) {
-                            throw new IOException("ScanCentral client version used is outdated. Update to the latest version provided on Tools page");
+                            throw new IOException(String.format("ScanCentral client version used is outdated. Update to the latest version provided on Tools page%nScanCentral Output: ", scoutput.toString()));
                         }
                         break;
                     }
                 }
             }
+
             if (versionLine != null && versionLine.contains("version")) {
                 Path outputZipFolderPath = Paths.get(String.valueOf(outputLocation)).resolve("output.zip");
                 FodEnums.SelectedScanCentralBuildType buildType = FodEnums.SelectedScanCentralBuildType.valueOf(job.getSelectedScanCentralBuildType());
@@ -235,9 +242,9 @@ class PayloadPackagingImpl {
                 if (exitCode != 0) throw new IOException("Errors executing Scan Central. Exiting with errorcode : " + exitCode);
 
                 return outputZipFolderPath;
-            } else throw new IOException("ScanCentral not found or invalid version");
+            } else throw new IOException(String.format("ScanCentral not found or invalid version%nScanCentral Output: ", scoutput.toString()));
         } catch (IllegalArgumentException | IOException | InterruptedException e) {
-            throw new IOException(String.format("Failed executing scan central : ", e));
+            throw new IOException(String.format("Failed executing scan central : %s", e.getMessage()), e);
         } finally {
             try {
                 if (stdInputVersion != null) {
@@ -342,6 +349,7 @@ class PayloadPackagingLocal implements PayloadPackaging {
 }
 
 class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOException> implements PayloadPackaging {
+    private static final long serialVersionUID = 1L;
     private transient VirtualChannel _channel;
     private RemoteOutputStream _logger;
     private JobModel _model;
@@ -369,8 +377,6 @@ class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOException
         PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
 
         _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _globalSCPath, _workspace, logger);
-        if(_payload == null) logger.println("Payload is null");
-        else logger.println("Payload is @ " + _payload.getRemote());
         return _payload;
     }
 
