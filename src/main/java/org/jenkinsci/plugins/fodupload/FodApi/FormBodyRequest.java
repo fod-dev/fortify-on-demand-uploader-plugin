@@ -10,7 +10,7 @@ public class FormBodyRequest extends HttpRequest {
     }
 
     public FormBodyRequest addValue(String key, String value) {
-        if (_body.contains(key)) _body.replace(key, value);
+        if (_body.containsKey(key)) _body.replace(key, value);
         else _body.put(key, value);
 
         return this;
