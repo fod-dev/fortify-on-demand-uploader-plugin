@@ -1,5 +1,5 @@
 # Changelog
-## Version 7.1.2 (03-13-2023)
+## Version 7.1.2 (03-14-2023)
 - Added support for packaging files required for Debricked open source scanning with Fortify ScanCentral SAST.
 
 ## Version 7.1.1 (09-22-2022)
