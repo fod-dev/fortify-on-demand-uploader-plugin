@@ -129,7 +129,7 @@ class ScanPayloadUploadImpl {
 
             } // end while
             log.println(getLogTimestamp(dateFormat) + " Payload upload complete");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace(log);
             scanResults.uploadNotSuccessful();
             return scanResults;
