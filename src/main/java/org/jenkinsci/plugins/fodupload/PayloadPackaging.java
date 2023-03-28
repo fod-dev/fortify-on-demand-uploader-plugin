@@ -28,14 +28,14 @@ public interface PayloadPackaging {
 
     boolean deletePayload() throws IOException, InterruptedException;
 
-    public static PayloadPackaging getInstance(JobModel model, String technologyStack, String globalSCPath, FilePath workspace, Launcher launcher, PrintStream logger) {
-        if (workspace.isRemote()) return new PayloadPackagingRemote(model, technologyStack, globalSCPath, workspace, launcher, logger);
-        else return new PayloadPackagingLocal(model, technologyStack, globalSCPath, workspace, logger);
+    public static PayloadPackaging getInstance(JobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, Launcher launcher, PrintStream logger) {
+        if (workspace.isRemote()) return new PayloadPackagingRemote(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, launcher, logger);
+        else return new PayloadPackagingLocal(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, logger);
     }
 }
 
 class PayloadPackagingImpl {
-    static FilePath performPackaging(JobModel model, String technologyStack, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
+    static FilePath performPackaging(JobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;
 
@@ -73,7 +73,7 @@ class PayloadPackagingImpl {
             }
 
             logger.println("Scan Central Path : " + scanCentralPath);
-            Path scPackPath = packageScanCentral(srcLocation, scanCentralPath, workspace, model, logger);
+            Path scPackPath = packageScanCentral(srcLocation, scanCentralPath, workspace, model, openSourceAnalysis, logger);
             logger.println("Packaged File Output Path : " + scPackPath);
 
             if (scPackPath != null) {
@@ -92,7 +92,7 @@ class PayloadPackagingImpl {
         return payload.delete();
     }
 
-    private static Path packageScanCentral(FilePath srcLocation, File scanCentralLocation, FilePath outputLocation, JobModel job, PrintStream logger) throws IOException {
+    private static Path packageScanCentral(FilePath srcLocation, File scanCentralLocation, FilePath outputLocation, JobModel job, Boolean openSourceAnalysis, PrintStream logger) throws IOException {
         BufferedReader stdInputVersion = null, stdInput = null;
         String scexec = SystemUtils.IS_OS_WINDOWS ? "scancentral.bat" : "scancentral";
 
@@ -100,8 +100,6 @@ class PayloadPackagingImpl {
             //version check
             logger.println("Checking ScanCentralVersion");
             String scanCentralbatLocation = scanCentralLocation.toPath().resolve(scexec).toString();
-
-            logger.println("JAVA_HOME: " + System.getenv("JAVA_HOME"));
 
             List<String> scanCentralVersionCommandList = new ArrayList<>();
 
@@ -154,6 +152,18 @@ class PayloadPackagingImpl {
 
                 scanCentralPackageCommandList.add(scanCentralbatLocation);
                 scanCentralPackageCommandList.add("package");
+
+                if (openSourceAnalysis){
+                    ComparableVersion minScanCentralOpenSourceSupportVersion = new ComparableVersion("22.1.2");
+                    ComparableVersion oldVersionScanCentralOpenSourceSupportVersionone = new ComparableVersion("21.1.5");
+                    ComparableVersion userScanCentralOpenSourceSupportVersion = new ComparableVersion(scanCentralVersion.substring(0,6));
+                    if (userScanCentralOpenSourceSupportVersion.compareTo(minScanCentralOpenSourceSupportVersion) < 0 && userScanCentralOpenSourceSupportVersion.compareTo(oldVersionScanCentralOpenSourceSupportVersionone) != 0 ) {
+                        logger.println("Warning message : If you are submitting Debricked OSS scan. Scan might fail due to to missing required dependency files");
+                    }else{
+                        scanCentralPackageCommandList.add("--oss");
+                    }
+                }
+
                 scanCentralPackageCommandList.add("--bt");
 
                 switch (buildType) {
@@ -324,21 +334,23 @@ class PayloadPackagingLocal implements PayloadPackaging {
     private PrintStream _logger;
     private JobModel _model;
     private String _technologyStack;
+    private Boolean _openSourceAnalysis;
     private FilePath _payload;
     private FilePath _workspace;
     private String _globalSCPath;
 
-    PayloadPackagingLocal(JobModel model, String technologyStack, String globalSCPath, FilePath workspace, PrintStream logger) {
+    PayloadPackagingLocal(JobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) {
         _logger = logger;
         _model = model;
         _technologyStack = technologyStack;
+        _openSourceAnalysis = openSourceAnalysis;
         _workspace = workspace;
         _globalSCPath = globalSCPath;
     }
 
     @Override
     public FilePath packagePayload() throws IOException {
-        _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _globalSCPath, _workspace, _logger);
+        _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, _logger);
         return _payload;
     }
 
@@ -354,13 +366,15 @@ class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOException
     private RemoteOutputStream _logger;
     private JobModel _model;
     private String _technologyStack;
+    private Boolean _openSourceAnalysis;
     private FilePath _payload;
     private FilePath _workspace;
     private String _globalSCPath;
 
-    PayloadPackagingRemote(JobModel model, String technologyStack, String globalSCPath, FilePath workspace, Launcher launcher, PrintStream logger) {
+    PayloadPackagingRemote(JobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, Launcher launcher, PrintStream logger) {
         _model = model;
         _technologyStack = technologyStack;
+        _openSourceAnalysis = openSourceAnalysis;
         _workspace = workspace;
         _globalSCPath = globalSCPath;
 
@@ -376,7 +390,7 @@ class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOException
     public FilePath call() throws IOException {
         PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
 
-        _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _globalSCPath, _workspace, logger);
+        _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, logger);
         return _payload;
     }
 

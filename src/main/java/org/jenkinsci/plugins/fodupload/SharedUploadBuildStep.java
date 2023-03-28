@@ -456,7 +456,7 @@ public class SharedUploadBuildStep {
             }
 
             String technologyStack = null;
-
+            Boolean openSourceAnalysis = false;
             apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher);
             if (apiConnection != null) {
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
@@ -466,9 +466,8 @@ public class SharedUploadBuildStep {
                 else if (model.getIsPipeline() || releaseId > 0)
                     technologyStack = model.getTechnologyStack();
 
+                GetStaticScanSetupResponse staticScanSetup = staticScanController.getStaticScanSettingsOld(releaseId);
                 if (Utils.isNullOrEmpty(technologyStack)) {
-                    GetStaticScanSetupResponse staticScanSetup = staticScanController.getStaticScanSettingsOld(releaseId);
-
                     if (staticScanSetup == null || Utils.isNullOrEmpty(staticScanSetup.getTechnologyStack())) {
                         logger.println("No scan settings defined for release " + releaseId);
                         build.setResult(Result.FAILURE);
@@ -477,8 +476,12 @@ public class SharedUploadBuildStep {
 
                     technologyStack = staticScanSetup.getTechnologyStack();
                 }
+
+                if (model.getOpenSourceScan() == null) openSourceAnalysis = staticScanSetup.isPerformOpenSourceAnalysis();
+                else openSourceAnalysis = Boolean.parseBoolean(model.getOpenSourceScan());
+
                 String scsetting = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
-                PayloadPackaging packaging = PayloadPackaging.getInstance(model, technologyStack, scsetting, workspace, launcher, logger);
+                PayloadPackaging packaging = PayloadPackaging.getInstance(model, technologyStack, openSourceAnalysis, scsetting, workspace, launcher, logger);
 
                 try {
                     model.setPayload(packaging.packagePayload());
