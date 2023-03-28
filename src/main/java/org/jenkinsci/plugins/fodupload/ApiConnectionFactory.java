@@ -26,11 +26,9 @@ package org.jenkinsci.plugins.fodupload;
 import hudson.Launcher;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
-//import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
-//import org.jenkinsci.plugins.fodupload.models.JobModel;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static org.jenkinsci.plugins.fodupload.Utils.FOD_URL_ERROR_MESSAGE;

@@ -463,7 +463,7 @@ public class FortifyStaticAssessment extends FortifyStep {
             errors = ValidateAuthModel(overrideGlobalAuthConfig);
 
             if (errors.isEmpty()) {
-                // can I construct the api?
+                // ToDo: can I construct the api?
                 // errors = ValidateModel(api, log);
             }
         } catch (FormValidation e) {
@@ -531,8 +531,8 @@ public class FortifyStaticAssessment extends FortifyStep {
             log.println("Error saving settings. Error message: " + ex.toString());
         }
         boolean overrideGlobalAuthConfig = !Utils.isNullOrEmpty(username);
-        //List<String> errors = ValidateModel(overrideGlobalAuthConfig, log);
         List<String> errors = null;
+
         try {
             errors = ValidateAuthModel(overrideGlobalAuthConfig);
 
@@ -680,7 +680,8 @@ public class FortifyStaticAssessment extends FortifyStep {
                         scanCentral = t.getFirst();
                         techStack = t.getSecond();
                     }
-                } else if (vres == ValidationUtils.ScanCentralValidationResult.ScanCentralRequired)
+                }
+                else if (vres == ValidationUtils.ScanCentralValidationResult.ScanCentralRequired)
                     scanCentral = getScanCentralForTechStack(techStack);
                 else if (vres == ValidationUtils.ScanCentralValidationResult.NoSelection) {
                     if (releaseIdInt != null) {

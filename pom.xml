@@ -203,11 +203,6 @@
                 <groupId>org.jenkins-ci.tools</groupId>
                 <artifactId>maven-hpi-plugin</artifactId>
                 <configuration>
-                    <!--!!! Don't commit this !!!-->
-                    <httpConnector>
-                        <host>192.168.21.111</host>
-                        <port>8099</port>
-                    </httpConnector>
                     <loggers>
                         <!-- for local pipeline testing -->
                         <org.jenkinsci.plugins.workflow>FINE</org.jenkinsci.plugins.workflow>
