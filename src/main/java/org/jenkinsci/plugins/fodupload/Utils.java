@@ -13,26 +13,19 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import net.sf.json.JSONObject;
-import okhttp3.Response;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.http.HttpStatus;
 import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
-import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.IFodEnum;
-import org.jenkinsci.plugins.fodupload.models.response.ApplicationApiResponse;
-import org.jenkinsci.plugins.fodupload.models.response.MicroserviceApiResponse;
-import org.jenkinsci.plugins.fodupload.models.response.ReleaseApiResponse;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 public class Utils {
@@ -102,7 +95,7 @@ public class Utils {
         Scope is limited (not all possible use cases covered).
     */
 
-    public static String isValidUrl(String url)  {
+    public static String isValidUrl(String url) {
         if (!url.matches("^https?:\\/\\/([^\\. :;\\?\\+&\\/])+(\\S[a-zA-Z0-9:.\\-\\_]+)[^\\. :;\\?\\+&\\/]+$")) {
             return null;
         }
@@ -155,9 +148,9 @@ public class Utils {
      * Zips a folder, stores it in a temp location and returns the object
      *
      * @param techStack technology stack of the folder to zip
-     * @param workspace location of the files to zip
+     * @param payload   location of the files to zip
      * @param logger    logger to write status text to
-     * at_return a File object
+     *                  at_return a File object
      * @throws IOException no files
      */
     public static File createZipFile(String techStack, FilePath payload, PrintStream logger) throws IOException {
@@ -281,15 +274,15 @@ public class Utils {
     }
 
     public static <E extends Enum<E> & IFodEnum> Boolean isValidEnumValue(Class<E> enumClass, String value) {
-        if(isNullOrEmpty(value)) return false;
+        if (isNullOrEmpty(value)) return false;
         List<E> enums = EnumUtils.getEnumList(enumClass);
         Integer valFromInt = tryParseInt(value, null);
 
-        if(valFromInt != null) {
+        if (valFromInt != null) {
             for (IFodEnum e : enums) {
                 if (e.getIntValue().equals(valFromInt)) return true;
             }
-        } else{
+        } else {
             for (IFodEnum e : enums) {
                 if (e.getStringValue().equals(value)) return true;
             }
@@ -298,7 +291,13 @@ public class Utils {
         return false;
     }
 
-    public static String getLogTimestampFormat(){
+    public static String getLogTimestampFormat() {
         return "yyyy-MM-dd HH:mm:ss.SSS";
+    }
+
+    private final static boolean _traceLogging = System.getenv("FOD_TRACE") != null && System.getenv("FOD_TRACE").equals("true");
+
+    public static boolean traceLogging() {
+        return _traceLogging;
     }
 }

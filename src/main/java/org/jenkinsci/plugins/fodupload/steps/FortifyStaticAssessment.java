@@ -541,7 +541,7 @@ public class FortifyStaticAssessment extends FortifyStep {
                         username,
                         personalAccessToken,
                         tenantId);
-                errors = ValidateModel(ApiConnectionFactory.createApiConnection(authModel, workspace.isRemote(), launcher), log);
+                errors = ValidateModel(ApiConnectionFactory.createApiConnection(authModel, workspace.isRemote(), launcher, log), log);
             }
         } catch (FormValidation e) {
             throw new RuntimeException(e);
@@ -849,7 +849,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public String retrieveCurrentUserSession(JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 UsersController usersController = new UsersController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(usersController.getCurrentUserSession());
@@ -863,7 +863,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public String retrieveAssessmentTypeEntitlements(Integer releaseId, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 AssessmentTypesController assessmentTypesController = new AssessmentTypesController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(assessmentTypesController.getStaticAssessmentTypeEntitlements(releaseId));
@@ -877,7 +877,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public String retrieveAssessmentTypeEntitlementsForAutoProv(String appName, String relName, Boolean isMicroservice, String microserviceName, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 ReleaseController releases = new ReleaseController(apiConnection, null, Utils.createCorrelationId());
                 AssessmentTypesController assessments = new AssessmentTypesController(apiConnection, null, Utils.createCorrelationId());
                 Integer relId = releases.getReleaseIdByName(appName.trim(), relName.trim(), isMicroservice, microserviceName);
@@ -903,7 +903,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public String retrieveStaticScanSettings(Integer releaseId, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 StaticScanController staticScanController = new StaticScanController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(staticScanController.getStaticScanSettings(releaseId));
@@ -917,7 +917,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public String retrieveAuditPreferences(Integer releaseId, Integer assessmentType, Integer frequencyType, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 ReleaseController releaseController = new ReleaseController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(releaseController.getAuditPreferences(releaseId, assessmentType, frequencyType));
@@ -931,7 +931,7 @@ public class FortifyStaticAssessment extends FortifyStep {
         public String retrieveLookupItems(String type, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 LookupItemsController lookupItemsController = new LookupItemsController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(lookupItemsController.getLookupItems(FodEnums.APILookupItemTypes.valueOf(type)));

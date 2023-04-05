@@ -190,7 +190,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
             authModel = AuthenticationModel.fromPersonalAccessToken(username, personalAccessToken, tenantId);
         }
 
-        return ApiConnectionFactory.createApiConnection(authModel, false, null);
+        return ApiConnectionFactory.createApiConnection(authModel, false, null, null);
     }
 
     private boolean isTechStackWithLanguageLevel(int techStack) {
@@ -574,7 +574,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public String retrieveCurrentUserSession(JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 UsersController usersController = new UsersController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(usersController.getCurrentUserSession());
@@ -588,7 +588,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public String retrieveAssessmentTypeEntitlements(Integer releaseId, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 AssessmentTypesController assessmentTypesController = new AssessmentTypesController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(assessmentTypesController.getStaticAssessmentTypeEntitlements(releaseId));
@@ -602,7 +602,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public String retrieveAuditPreferences(Integer releaseId, Integer assessmentType, Integer frequencyType, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 ReleaseController releaseController = new ReleaseController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(releaseController.getAuditPreferences(releaseId, assessmentType, frequencyType));
@@ -616,7 +616,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public String retrieveLookupItems(String type, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 LookupItemsController lookupItemsController = new LookupItemsController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(lookupItemsController.getLookupItems(FodEnums.APILookupItemTypes.valueOf(type)));
@@ -630,7 +630,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
         public String retrieveStaticScanSettings(Integer releaseId, JSONObject authModelObject) {
             try {
                 AuthenticationModel authModel = Utils.getAuthModelFromObject(authModelObject);
-                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+                FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
                 StaticScanController staticScanController = new StaticScanController(apiConnection, null, Utils.createCorrelationId());
 
                 return Utils.createResponseViewModel(staticScanController.getStaticScanSettings(releaseId));

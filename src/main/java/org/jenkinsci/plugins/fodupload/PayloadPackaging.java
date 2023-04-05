@@ -36,6 +36,7 @@ public interface PayloadPackaging {
 
 class PayloadPackagingImpl {
     static FilePath performPackaging(JobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
+        logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;
 

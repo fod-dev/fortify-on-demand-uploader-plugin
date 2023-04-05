@@ -19,7 +19,7 @@ public class SharedCreateApplicationForm {
     //<editor-fold desc="Create Application">
 
     public static Result<CreateApplicationResponse> submitCreateApplication(AuthenticationModel authModel, JSONObject formObject) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         String correlationId = Utils.createCorrelationId();
 
         System.out.println("Creating an application with FOD API. [CorrelationId = " + correlationId + "]");
@@ -96,7 +96,7 @@ public class SharedCreateApplicationForm {
     //<editor-fold desc="Create Microservice">
 
     public static Result<Integer> submitCreateMicroservice(AuthenticationModel authModel, JSONObject formObject) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         String correlationId = Utils.createCorrelationId();
 
         System.out.println("Creating a microservice with FOD API. [CorrelationId = " + correlationId + "]");
@@ -143,7 +143,7 @@ public class SharedCreateApplicationForm {
     //<editor-fold desc="Create Release">
 
     public static Result<Integer> submitCreateRelease(AuthenticationModel authModel, JSONObject formObject) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         String correlationId = Utils.createCorrelationId();
 
         System.out.println("Creating a release with FOD API. [CorrelationId = " + correlationId + "]");

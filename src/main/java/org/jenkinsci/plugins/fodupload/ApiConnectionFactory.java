@@ -31,6 +31,8 @@ import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import java.io.PrintStream;
+
 import static org.jenkinsci.plugins.fodupload.Utils.FOD_URL_ERROR_MESSAGE;
 import static org.jenkinsci.plugins.fodupload.Utils.isValidUrl;
 
@@ -40,7 +42,7 @@ import static org.jenkinsci.plugins.fodupload.Utils.isValidUrl;
 public class ApiConnectionFactory {
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-    public static FodApiConnection createApiConnection(AuthenticationModel model, boolean executeOnRemoteAgent, Launcher launcher) throws FormValidation {
+    public static FodApiConnection createApiConnection(AuthenticationModel model, boolean executeOnRemoteAgent, Launcher launcher, PrintStream logger) throws FormValidation {
         FodApiConnection apiConnection = null;
         if (GlobalConfiguration.all() != null && GlobalConfiguration.all().get(FodGlobalDescriptor.class) != null) {
             if (model.getOverrideGlobalConfig()) {
@@ -57,10 +59,10 @@ public class ApiConnectionFactory {
                         apiUrl,
                         FodEnums.GrantType.PASSWORD,
                         "api-tenant",
-                        executeOnRemoteAgent, launcher);
+                        executeOnRemoteAgent, launcher, logger);
 
             } else {
-                apiConnection = GlobalConfiguration.all().get(FodGlobalDescriptor.class).createFodApiConnection(executeOnRemoteAgent, launcher);
+                apiConnection = GlobalConfiguration.all().get(FodGlobalDescriptor.class).createFodApiConnection(executeOnRemoteAgent, launcher, logger);
             }
         }
         return apiConnection;

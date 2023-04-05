@@ -22,7 +22,7 @@ public class FodApiConnection {
     private final static int WRITE_TIMEOUT = 600; // seconds
     private final static int READ_TIMEOUT = 600; // seconds
 
-    private final static TokenCacheManager tokenCacheManager = new TokenCacheManager();
+    private final TokenCacheManager tokenCacheManager;
 
     private String baseUrl;
     private String apiUrl;
@@ -37,6 +37,7 @@ public class FodApiConnection {
     private ProxyConfiguration proxy = null;
 
     private Launcher _launcher = null;
+    private PrintStream _httpLogger = null;
 
     /**
      * Constructor that encapsulates the apiConnection
@@ -45,26 +46,26 @@ public class FodApiConnection {
      * @param secret  apiConnection secret
      * @param baseUrl apiConnection baseUrl
      */
-    public FodApiConnection(final String id, final String secret, final String baseUrl, final String apiUrl, final GrantType grantType, final String scope, boolean executeOnRemoteAgent, Launcher launcher) {
+    public FodApiConnection(final String id, final String secret, final String baseUrl, final String apiUrl, final GrantType grantType, final String scope, boolean executeOnRemoteAgent, Launcher launcher, PrintStream logger) {
         this.id = id;
         this.secret = secret;
         this.baseUrl = baseUrl;
         this.apiUrl = apiUrl;
         this.grantType = grantType;
         this.scope = scope;
+        this.tokenCacheManager = new TokenCacheManager(logger);
 
         //Jenkins instance = Jenkins.getInstance();
         Jenkins instance = Jenkins.getInstanceOrNull();
 
-        if (instance != null)
-            proxy = instance.proxy;
+        if (instance != null) proxy = instance.proxy;
+        _httpLogger = org.jenkinsci.plugins.fodupload.Utils.traceLogging() ? logger : null;
 
         // ToDo: implement optional env var for proxy
         if (executeOnRemoteAgent) {
             _launcher = launcher;
-            client = new RemoteAgentClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher);
-        }
-        else client = new ServerClient(Utils.CreateOkHttpClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy));
+            client = new RemoteAgentClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher, _httpLogger);
+        } else client = new ServerClient(Utils.CreateOkHttpClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy), _httpLogger);
     }
 
     /**
@@ -153,8 +154,9 @@ public class FodApiConnection {
                     .build();
 
             return ((ServerClient) client).execute(req);
+        } else {
+            return request(Utils.OkHttpRequestToHttpRequest(request));
         }
-        else return request(Utils.OkHttpRequestToHttpRequest(request));
     }
 
     public ResponseContent request(HttpRequest request) throws IOException {
@@ -190,6 +192,10 @@ public class FodApiConnection {
         } else {
             return new ScanPayloadUploadRemote(uploadRequest, correlationId, fragUrl, getTokenFromCache(), CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher, logger);
         }
+    }
+
+    private void log(String msg) {
+        if (_httpLogger != null) _httpLogger.println(msg);
     }
 
 }

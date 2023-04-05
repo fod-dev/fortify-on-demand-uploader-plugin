@@ -9,6 +9,7 @@ import org.jenkinsci.plugins.fodupload.FodApi.ResponseContent;
 import org.jenkinsci.plugins.fodupload.models.FodEnums;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +18,15 @@ public class TokenCacheManager {
 
     // delete tokens that are this much close to expiry (in seconds)
     private static int DELETE_TOKEN_BEFORE_SECONDS = 120;
+    private final static HashMap<String, Token> tokens = new HashMap<>();
+    private PrintStream _logger;
 
-    private HashMap<String, Token> tokens;
+    public TokenCacheManager(PrintStream logger) {
+        _logger = logger;
+    }
 
-    public TokenCacheManager() {
-        this.tokens = new HashMap<>();
+    private void log(String msg) {
+        if (_logger != null) _logger.println(msg);
     }
 
     public synchronized String getToken(IHttpClient client, String apiUrl, FodEnums.GrantType grantType, String scope, String id, String secret) throws IOException {
@@ -30,6 +35,7 @@ public class TokenCacheManager {
 
         if (!tokens.containsKey(key)) {
             Token token = retrieveToken(client, apiUrl, grantType, scope, id, secret);
+
             tokens.put(key, token);
             return token.value;
         }
@@ -53,11 +59,13 @@ public class TokenCacheManager {
         FormBodyRequest request = new FormBodyRequest(apiUrl + "/oauth/token", HttpRequest.Verb.Post);
 
         if (grantType == FodEnums.GrantType.CLIENT_CREDENTIALS) {
+            log("Logging into API with token");
             request.addValue("scope", scope)
                     .addValue("grant_type", "client_credentials")
                     .addValue("client_id", id)
                     .addValue("client_secret", secret);
         } else if (grantType == FodEnums.GrantType.PASSWORD) {
+            log("Logging into API with PAT");
             request.addValue("scope", scope)
                     .addValue("grant_type", "password")
                     .addValue("username", id)

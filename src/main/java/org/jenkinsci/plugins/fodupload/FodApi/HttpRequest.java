@@ -57,7 +57,17 @@ public abstract class HttpRequest implements Serializable {
             this._val = val;
         }
 
-
     }
+
+    public static Verb parseVerb(String val) {
+        val = val.toUpperCase(Locale.ROOT);
+
+        for (Verb v : Verb.values()) {
+            if (v._val.equals(val)) return v;
+        }
+
+        throw new IllegalArgumentException("Invalid Verb " + val);
+    }
+
 }
 

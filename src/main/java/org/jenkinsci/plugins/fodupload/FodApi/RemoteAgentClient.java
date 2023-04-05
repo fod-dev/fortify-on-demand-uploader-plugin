@@ -5,6 +5,7 @@ import hudson.ProxyConfiguration;
 import hudson.remoting.VirtualChannel;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 class RemoteAgentClient implements IHttpClient {
     private int _connectionTimeout;
@@ -12,19 +13,22 @@ class RemoteAgentClient implements IHttpClient {
     private int _readTimeout;
     private ProxyConfiguration _proxy;
     private VirtualChannel _channel;
+    private PrintStream _logger;
 
-    public RemoteAgentClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy, Launcher launcher) {
+    public RemoteAgentClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy, Launcher launcher, PrintStream logger) {
         this(connectionTimeout, writeTimeout, readTimeout, proxy);
 
+        _logger = logger;
         _channel = launcher.getChannel();
         if (_channel == null) {
             throw new IllegalStateException("Launcher doesn't support remoting but it is required");
         }
     }
 
-    public RemoteAgentClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy, VirtualChannel channel) {
+    public RemoteAgentClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy, VirtualChannel channel, PrintStream logger) {
         this(connectionTimeout, writeTimeout, readTimeout, proxy);
 
+        _logger = logger;
         _channel = channel;
         if (channel == null) {
             throw new IllegalStateException("Launcher doesn't support remoting but it is required");
@@ -40,7 +44,7 @@ class RemoteAgentClient implements IHttpClient {
     }
 
     public ResponseContent execute(HttpRequest request) throws IOException {
-        RemoteProxyCallable callable = new RemoteProxyCallable(request, _connectionTimeout, _writeTimeout, _readTimeout, _proxy);
+        RemoteProxyCallable callable = new RemoteProxyCallable(request, _connectionTimeout, _writeTimeout, _readTimeout, _proxy, _logger);
 
         try {
             return _channel.call(callable);

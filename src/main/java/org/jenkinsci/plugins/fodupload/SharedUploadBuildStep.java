@@ -13,6 +13,7 @@ import jenkins.model.Jenkins;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
+import org.jenkinsci.plugins.fodupload.FodApi.HttpRequest;
 import org.jenkinsci.plugins.fodupload.controllers.ApplicationsController;
 import org.jenkinsci.plugins.fodupload.controllers.StaticScanController;
 import org.jenkinsci.plugins.fodupload.models.AuthenticationModel;
@@ -248,7 +249,7 @@ public class SharedUploadBuildStep {
             return FormValidation.error("Personal Access Token is empty!");
         if (Utils.isNullOrEmpty(tenantId))
             return FormValidation.error("Tenant ID is null.");
-        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant", false, null);
+        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant", false, null, null);
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
 
     }
@@ -328,13 +329,13 @@ public class SharedUploadBuildStep {
 
     @SuppressWarnings("unused")
     public static GenericListResponse<ApplicationApiResponse> customFillUserSelectedApplicationList(String searchTerm, int offset, int limit, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         ApplicationsController applicationController = new ApplicationsController(apiConnection, null, null);
         return applicationController.getApplicationList(searchTerm, offset, limit);
     }
 
     public static org.jenkinsci.plugins.fodupload.models.Result<ApplicationApiResponse> customFillUserApplicationById(int applicationId, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         ApplicationsController applicationsController = new ApplicationsController(apiConnection, null, null);
         org.jenkinsci.plugins.fodupload.models.Result<ApplicationApiResponse> result = applicationsController.getApplicationById(applicationId);
 
@@ -342,19 +343,19 @@ public class SharedUploadBuildStep {
     }
 
     public static List<MicroserviceApiResponse> customFillUserSelectedMicroserviceList(int applicationId, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         ApplicationsController applicationController = new ApplicationsController(apiConnection, null, null);
         return applicationController.getMicroserviceListByApplication(applicationId);
     }
 
     public static GenericListResponse<ReleaseApiResponse> customFillUserSelectedReleaseList(int applicationId, int microserviceId, String searchTerm, Integer offset, Integer limit, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         ApplicationsController applicationController = new ApplicationsController(apiConnection, null, null);
         return applicationController.getReleaseListByApplication(applicationId, microserviceId, searchTerm, offset, limit);
     }
 
     public static org.jenkinsci.plugins.fodupload.models.Result<ReleaseApiResponse> customFillUserReleaseById(int releaseId, AuthenticationModel authModel) throws IOException {
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(authModel, false, null, null);
         ApplicationsController applicationsController = new ApplicationsController(apiConnection, null, null);
         org.jenkinsci.plugins.fodupload.models.Result<ReleaseApiResponse> result = applicationsController.getReleaseById(releaseId);
 
@@ -457,28 +458,32 @@ public class SharedUploadBuildStep {
 
             String technologyStack = null;
             Boolean openSourceAnalysis = false;
-            apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher);
+
+            apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher, logger);
+
             if (apiConnection != null) {
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
 
-                if (releaseId <= 0 && model.loadBsiToken())
-                    technologyStack = model.getBsiToken().getTechnologyStack();
-                else if (model.getIsPipeline() || releaseId > 0)
-                    technologyStack = model.getTechnologyStack();
+                if (releaseId <= 0 && model.loadBsiToken()) technologyStack = model.getBsiToken().getTechnologyStack();
+                else if (model.getIsPipeline() || releaseId > 0) technologyStack = model.getTechnologyStack();
 
-                GetStaticScanSetupResponse staticScanSetup = staticScanController.getStaticScanSettingsOld(releaseId);
-                if (Utils.isNullOrEmpty(technologyStack)) {
-                    if (staticScanSetup == null || Utils.isNullOrEmpty(staticScanSetup.getTechnologyStack())) {
-                        logger.println("No scan settings defined for release " + releaseId);
-                        build.setResult(Result.FAILURE);
-                        return;
+                if (Utils.isNullOrEmpty(technologyStack) || model.getOpenSourceScan() == null) {
+                    logger.println("Getting scan settings for release " + releaseId);
+                    GetStaticScanSetupResponse staticScanSetup = staticScanController.getStaticScanSettingsOld(releaseId);
+
+                    if (Utils.isNullOrEmpty(technologyStack)) {
+                        if (staticScanSetup == null || Utils.isNullOrEmpty(staticScanSetup.getTechnologyStack())) {
+                            logger.println("No scan settings defined for release " + releaseId);
+                            build.setResult(Result.FAILURE);
+                            return;
+                        }
+                        technologyStack = staticScanSetup.getTechnologyStack();
                     }
 
-                    technologyStack = staticScanSetup.getTechnologyStack();
+                    if (model.getOpenSourceScan() == null) openSourceAnalysis = staticScanSetup.isPerformOpenSourceAnalysis();
                 }
 
-                if (model.getOpenSourceScan() == null) openSourceAnalysis = staticScanSetup.isPerformOpenSourceAnalysis();
-                else openSourceAnalysis = Boolean.parseBoolean(model.getOpenSourceScan());
+                if (model.getOpenSourceScan() != null) openSourceAnalysis = Boolean.parseBoolean(model.getOpenSourceScan());
 
                 String scsetting = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
                 PayloadPackaging packaging = PayloadPackaging.getInstance(model, technologyStack, openSourceAnalysis, scsetting, workspace, launcher, logger);

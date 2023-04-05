@@ -158,7 +158,7 @@ public class SharedPollingBuildStep {
         if (Utils.isNullOrEmpty(tenantId))
             return FormValidation.error("Tenant ID is null.");
 
-        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant", false, null);
+        testApi = new FodApiConnection(tenantId + "\\" + username, plainTextPersonalAccessToken, baseUrl, apiUrl, FodEnums.GrantType.PASSWORD, "api-tenant", false, null, null);
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
     }
 
@@ -249,7 +249,7 @@ public class SharedPollingBuildStep {
             return;
         }
 
-        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher);
+        FodApiConnection apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher, logger);
 
         try {
 

@@ -297,6 +297,7 @@ public class StaticScanController extends ControllerBase {
                 .addHeader("CorrelationId", getCorrelationId())
                 .get()
                 .build();
+
         ResponseContent response = apiConnection.request(request);
 
         if (!response.isSuccessful()) {
