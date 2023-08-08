@@ -154,13 +154,15 @@ class PayloadPackagingImpl {
                 scanCentralPackageCommandList.add(scanCentralbatLocation);
                 scanCentralPackageCommandList.add("package");
 
-                if (openSourceAnalysis){
+                if (Utils.traceLogging()) scanCentralPackageCommandList.add("-debug");
+
+                if (openSourceAnalysis) {
                     ComparableVersion minScanCentralOpenSourceSupportVersion = new ComparableVersion("22.1.2");
                     ComparableVersion oldVersionScanCentralOpenSourceSupportVersionone = new ComparableVersion("21.1.5");
-                    ComparableVersion userScanCentralOpenSourceSupportVersion = new ComparableVersion(scanCentralVersion.substring(0,6));
-                    if (userScanCentralOpenSourceSupportVersion.compareTo(minScanCentralOpenSourceSupportVersion) < 0 && userScanCentralOpenSourceSupportVersion.compareTo(oldVersionScanCentralOpenSourceSupportVersionone) != 0 ) {
+                    ComparableVersion userScanCentralOpenSourceSupportVersion = new ComparableVersion(scanCentralVersion.substring(0, 6));
+                    if (userScanCentralOpenSourceSupportVersion.compareTo(minScanCentralOpenSourceSupportVersion) < 0 && userScanCentralOpenSourceSupportVersion.compareTo(oldVersionScanCentralOpenSourceSupportVersionone) != 0) {
                         logger.println("Warning message : If you are submitting Debricked OSS scan. Scan might fail due to to missing required dependency files");
-                    }else{
+                    } else {
                         scanCentralPackageCommandList.add("--oss");
                     }
                 }
