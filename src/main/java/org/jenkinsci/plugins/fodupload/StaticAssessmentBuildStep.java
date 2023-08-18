@@ -79,6 +79,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                                      boolean scanCentralSkipBuild,
                                      String scanCentralBuildCommand,
                                      String scanCentralBuildFile,
+                                     String scanCentralExcludeFiles,
                                      String scanCentralBuildToolVersion,
                                      String scanCentralVirtualEnv,
                                      String scanCentralRequirementFile) throws IllegalArgumentException, FormValidation {
@@ -178,6 +179,7 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
                 scanCentralSkipBuild,
                 scanCentralBuildCommand,
                 scanCentralBuildFile,
+                scanCentralExcludeFiles,
                 scanCentralBuildToolVersion,
                 scanCentralVirtualEnv,
                 scanCentralRequirementFile);
@@ -377,6 +379,10 @@ public class StaticAssessmentBuildStep extends Recorder implements SimpleBuildSt
 
     public String getScanCentralBuildFile() {
         return sharedBuildStep.getModel().getScanCentralBuildFile();
+    }
+
+    public String getScanCentralExcludeFiles() {
+        return sharedBuildStep.getModel().getScanCentralExcludeFiles();
     }
 
     public String getScanCentralBuildToolVersion() {

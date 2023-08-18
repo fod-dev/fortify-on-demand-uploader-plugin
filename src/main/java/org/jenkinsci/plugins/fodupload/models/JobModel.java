@@ -31,6 +31,7 @@ public class JobModel implements Serializable {
     private boolean scanCentralSkipBuild;
     private String scanCentralBuildCommand;
     private String scanCentralBuildFile;
+    private String scanCentralExcludeFiles;
     private String scanCentralBuildToolVersion;
     private String scanCentralVirtualEnv;
     private String scanCentralRequirementFile;
@@ -73,6 +74,7 @@ public class JobModel implements Serializable {
      * @param scanCentralSkipBuild          Desc
      * @param scanCentralBuildCommand       Desc
      * @param scanCentralBuildFile          Desc
+     * @param scanCentralExcludeFiles       Desc
      * @param scanCentralBuildToolVersion   Desc
      * @param scanCentralVirtualEnv         Desc
      * @param scanCentralRequirementFile    Desc
@@ -93,6 +95,7 @@ public class JobModel implements Serializable {
                     boolean scanCentralSkipBuild,
                     String scanCentralBuildCommand,
                     String scanCentralBuildFile,
+                    String scanCentralExcludeFiles,
                     String scanCentralBuildToolVersion,
                     String scanCentralVirtualEnv,
                     String scanCentralRequirementFile,
@@ -131,6 +134,7 @@ public class JobModel implements Serializable {
         this.scanCentralSkipBuild = scanCentralSkipBuild;
         this.scanCentralBuildCommand = scanCentralBuildCommand;
         this.scanCentralBuildFile = scanCentralBuildFile;
+        this.scanCentralExcludeFiles = scanCentralExcludeFiles;
         this.scanCentralBuildToolVersion = scanCentralBuildToolVersion;
         this.scanCentralVirtualEnv = scanCentralVirtualEnv;
         this.scanCentralRequirementFile = scanCentralRequirementFile;
@@ -229,6 +233,8 @@ public class JobModel implements Serializable {
     public String getScanCentralBuildFile() {
         return scanCentralBuildFile;
     }
+
+    public String getScanCentralExcludeFiles() {return scanCentralExcludeFiles;}
 
     public String getScanCentralBuildToolVersion() {
         return scanCentralBuildToolVersion;

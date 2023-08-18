@@ -590,6 +590,7 @@ class PipelineGenerator {
         let sssb = '';
         let ssbc = '';
         let ssbf = '';
+        let ssef = '';
         let ssbtv = '';
         let ssve = '';
         let ssrf = '';
@@ -670,22 +671,28 @@ class PipelineGenerator {
                 sssb = this.getHiddenFieldCheckValue('#scanCentralSkipBuildCheck');
                 ssbc = jq('#scanCentralBuildCommandInput').val();
                 ssbf = jq('#scanCentralBuildFileInput').val();
+
                 break;
             case _scanCentralBuildTypes.MSBuild:
                 ssbc = jq('#scanCentralBuildCommandInput').val();
                 ssbf = jq('#scanCentralBuildFileInput').val();
+
                 break;
             case _scanCentralBuildTypes.Python:
                 ssve = jq('#scanCentralVirtualEnvInput').val();
                 ssrf = jq('#scanCentralRequirementFileInput').val();
+
                 break;
             case _scanCentralBuildTypes.PHP:
             case _scanCentralBuildTypes.Go:
+
                 break;
             case 'None':
                 ss = '';
                 break;
         }
+        ssef = jq('#scanCentralExcludeFilesInput').val();
+
         if (jq('#sonatypeEnabled').val() && jq('#technologyStackSelect').val() > 0 && techIdsWithOutOpenSourceSupport.includes(jq('#technologyStackSelect').val())) {
             jq('#sonatypeEnabled').prop('checked', false);
             son = false;
@@ -714,6 +721,7 @@ class PipelineGenerator {
         jq('#scanCentralSkipBuild').val(sssb);
         jq('#scanCentralBuildCommand').val(ssbc);
         jq('#scanCentralBuildFile').val(ssbf);
+        jq('#scanCentralExcludeFiles').val(ssef);
         jq('#scanCentralBuildToolVersion').val(ssbtv);
         jq('#scanCentralVirtualEnv').val(ssve);
         jq('#scanCentralRequirementFile').val(ssrf);
@@ -918,6 +926,9 @@ class PipelineGenerator {
 
         jq('#scanCentralBuildFileInput')
             .change(_ => this.populateHiddenFields());
+
+        jq('#scanCentralExcludeFilesInput')
+                    .change(_ => this.populateHiddenFields());
 
         jq('#scanCentralBuildToolVersionInput')
             .change(_ => this.populateHiddenFields());

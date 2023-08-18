@@ -154,7 +154,12 @@ class PayloadPackagingImpl {
                 scanCentralPackageCommandList.add(scanCentralbatLocation);
                 scanCentralPackageCommandList.add("package");
 
-                if (Utils.traceLogging()) scanCentralPackageCommandList.add("-debug");
+                String extraParams = System.getenv("FOD_SC_EP");
+
+                if (!Utils.isNullOrEmpty(extraParams)) {
+                    logger.println("Including additional ScanCentral arguments set in environment variable FOD_SC_EP '" + extraParams + "'");
+                    scanCentralPackageCommandList.add(extraParams);
+                }
 
                 if (openSourceAnalysis) {
                     ComparableVersion minScanCentralOpenSourceSupportVersion = new ComparableVersion("22.1.2");
@@ -193,6 +198,7 @@ class PayloadPackagingImpl {
                             scanCentralPackageCommandList.add("--build-file");
                             scanCentralPackageCommandList.add("\"" + job.getScanCentralBuildFile() + "\"");
                         }
+
                         break;
                     case MSBuild:
                         scanCentralPackageCommandList.add("msbuild");
@@ -206,6 +212,7 @@ class PayloadPackagingImpl {
                         } else {
                             throw new IOException("Build File is a required field for msbuild build type. Please fill in the .sln file name in the current source folder ");
                         }
+
                         break;
                     case Python:
                         scanCentralPackageCommandList.add("none");
@@ -234,6 +241,16 @@ class PayloadPackagingImpl {
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid ScanCentral build type: " + buildType);
+                }
+                if(!Utils.isNullOrEmpty(job.getScanCentralExcludeFiles())){
+                    ComparableVersion minScanCentralExcludeFilesSupportVersion = new ComparableVersion("22.2.0");
+                    ComparableVersion userScanCentralVersion = new ComparableVersion(scanCentralVersion.substring(0, 6));
+                    if (userScanCentralVersion.compareTo(minScanCentralExcludeFilesSupportVersion) < 0 ) {
+                        logger.println("Warning message : Scan Central Client version used does not support file exclusion. Please download and use Scan Central 22.2 or above to get the functionality.");
+                    } else {
+                        scanCentralPackageCommandList.add("--exclude");
+                        scanCentralPackageCommandList.add("\"" + job.getScanCentralExcludeFiles()+ "\"");
+                    }
                 }
                 scanCentralPackageCommandList.add("--o");
                 scanCentralPackageCommandList.add("\"" + outputZipFolderPath.toString() + "\"");
