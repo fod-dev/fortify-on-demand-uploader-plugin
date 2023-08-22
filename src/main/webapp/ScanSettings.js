@@ -267,7 +267,7 @@ class ScanSettings {
                 .each((i, e) => {
                     let jqe = jq(e);
 
-                    if (jqe.hasClass(scClass)) jqe.show();
+                    if (jqe.hasClass(scClass) || jqe.hasClass('fode-row-sc-all')) jqe.show();
                     else jqe.hide();
                 });
 

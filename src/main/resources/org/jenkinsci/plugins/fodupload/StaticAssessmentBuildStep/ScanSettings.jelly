@@ -99,7 +99,7 @@
                 </f:entry>
                  <f:entry title="Exclude Files" field="scanCentralExcludeFiles" help="/plugin/fortify-on-demand-uploader/help-scanCentral-excludeFile.html">
                     <div id="excludeFilesForm"
-                         class="fode-field spinner-container fode-row-sc fode-row-sc-gradle fode-row-sc-maven fode-row-sc-msbuild fode-row-sc-php fode-row-sc-python">
+                         class="fode-field spinner-container fode-row-sc fode-row-sc-all">
                          <f:textbox></f:textbox>
                     </div>
                  </f:entry>
