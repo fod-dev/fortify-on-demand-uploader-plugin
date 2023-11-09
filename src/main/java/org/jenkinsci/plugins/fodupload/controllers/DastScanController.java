@@ -16,9 +16,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-
-import static org.jenkinsci.plugins.fodupload.Config.FodGlobalConstants.FodDastApiConstants.DastWebSiteScanPutApi;
-import static org.jenkinsci.plugins.fodupload.Config.FodGlobalConstants.FodDastApiConstants.DastWorkflowScanPutApi;
+import static org.jenkinsci.plugins.fodupload.Config.FodGlobalConstants.FodDastApiConstants.*;
 
 public class DastScanController extends ControllerBase {
     /**
@@ -90,6 +88,22 @@ public class DastScanController extends ControllerBase {
                     temp = File.createTempFile("worflowdriven", requestModel.releaseId);
                     fileName = "WorkflowDriven.webmacro";
                     break;
+                case OpenAPIDefinition:
+                    temp = File.createTempFile("openAPIDefinition", requestModel.releaseId);
+                    fileName = "OpenAPIDefinition.json";
+                    break;
+                case GRPCDefinition:
+                    temp = File.createTempFile("grpcDefinition", requestModel.releaseId);
+                    fileName = "GRPCDefinition.proto";
+                    break;
+                case GraphQLDefinition:
+                    temp = File.createTempFile("graphQLDefinition", requestModel.releaseId);
+                    fileName = "GraphQLDefinition.json";
+                    break;
+                case PostmanCollection:
+                    temp = File.createTempFile("postmanCollection", requestModel.releaseId);
+                    fileName = "PostmanCollection.json";
+                    break;
             }
             if (temp == null) {
                 throw new RuntimeException("File upload not available");
@@ -159,6 +173,86 @@ public class DastScanController extends ControllerBase {
         Request request = new Request.Builder().url(urlBuilder.build()).addHeader("Accept", "application/json").addHeader("CorrelationId", getCorrelationId()).get().build();
         return apiConnection.requestTyped(request, new TypeToken<GetDastScanSettingResponse>() {
         }.getType());
+    }
+
+    public PutDastScanSetupResponse putDastOpenApiScanSettings(final Integer releaseId, PutDastAutomatedOpenApiReqModel settings) throws IOException {
+
+        String requestContent = Json.getInstance().toJson(settings);
+
+        System.out.println("req content " + requestContent);
+
+        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder()
+                .addPathSegments(String.format(DastOpenApiScanPutApi, releaseId));
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .put(RequestBody.create(MediaType.parse("application/json"), requestContent))
+                .build();
+        ResponseContent response = apiConnection.request(request);
+        PutDastScanSetupResponse putDastScanSetupResponse = new PutDastScanSetupResponse();
+        putDastScanSetupResponse = (PutDastScanSetupResponse) convertHttpResponseIntoDastApiResponse(response, putDastScanSetupResponse);
+        return putDastScanSetupResponse;
+    }
+
+    public PutDastScanSetupResponse putDastGrpcScanSettings(final Integer releaseId, PutDastAutomatedGrpcReqModel settings) throws IOException {
+
+        String requestContent = Json.getInstance().toJson(settings);
+
+        System.out.println("req content " + requestContent);
+
+        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder()
+                .addPathSegments(String.format(DastGrpcScanPutApi, releaseId));
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .put(RequestBody.create(MediaType.parse("application/json"), requestContent))
+                .build();
+        ResponseContent response = apiConnection.request(request);
+        PutDastScanSetupResponse putDastScanSetupResponse = new PutDastScanSetupResponse();
+        putDastScanSetupResponse = (PutDastScanSetupResponse) convertHttpResponseIntoDastApiResponse(response, putDastScanSetupResponse);
+        return putDastScanSetupResponse;
+    }
+
+    public PutDastScanSetupResponse putDastGraphQLScanSettings(final Integer releaseId, PutDastAutomatedGraphQlReqModel settings) throws IOException {
+
+        String requestContent = Json.getInstance().toJson(settings);
+
+        System.out.println("req content " + requestContent);
+
+        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder()
+                .addPathSegments(String.format(DastGraphQLScanPutApi, releaseId));
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .put(RequestBody.create(MediaType.parse("application/json"), requestContent))
+                .build();
+        ResponseContent response = apiConnection.request(request);
+        PutDastScanSetupResponse putDastScanSetupResponse = new PutDastScanSetupResponse();
+        putDastScanSetupResponse = (PutDastScanSetupResponse) convertHttpResponseIntoDastApiResponse(response, putDastScanSetupResponse);
+        return putDastScanSetupResponse;
+    }
+
+    public PutDastScanSetupResponse putDastPostmanScanSettings(final Integer releaseId, PutDastAutomatedPostmanReqModel settings) throws IOException {
+
+        String requestContent = Json.getInstance().toJson(settings);
+
+        System.out.println("req content " + requestContent);
+
+        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder()
+                .addPathSegments(String.format(DastPostmanScanPutApi, releaseId));
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .addHeader("Accept", "application/json")
+                .addHeader("CorrelationId", getCorrelationId())
+                .put(RequestBody.create(MediaType.parse("application/json"), requestContent))
+                .build();
+        ResponseContent response = apiConnection.request(request);
+        PutDastScanSetupResponse putDastScanSetupResponse = new PutDastScanSetupResponse();
+        putDastScanSetupResponse = (PutDastScanSetupResponse) convertHttpResponseIntoDastApiResponse(response, putDastScanSetupResponse);
+        return putDastScanSetupResponse;
     }
 
     private <T> T convertHttpResponseIntoDastApiResponse(ResponseContent response, T fodApiResponse) throws IOException {
