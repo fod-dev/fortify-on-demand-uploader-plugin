@@ -491,8 +491,13 @@ class DastScanSettings {
         var inputId = openApiSettings.sourceType == 'Url' ? 'openApiInputUrl' : 'openApiInputFile';
         this.onApiTypeChanged();
         jq('#' + inputId).trigger('click');
-        jq('#dast-openApi-url input').val(openApiSettings.sourceUrn);
         jq('#dast-openApi-api-key input').val(openApiSettings.apiKey);
+        if(openApiSettings.sourceType == 'Url'){
+        jq('#dast-openApi-url input').val(openApiSettings.sourceUrn);
+        }
+        else{
+           //ToDo : Write code for showing file name
+         }
     }
     setGraphQlSettings(graphQlSettings){
         jq('#apiTypeList').val('graphQl');
@@ -502,8 +507,8 @@ class DastScanSettings {
          jq('#dast-graphQL-api-host input').val(graphQlSettings.host);
          jq('#dast-graphQL-api-servicePath input').val(graphQlSettings.servicePath);
          jq('#dast-graphQL-schemeType input').val(graphQlSettings.schemeType);
-         if(graphQlSettings.SourceType == 'Url'){
-         jq('#dast-graphQL-url').val(graphQlSettings.sourceUrn);
+         if(graphQlSettings.sourceType == 'Url'){
+         jq('#dast-graphQL-url input').val(graphQlSettings.sourceUrn);
          }
          else{
           //ToDo : Write code for showing file name
