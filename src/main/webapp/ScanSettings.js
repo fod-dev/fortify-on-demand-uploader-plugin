@@ -47,7 +47,7 @@ class ScanSettings {
         let at = this.assessments ? this.assessments[atval] : null;
 
         entsel.find('option,optgroup').remove();
-        debugger;
+
         if (at) {
             let available = at.entitlementsSorted.filter(e => e.id > 0);
             let forPurchase = at.entitlementsSorted.filter(e => e.id <= 0);

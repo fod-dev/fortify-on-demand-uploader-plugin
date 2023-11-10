@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import static org.jenkinsci.plugins.fodupload.Config.FodGlobalConstants.FodDastApiConstants.*;
+import static org.jenkinsci.plugins.fodupload.Config.FodGlobalConstants.FodDastApiEndpoint.*;
 
 public class DastScanController extends ControllerBase {
     /**
@@ -115,7 +115,7 @@ public class DastScanController extends ControllerBase {
 
             HttpUrl.Builder urlBuilder = apiConnection.urlBuilder()
                     .addQueryParameter("dastFileType", (requestModel.dastFileType.getValue()))
-                    .addPathSegments(String.format(FodGlobalConstants.FodDastApiConstants.DastFileUploadPatchApi, Integer.parseInt(requestModel.releaseId)));
+                    .addPathSegments(String.format(FodGlobalConstants.FodDastApiEndpoint.DastFileUploadPatchApi, Integer.parseInt(requestModel.releaseId)));
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
@@ -150,7 +150,7 @@ public class DastScanController extends ControllerBase {
 
     public PostDastStartScanResponse StartDastScan(Integer releaseId) throws IOException {
 
-        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder().addPathSegments(String.format(FodGlobalConstants.FodDastApiConstants.DastStartScanAPi, releaseId));
+        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder().addPathSegments(String.format(FodGlobalConstants.FodDastApiEndpoint.DastStartScanAPi, releaseId));
         Request request = new Request.Builder()
                 .url(urlBuilder.build())
                 .addHeader("Accept", "application/json")
@@ -166,7 +166,7 @@ public class DastScanController extends ControllerBase {
 
     public GetDastScanSettingResponse getDastScanSettings(final Integer releaseId) throws IOException {
 
-        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder().addPathSegments(String.format(FodGlobalConstants.FodDastApiConstants.DastGetApi, releaseId));
+        HttpUrl.Builder urlBuilder = apiConnection.urlBuilder().addPathSegments(String.format(FodGlobalConstants.FodDastApiEndpoint.DastGetApi, releaseId));
 
         System.out.println("retrieve dynamic scan settings....");
 
