@@ -966,7 +966,7 @@ public class FortifyDastPipelineAssessment extends FortifyStep {
                         openApiRadioSource, sourceUrn, openApiKey);
 
             }
-            if (FodEnums.DastApiType.GraphQL.toString().equalsIgnoreCase(selectedApiType)) {
+            else if (FodEnums.DastApiType.GraphQL.toString().equalsIgnoreCase(selectedApiType)) {
                 Path graphQlPath = Paths.get(graphQLFilePath);
                 PatchDastFileUploadResponse response = dastScanSharedBuildStep.PatchSetupManifestFile(Files.readAllBytes(graphQlPath), "GraphQLDefinition");
                 graphQLFileId = String.valueOf(response.fileId);
@@ -977,7 +977,8 @@ public class FortifyDastPipelineAssessment extends FortifyStep {
                         networkAuthUserName, networkAuthPassword, networkAuthType,
                         sourceUrn, graphQlRadioSource, graphQLSchemeType, graphQlApiHost, graphQlApiServicePath);
 
-            } else if (FodEnums.DastApiType.Grpc.toString().equalsIgnoreCase(selectedApiType)) {
+            }
+            else if (FodEnums.DastApiType.Grpc.toString().equalsIgnoreCase(selectedApiType)) {
                 Path grpcPath = Paths.get(grpcFilePath);
                 PatchDastFileUploadResponse response = dastScanSharedBuildStep.PatchSetupManifestFile(Files.readAllBytes(grpcPath), "GRPCDefinition");
                 grpcFileId = String.valueOf(response.fileId);
@@ -987,7 +988,8 @@ public class FortifyDastPipelineAssessment extends FortifyStep {
                         networkAuthUserName, networkAuthPassword, networkAuthType,
                         grpcFileId, grpcSchemeType, grpcApiHost, grpcApiServicePath);
 
-            } else if (FodEnums.DastApiType.Postman.toString().equalsIgnoreCase(selectedApiType)) {
+            }
+            else if (FodEnums.DastApiType.Postman.toString().equalsIgnoreCase(selectedApiType)) {
                 Path postmanPath = Paths.get(postmanFilePath);
                 PatchDastFileUploadResponse response = dastScanSharedBuildStep.PatchSetupManifestFile(Files.readAllBytes(postmanPath), "PostmanCollection");
                 postmanFileId = String.valueOf(response.fileId);
