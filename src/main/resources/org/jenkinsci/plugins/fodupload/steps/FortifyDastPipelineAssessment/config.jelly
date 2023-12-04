@@ -250,8 +250,7 @@
                     </span>
                 </f:entry>
             </f:optionalBlock>
-            <f:entry
-                    title="Please provide the workflow driven macro file path. Supported extensions: *.har, *.webmacro, *.burp">
+            <f:entry title="Please provide the workflow driven macro file path. Supported extensions: *.har, *.webmacro, *.burp">
                 <f:textbox name="workflowMacroFilePath" field="workflowMacroFilePath"/>
                 <p style="color:red" hidden="true" class="allowed-extension">Allowed extensions are *.har, *.webmacro, *.burp</p>
             </f:entry>
@@ -367,7 +366,8 @@
                         <div id="dast-postman" class="apiOptions fode-field spinner-container">
                             <div class="dastPipelineFilePath postmanFilePath fode-field spinner-container">
                                 <f:entry title="Please provide the postman file path. Supported extension: *.json">
-                                    <f:textbox field="postmanFilePath" ></f:textbox>
+                                    <f:textbox field="postmanFilePath" name="postmanFilePath"></f:textbox>
+                                    <p style="color:red" hidden="true" class="allowed-extension">Allowed extensions are *.json</p>
                                 </f:entry>
                             </div>
                            <!-- <f:entry field="postmanFile"
@@ -444,7 +444,9 @@
                         <div id="dast-grpc" class="apiOptions fode-field spinner-container">
                             <div class="dastPipelineFilePath grpcFilePath fode-field spinner-container">
                                 <f:entry title="Please provide the grpc file path. Supported extension: *.proto">
-                                    <f:textbox field="grpcFilePath" ></f:textbox></f:entry>
+                                    <f:textbox field="grpcFilePath" name="grpcFilePath"></f:textbox>
+                                    <p style="color:red" hidden="true" class="allowed-extension">Allowed extensions are *.proto</p>
+                                </f:entry>
                             </div>
                            <!-- <f:entry field="grpcupload" title="Please upload the proto file: *.proto">
                                 <div id="dast-grpc-upload" class="fode-field spinner-container">
