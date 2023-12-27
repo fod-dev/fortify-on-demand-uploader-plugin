@@ -96,7 +96,9 @@ public class DastScanSharedBuildStep {
                                    String workflowMacroPath,
                                    int loginMacroId, String workflowMacroId, String allowedHost, String networkAuthUserName,
                                    String networkAuthPassword, String applicationId, String assessmentTypeId, String entitlementId,
-                                   String entitlementFrequencyType, String selectedNetworkAuthType, boolean timeBoxChecked) {
+                                   String entitlementFrequencyType, String selectedNetworkAuthType, boolean timeBoxChecked,
+     boolean requestLoginMacroFileCreation, String loginMacroPrimaryUserName, String loginMacroPrimaryPassword,
+                                   String loginMacroSecondaryUsername, String loginMacroSecondaryPassword, boolean requestFalsePositiveRemoval) {
 
         authModel = new AuthenticationModel(overrideGlobalConfig, username, personalAccessToken, tenantId);
         model = new DastScanJobModel(overrideGlobalConfig, username, personalAccessToken, tenantId,
@@ -108,7 +110,9 @@ public class DastScanSharedBuildStep {
                 , networkAuthPassword
                 , assessmentTypeId, entitlementId,
                 entitlementFrequencyType
-                , selectedNetworkAuthType);
+                ,selectedNetworkAuthType, timeBoxChecked,
+                requestLoginMacroFileCreation, loginMacroPrimaryUserName, loginMacroPrimaryPassword, loginMacroSecondaryUsername,
+                loginMacroSecondaryPassword, requestFalsePositiveRemoval);
     }
 
     public FodApiConnection getFodApiConnection() throws Exception {
@@ -186,6 +190,21 @@ public class DastScanSharedBuildStep {
                 if (this.model.getScanPolicyType().isEmpty())
                     errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
                 break;
+            case "API":
+
+                if (this.model.getSelectedApi().isEmpty())
+                    errors.add(FodGlobalConstants.FodDastValidation.DastScanAPITypeNotFound);
+
+                switch(this.model.getSelectedApi()){
+                    case "OpenApi":
+                        if(this.model.getSelectedOpenApiurl().isEmpty() && this.model.getSelectedOpenApiFileSource().isEmpty()
+                        && this.model.getOpenApiFilePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanOpenApiSourceNotFound);
+                        }
+                }
+
+                    errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
+                break;
         }
         return errors;
     }
@@ -245,8 +264,10 @@ public class DastScanSharedBuildStep {
                                                   boolean redundantPageDetection, String scanEnvironment,
                                                   boolean requireLoginMacroAuth,
                                                   String networkAuthUserName, String networkAuthPassword
-            , String networkAuthType, String timeboxScan
-    ) throws Exception {
+            , String networkAuthType, String timeboxScan, boolean requestLoginMacroFileCreation, String loginMacroPrimaryUserName,
+                                                  String loginMacroPrimaryPassword,
+                                                  String loginMacroSecondaryUsername, String loginMacroSecondaryPassword, boolean requestFalsePositiveRemoval)
+            throws Exception{
 
         DastScanController dynamicController = new DastScanController(getFodApiConnection(), null, Utils.createCorrelationId());
 
@@ -254,6 +275,7 @@ public class DastScanSharedBuildStep {
 
             PutDastWebSiteScanReqModel dynamicScanSetupReqModel;
             dynamicScanSetupReqModel = new PutDastWebSiteScanReqModel();
+            dynamicScanSetupReqModel.setRequestLoginMacroFileCreation(false);
             dynamicScanSetupReqModel.setEntitlementFrequencyType(entitlementFreq);
             dynamicScanSetupReqModel.setAssessmentTypeId(Integer.parseInt(assessmentTypeID));
             dynamicScanSetupReqModel.setTimeZone(timeZone);
@@ -293,6 +315,20 @@ public class DastScanSharedBuildStep {
                 networkSetting.setNetworkAuthenticationType(networkAuthType);
                 dynamicScanSetupReqModel.setNetworkAuthenticationSettings(networkSetting);
             }
+
+            if (!loginMacroPrimaryUserName.isEmpty() && !loginMacroPrimaryPassword.isEmpty()
+                    && !loginMacroSecondaryUsername.isEmpty() && !loginMacroSecondaryPassword.isEmpty()) {
+                dynamicScanSetupReqModel.setRequestLoginMacroFileCreation(true);
+                PutDastWebSiteScanReqModel.LoginMacroFileCreationDetails loginMacroFileCreationDetails = dynamicScanSetupReqModel.getLoginMacroFileCreationDetails();
+                loginMacroFileCreationDetails.setPrimaryUsername(loginMacroPrimaryUserName);
+                loginMacroFileCreationDetails.setPrimaryPassword(loginMacroPrimaryPassword);
+                loginMacroFileCreationDetails.setSecondaryUsername(loginMacroSecondaryUsername);
+                loginMacroFileCreationDetails.setSecondaryPassword(loginMacroSecondaryPassword);
+                dynamicScanSetupReqModel.setLoginMacroFileCreationDetails(loginMacroFileCreationDetails);
+
+            }
+
+            dynamicScanSetupReqModel.setRequestFalsePositiveRemoval(requestFalsePositiveRemoval);
             if (scanScope) //if true => Restrict scan to URL directories and subdirectories
                 dynamicScanSetupReqModel.setRestrictToDirectoryAndSubdirectories(scanScope);
             else

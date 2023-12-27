@@ -20,7 +20,15 @@ public class PutDastWebSiteScanReqModel extends PutDastScanSetupReqModel {
     public void setRestrictToDirectoryAndSubdirectories(boolean restrictToDirectoryAndSubdirectories) {
         this.restrictToDirectoryAndSubdirectories = restrictToDirectoryAndSubdirectories;
     }
-    boolean restrictToDirectoryAndSubdirectories;
+
+    public void setRequestFalsePositiveRemoval(boolean requestFalsePositiveRemoval) {
+        this.requestFalsePositiveRemoval = requestFalsePositiveRemoval;
+    }
+
+    private  boolean restrictToDirectoryAndSubdirectories;
+
+    private boolean requestFalsePositiveRemoval;
+
     public void setTimeBoxInHours(Integer timeBoxInHours) {
         this.timeBoxInHours = timeBoxInHours;
     }
@@ -37,4 +45,46 @@ public class PutDastWebSiteScanReqModel extends PutDastScanSetupReqModel {
     }
     String policy;
     int loginMacroFileId;
+
+    public void setRequestLoginMacroFileCreation(boolean requestLoginMacroFileCreation) {
+        this.requestLoginMacroFileCreation = requestLoginMacroFileCreation;
+    }
+
+    private  boolean requestLoginMacroFileCreation;
+    private String loginMacroPrimaryUserName;
+
+    public void setLoginMacroFileCreationDetails(LoginMacroFileCreationDetails loginMacroFileCreationDetails) {
+        this.loginMacroFileCreationDetails = loginMacroFileCreationDetails;
+    }
+
+    public LoginMacroFileCreationDetails getLoginMacroFileCreationDetails() {
+        return loginMacroFileCreationDetails;
+    }
+
+    private LoginMacroFileCreationDetails loginMacroFileCreationDetails;
+
+
+    public class LoginMacroFileCreationDetails{
+        public String primaryUsername;
+        public String primaryPassword;
+
+        public void setPrimaryUsername(String primaryUsername) {
+            this.primaryUsername = primaryUsername;
+        }
+
+        public void setPrimaryPassword(String primaryPassword) {
+            this.primaryPassword = primaryPassword;
+        }
+
+        public void setSecondaryUsername(String secondaryUsername) {
+            this.secondaryUsername = secondaryUsername;
+        }
+
+        public void setSecondaryPassword(String secondaryPassword) {
+            this.secondaryPassword = secondaryPassword;
+        }
+
+        public String secondaryUsername;
+        public String secondaryPassword;
+    }
 }

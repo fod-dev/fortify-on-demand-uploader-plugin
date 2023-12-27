@@ -503,6 +503,7 @@ class DastFreeStyle {
             }
         }
     }
+<<<<<<< Updated upstream
 
     setUploadedFileDetails() {
 
@@ -511,6 +512,16 @@ class DastFreeStyle {
                 jq('.uploadedFileDetails').text(item.fileName);
                        jq('.uploadedFileContainer').show();
             });
+=======
+    setUploadedFileDetails(){
+        debugger;
+       if(!Object.is(this.scanSettings.fileDetails, null)){
+               this.scanSettings.fileDetails.forEach((item, index, arr) => {
+                       jq('.uploadedFileDetails').text(item.fileName);
+                       jq('.uploadedFileContainer').show();
+                       });
+               }
+>>>>>>> Stashed changes
         }
     }
 

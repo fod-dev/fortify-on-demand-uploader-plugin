@@ -55,7 +55,9 @@ public class FortifyDastFreeStyleBuildStep extends Recorder implements SimpleBui
                                          String openApiRadioSource, String openApiFileId, String openApiUrl, String openApiKey,
                                          String postmanFileId,
                                          String graphQlRadioSource, String graphQLFileId, String graphQLUrl, String graphQLSchemeType, String graphQlApiHost, String graphQlApiServicePath,
-                                         String grpcFileId, String grpcSchemeType, String grpcApiHost, String grpcApiServicePath, String openApiFilePath, String postmanFilePath, String graphQlFilePath, String grpcFilePath
+                                         String grpcFileId, String grpcSchemeType, String grpcApiHost, String grpcApiServicePath, String openApiFilePath, String postmanFilePath, String graphQlFilePath, String grpcFilePath,
+                                         boolean requestLoginMacroFileCreation, String loginMacroPrimaryUserName, String loginMacroPrimaryPassword, String loginMacroSecondaryUsername,
+                                         String loginMacroSecondaryPassword, boolean requestFalsePositiveRemoval
 
     ) throws IllegalArgumentException, IOException {
         try {
@@ -70,7 +72,9 @@ public class FortifyDastFreeStyleBuildStep extends Recorder implements SimpleBui
                         selectedScanType, selectedDynamicTimeZone, enableRedundantPageDetection, null,null,
                         loginMacroId.isEmpty() ? 0 : Integer.parseInt(loginMacroId), workflowMacroId, workflowMacroHosts,
                         networkAuthUserName, networkAuthPassword, userSelectedApplication,
-                        assessmentTypeId, entitlementId, entitlementFrequencyType, selectedNetworkAuthType, timeBoxChecked
+                        assessmentTypeId, entitlementId, entitlementFrequencyType, selectedNetworkAuthType, timeBoxChecked,
+                        requestLoginMacroFileCreation, loginMacroPrimaryUserName, loginMacroPrimaryPassword,
+                        loginMacroSecondaryUsername, loginMacroSecondaryPassword, requestFalsePositiveRemoval
                 );
 
             } else if (selectedScanType.equals(FodEnums.DastScanType.API.toString())) {
@@ -103,7 +107,9 @@ public class FortifyDastFreeStyleBuildStep extends Recorder implements SimpleBui
                         entitlementFrequencyType, loginMacroId, selectedDynamicTimeZone, scanPolicy,
                         webSiteUrl, scanScope, enableRedundantPageDetection, dastEnv,
                         webSiteNetworkAuthSettingEnabled, networkAuthUserName,
-                        networkAuthPassword, selectedNetworkAuthType, scanTimeBox);
+                        networkAuthPassword, selectedNetworkAuthType, scanTimeBox,
+                        requestLoginMacroFileCreation, loginMacroPrimaryUserName,
+                        loginMacroPrimaryPassword, loginMacroSecondaryUsername ,loginMacroSecondaryPassword, requestFalsePositiveRemoval);
 
             } else if (FodEnums.DastScanType.Workflow.toString().equalsIgnoreCase(selectedScanType)) {
 

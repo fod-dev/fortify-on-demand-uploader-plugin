@@ -437,7 +437,70 @@ public class FortifyDastPipeline extends FortifyStep {
     }
 
     private boolean scanScope;
+
+    public boolean isRequestLoginMacroFileCreation() {
+        return requestLoginMacroFileCreation;
+    }
+
+    @DataBoundSetter
+    public void setRequestLoginMacroFileCreation(boolean requestLoginMacroFileCreation) {
+        this.requestLoginMacroFileCreation = requestLoginMacroFileCreation;
+    }
+
+    public String getLoginMacroPrimaryUserName() {
+        return loginMacroPrimaryUserName;
+    }
+
+    @DataBoundSetter
+    public void setLoginMacroPrimaryUserName(String loginMacroPrimaryUserName) {
+        this.loginMacroPrimaryUserName = loginMacroPrimaryUserName;
+    }
+
+    public String getLoginMacroPrimaryPassword() {
+        return loginMacroPrimaryPassword;
+    }
+
+    @DataBoundSetter
+    public void setLoginMacroPrimaryPassword(String loginMacroPrimaryPassword) {
+        this.loginMacroPrimaryPassword = loginMacroPrimaryPassword;
+    }
+
+    public String getLoginMacroSecondaryUsername() {
+        return loginMacroSecondaryUsername;
+    }
+
+    @DataBoundSetter
+    public void setLoginMacroSecondaryUsername(String loginMacroSecondaryUsername) {
+        this.loginMacroSecondaryUsername = loginMacroSecondaryUsername;
+    }
+
+    public String getLoginMacroSecondaryPassword() {
+        return loginMacroSecondaryPassword;
+    }
+
+    @DataBoundSetter
+    public void setLoginMacroSecondaryPassword(String loginMacroSecondaryPassword) {
+        this.loginMacroSecondaryPassword = loginMacroSecondaryPassword;
+    }
+
+    private boolean requestLoginMacroFileCreation;
+    private String loginMacroPrimaryUserName;
+    private String loginMacroPrimaryPassword;
+    private String loginMacroSecondaryUsername;
+    private String loginMacroSecondaryPassword;
+
+    public boolean getRequestFalsePositiveRemoval() {
+        return requestFalsePositiveRemoval;
+    }
+
+    @DataBoundSetter
+    public void setRequestFalsePositiveRemoval(boolean requestFalsePositiveRemoval) {
+        this.requestFalsePositiveRemoval = requestFalsePositiveRemoval;
+    }
+
+    private boolean requestFalsePositiveRemoval;
     private String scanType;
+
 
     private String workflowMacroId;
 
@@ -468,6 +531,9 @@ public class FortifyDastPipeline extends FortifyStep {
     public void setEntitlementFrequency(String entitlementFrequency) {
         this.entitlementFrequency = entitlementFrequency;
     }
+
+
+
 
     public final void SaveScanSettings(FilePath workspace, PrintStream logger, DastScanSharedBuildStep dastScanSharedBuildStep) throws Exception {
 
@@ -769,7 +835,8 @@ public class FortifyDastPipeline extends FortifyStep {
                 , scanScope, enableRedundantPageDetection, envFacing
                 , requireLoginMacro,
                 networkAuthUserName, networkAuthPassword
-                , networkAuthType, scanTimeBox);
+                , networkAuthType, scanTimeBox, requestLoginMacroFileCreation, loginMacroPrimaryUserName, loginMacroPrimaryPassword,
+                loginMacroSecondaryUsername, loginMacroSecondaryPassword, requestFalsePositiveRemoval);
     }
 
     private void saveWorkflowSiteScanSettings(FilePath workspace, PrintStream printStream, DastScanSharedBuildStep dastScanSharedBuildStep) throws Exception {
@@ -947,7 +1014,14 @@ public class FortifyDastPipeline extends FortifyStep {
                         entitlementId,
                         entitlementFrequency,
                         networkAuthType,
-                        timeBoxChecked);
+                        timeBoxChecked,
+                        requestLoginMacroFileCreation,
+                        loginMacroPrimaryUserName,
+                        loginMacroPrimaryPassword,
+                        loginMacroSecondaryUsername,
+                        loginMacroSecondaryPassword,
+                        requestFalsePositiveRemoval
+                        );
             } else if (Objects.equals(scanType, FodEnums.DastScanType.API.toString())) {
 
                 dastScanSharedBuildStep = new DastScanSharedBuildStep(overrideGlobalConfig, username, personalAccessToken, tenantId,
