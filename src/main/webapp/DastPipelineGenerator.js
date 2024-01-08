@@ -1220,43 +1220,49 @@ class DastPipelineGenerator {
     openApiScanVisibility(isVisible) {
         if (isVisible)
             jq('#dast-openApi').closest('.tr').show();
-        else
+        else{
             jq('#dast-openApi').closest('.tr').hide();
 
         jq('#dast-postman').closest('.tr').hide();
         jq('#dast-graphQL').closest('.tr').hide();
         jq('#dast-grpc').closest('.tr').hide();
+        }
     }
 
     graphQlScanVisibility(isVisible) {
         if (isVisible)
             jq('#dast-graphQL').closest('.tr').show();
-        else
+        else{
             jq('#dast-graphQL').closest('.tr').hide();
 
         jq('#dast-openApi').closest('.tr').hide()
         jq('#dast-postman').closest('.tr').hide();
         jq('#dast-grpc').closest('.tr').hide();
+        }
     }
 
     grpcScanVisibility(isVisible) {
         if (isVisible)
             jq('#dast-grpc').closest('.tr').show();
-        else
-            jq('#dast-grpc').closest('.tr').hide();
+        else{
+        jq('#dast-grpc').closest('.tr').hide();
         jq('#dast-openApi').closest('.tr').hide()
         jq('#dast-postman').closest('.tr').hide();
         jq('#dast-graphQL').closest('.tr').hide();
+        }
     }
 
     postmanScanVisibility(isVisible) {
-        if (isVisible)
+        if (isVisible){
             jq('#dast-postman').closest('.tr').show();
-        else
+            jq('.postmanFilePath').show();
+            }
+        else{
             jq('#dast-postman').closest('.tr').hide();
         jq('#dast-openApi').closest('.tr').hide()
         jq('#dast-graphQL').closest('.tr').hide();
         jq('#dast-grpc').closest('.tr').hide();
+        }
     }
 
     apiScanSettingVisibility(isVisible) {
@@ -1362,9 +1368,11 @@ class DastPipelineGenerator {
             jq('.openApiSourceControls').show()
             jq('#dast-api-openApi-upload').hide();
             jq('#dast-openApi-filePath').show();
+            jq('#dast-openApi-api-key').show();
             jq('#openApiRadioSource').val(jq('#' + event.target.id).val());
         } else if (id === 'openApiInputUrl') {
             jq('.openApiSourceControls').show()
+            jq('#dast-openApi-api-key').show();
             jq('#dast-openApi-url').show();
             jq('#openApiRadioSource').val(jq('#' + event.target.id).val());
         } else if (id === 'graphQlInputFile') {

@@ -203,6 +203,43 @@ public class DastScanSharedBuildStep {
                                 && this.model.getOpenApiFilePath().isEmpty()) {
                             errors.add(FodGlobalConstants.FodDastValidation.DastScanOpenApiSourceNotFound);
                         }
+                        break;
+                    case Grpc:
+                        if(this.model.getSelectedGrpcUpload().isEmpty()
+                                && this.model.getGrpcFilePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSourceNotFound);
+                        }
+                        if(this.model.getSelectedGrpcApiHost().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcHostNotFound);
+                        }
+                        if(this.model.getSelectedGrpcApiServicePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcServicePathNotFound);
+                        }
+                        if(this.model.getSelectedGrpcSchemeType().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSchemeTypeNotFound);
+                        }
+                        break;
+                    case GraphQL:
+                        if(this.model.getSelectedGraphQlUpload().isEmpty()
+                                && this.model.getGraphQlFilePath().isEmpty()
+                                && this.model.getSelectedGraphQlUrl().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSourceNotFound);
+                        }
+                        if(this.model.getSelectedGraphQlApiHost().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlHostNotFound);
+                        }
+                        if(this.model.getSelectedGraphQlApiServicePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlServicePathNotFound);
+                        }
+                        if(this.model.getSelectedGraphQLSchemeType().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSchemeTypeNotFound);
+                        }
+                        break;
+                    case Postman:
+                        if(this.model.getSelectedPostmanFile() == null && this.model.getPostmanFilePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanPostmanSourceNotFound);
+                        }
+                        break;
                 }
                 errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
                 break;
@@ -258,6 +295,56 @@ public class DastScanSharedBuildStep {
 
                 if (this.model.getScanPolicyType().isEmpty())
                     errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
+                break;
+            case API:
+
+                if (this.model.getSelectedApi().isEmpty())
+                    errors.add(FodGlobalConstants.FodDastValidation.DastScanAPITypeNotFound);
+
+                switch(this.model.getSelectedApi()){
+                    case "openApi":
+                        if(this.model.getSelectedOpenApiurl().isEmpty() && this.model.getSelectedOpenApiFileSource().isEmpty()
+                                && this.model.getOpenApiFilePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanOpenApiSourceNotFound);
+                        }
+                        break;
+                    case "grpc":
+                        if(this.model.getSelectedGrpcUpload() == null
+                                && this.model.getGrpcFilePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSourceNotFound);
+                        }
+                        if(this.model.getSelectedGrpcApiHost().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcHostNotFound);
+                        }
+                        if(this.model.getSelectedGrpcApiServicePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcServicePathNotFound);
+                        }
+                        if(this.model.getSelectedGrpcSchemeType().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSchemeTypeNotFound);
+                        }
+                        break;
+                    case "graphQl":
+                        if(this.model.getSelectedGraphQlUpload()== null
+                                && this.model.getGraphQlFilePath().isEmpty()
+                                && this.model.getSelectedGraphQlUrl().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSourceNotFound);
+                        }
+                        if(this.model.getSelectedGraphQlApiHost().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlHostNotFound);
+                        }
+                        if(this.model.getSelectedGraphQlApiServicePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlServicePathNotFound);
+                        }
+                        if(this.model.getSelectedGraphQLSchemeType().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSchemeTypeNotFound);
+                        }
+                        break;
+                    case "postman":
+                        if(this.model.getSelectedPostmanFile() == null && this.model.getPostmanFilePath().isEmpty()){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanPostmanSourceNotFound);
+                        }
+                        break;
+                }
                 break;
         }
         return errors;
