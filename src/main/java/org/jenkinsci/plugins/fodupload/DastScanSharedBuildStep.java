@@ -1,4 +1,5 @@
 package org.jenkinsci.plugins.fodupload;
+
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
@@ -20,6 +21,7 @@ import org.jenkinsci.plugins.fodupload.models.response.Dast.PutDastScanSetupResp
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.verb.POST;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
@@ -152,21 +154,19 @@ public class DastScanSharedBuildStep {
     public List<String> ValidateForAutoProv() {
         List<String> errors = new ArrayList<>();
         //Check for mandate fields based on scan type.
-        if (this.model.getSelectedScanType().isEmpty()) {
+        if (Utils.isNullOrEmpty(this.model.getSelectedScanType())) {
             errors.add(FodGlobalConstants.FodDastValidation.DastPipelineScanTypeNotFound);
         }
 
-        if (this.model.getEntitlementId().isEmpty()) {
+        if (Utils.isNullOrEmpty(this.model.getEntitlementId())) {
             errors.add(FodGlobalConstants.FodDastValidation.DastPipelineScanEntitlementIdNotFound);
         }
         if (getModel().isWebSiteNetworkAuthEnabled()) {
-            if (getModel().getNetworkAuthPassword().isEmpty()) {
+            if (Utils.isNullOrEmpty(getModel().getNetworkAuthPassword())) {
                 errors.add(FodGlobalConstants.FodDastValidation.DastScanNetworkPasswordNotFound);
-            } else if (getModel().getNetworkAuthUserName().isEmpty()) {
-
+            } else if (Utils.isNullOrEmpty(getModel().getNetworkAuthUserName())) {
                 errors.add(FodGlobalConstants.FodDastValidation.DastScanNetworkUserNameNotFound);
-            } else if (getModel().getNetworkAuthType().isEmpty()) {
-
+            } else if (Utils.isNullOrEmpty(getModel().getNetworkAuthType())) {
                 errors.add(FodGlobalConstants.FodDastValidation.DastScanNetworkAuthTypeNotFound);
             }
         }
@@ -178,17 +178,17 @@ public class DastScanSharedBuildStep {
 
         switch (dastScanType) {
             case Standard:
-                if (this.model.getWebSiteUrl().isEmpty()) {
+                if (Utils.isNullOrEmpty(this.model.getWebSiteUrl())) {
                     errors.add(FodGlobalConstants.FodDastValidation.DastPipelineWebSiteUrlNotFound);
                 }
-                if (this.model.getScanPolicyType().isEmpty())
+                if (Utils.isNullOrEmpty(this.model.getScanPolicyType()))
                     errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
                 break;
             case Workflow:
-                if (this.model.getWorkflowMacroFilePath().isEmpty())
+                if (Utils.isNullOrEmpty(this.model.getWorkflowMacroFilePath()))
                     errors.add(FodGlobalConstants.FodDastValidation.DastPipelineWorkflowMacroFilePathNotFound);
 
-                if (this.model.getScanPolicyType().isEmpty())
+                if (Utils.isNullOrEmpty(this.model.getScanPolicyType()))
                     errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
                 break;
             case API:
@@ -411,10 +411,10 @@ public class DastScanSharedBuildStep {
                 dynamicScanSetupReqModel.setNetworkAuthenticationSettings(networkSetting);
             }
 
-            if (loginMacroPrimaryUserName!=null && !loginMacroPrimaryUserName.isEmpty() &&
-                    loginMacroPrimaryPassword!=null && !loginMacroPrimaryPassword.isEmpty()
-                    &&loginMacroSecondaryUsername!=null && !loginMacroSecondaryUsername.isEmpty() &&
-                    loginMacroSecondaryPassword!=null&&!loginMacroSecondaryPassword.isEmpty()) {
+            if (loginMacroPrimaryUserName != null && !loginMacroPrimaryUserName.isEmpty() &&
+                    loginMacroPrimaryPassword != null && !loginMacroPrimaryPassword.isEmpty()
+                    && loginMacroSecondaryUsername != null && !loginMacroSecondaryUsername.isEmpty() &&
+                    loginMacroSecondaryPassword != null && !loginMacroSecondaryPassword.isEmpty()) {
                 dynamicScanSetupReqModel.setRequestLoginMacroFileCreation(true);
                 LoginMacroFileCreationDetails loginMacroDetails = new LoginMacroFileCreationDetails();
                 loginMacroDetails.setPrimaryUsername(loginMacroPrimaryUserName);

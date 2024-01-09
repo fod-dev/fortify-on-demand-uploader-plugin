@@ -405,7 +405,7 @@ class DastFreeStyle {
                         this.setPatchUploadFileId();
                         this.scanSettingsVisibility(true);
                         this.scanTypeVisibility(true);
-                      //  validateRequiredFields(requiredFieldsFreestyle);
+                        validateRequiredFields(requiredFieldsFreestyle);
                     } else {
                         await this.onAssessmentChanged(false);
                         this.showMessage('Failed to retrieve scan settings from API', true);
