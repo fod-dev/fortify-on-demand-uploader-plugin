@@ -877,9 +877,6 @@ public class FortifyDastPipeline extends FortifyStep {
 
                 if (response == null || !response.isSuccess || response.fileId <= 0) {
 
-                    Utils.logger(printStream,
-                            String.format("Failed to upload payload for release Id %s", releaseId));
-
                     throw new Exception(String.format("Failed to upload payload for release Id %s", releaseId));
                 }
 
@@ -902,7 +899,7 @@ public class FortifyDastPipeline extends FortifyStep {
 
                 if (!patchPayload.exists()) {
 
-                    printStream.printf("FilePath for the Payload not constructed for releaseId %s%n", releaseId);
+
                     throw new Exception(String.format("FilePath for the Payload not constructed for releaseId %s%n", releaseId));
                 }
 
