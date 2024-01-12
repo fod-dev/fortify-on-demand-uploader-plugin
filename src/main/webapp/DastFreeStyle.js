@@ -381,7 +381,6 @@ class DastFreeStyle {
                         }
                         this.setWorkflowDrivenScanSetting();
                         this.setApiScanSetting();
-                        this.setUploadedFileDetails();
                         this.setRestrictScan();
                         jq('#ddlNetworkAuthType').val(networkAuthTypes);
                         this.onNetworkAuthTypeLoad();
@@ -476,14 +475,9 @@ class DastFreeStyle {
         }
     }
 
-    setUploadedFileDetails() {
-        if (this.scanSettings && this.scanSettings.fileDetails) {
-            this.scanSettings.fileDetails.forEach((item, index, arr) => {
-                jq('.uploadedFileDetails').text(item.fileName);
-                jq('.uploadedFileContainer').show();
-            });
-        }
-    }
+
+
+
 
     setOpenApiSettings(openApiSettings) {
         jq('#apiTypeList').val('openApi');
@@ -493,8 +487,15 @@ class DastFreeStyle {
         jq('#dast-openApi-api-key input').val(openApiSettings.apiKey);
         if (openApiSettings.sourceType === 'Url') {
             jq('#dast-openApi-url input').val(openApiSettings.sourceUrn);
-        } else {
-            //ToDo : Write code for showing file name
+        }
+        else if(openApiSettings.sourceType === 'FileId') {
+           if (this.scanSettings && this.scanSettings.fileDetails) {
+               this.scanSettings.fileDetails.forEach((item, index, arr) => {
+                   jq('.openApiFileDetails').text(item.fileName);
+                   jq('#openApiFileId').val(item.fileId);
+                   jq('.uploadedFileContainer').show();
+               });
+           }
         }
     }
 
@@ -508,14 +509,28 @@ class DastFreeStyle {
         jq('#dast-graphQL-schemeType input').val(graphQlSettings.schemeType);
         if (graphQlSettings.sourceType === 'Url') {
             jq('#dast-graphQL-url input').val(graphQlSettings.sourceUrn);
-        } else {
-            //ToDo : Write code for showing file name
+        }
+        else if(graphQlSettings.sourceType === 'FileId') {
+            if (this.scanSettings && this.scanSettings.fileDetails) {
+               this.scanSettings.fileDetails.forEach((item, index, arr) => {
+                   jq('.graphQlFileDetails').text(item.fileName);
+                   jq('#graphQLFileId').val(item.fileId);
+                   jq('.uploadedFileContainer').show();
+               });
+           }
         }
     }
 
     setGrpcSettings(grpcSettings) {
         jq('#apiTypeList').val('grpc');
         this.onApiTypeChanged();
+        if (this.scanSettings && this.scanSettings.fileDetails) {
+           this.scanSettings.fileDetails.forEach((item, index, arr) => {
+               jq('.grpcFileDetails').text(item.fileName);
+               jq('#grpcFileId').val(item.fileId);
+               jq('.uploadedFileContainer').show();
+           });
+       }
         jq('#dast-grpc-api-host input').val(grpcSettings.host);
         jq('#dast-grpc-api-servicePath input').val(grpcSettings.servicePath);
         jq('#dast-grpc-schemeType input').val(grpcSettings.schemeType);
@@ -524,6 +539,13 @@ class DastFreeStyle {
     setPostmanSettings(postmanSettings) {
         jq('#apiTypeList').val('postman');
         this.onApiTypeChanged();
+        if (this.scanSettings && this.scanSettings.fileDetails) {
+           this.scanSettings.fileDetails.forEach((item, index, arr) => {
+               jq('.postmanFileDetails').text(item.fileName);
+               jq('#openApiFileId').val(item.fileId);
+               jq('.uploadedFileContainer').show();
+           });
+       }
     }
 
     setSelectedEntitlementValue(entitlements) {
@@ -562,7 +584,8 @@ class DastFreeStyle {
         if (this.scanSettings && this.scanSettings.networkAuthenticationSettings) {
             jq('#networkUsernameRow').find('input').val(this.scanSettings.networkAuthenticationSettings.userName);
             jq('#networkPasswordRow').find('input').val(this.scanSettings.networkAuthenticationSettings.password);
-            if (jq('#webSiteNetworkAuthSettingEnabledRow').find('input:checkbox:first').prop('checked') === false) {
+            if (jq('#webSiteNetworkAuthSettingEnabledRow').find('input:checkbox:first').prop('checked') === false &&
+                this.scanSettings.networkAuthenticationSettings.password) {
                 jq('#webSiteNetworkAuthSettingEnabledRow').find('input:checkbox:first').trigger('click');
             }
             let np = jq('#networkPasswordRow').find('input');
@@ -574,11 +597,13 @@ class DastFreeStyle {
         jq('#networkUsernameRow').find('input').val(undefined);
         jq('#networkPasswordRow').find('input').val(undefined);
         jq('#ddlNetworkAuthType').prop('selectedIndex', 0);
-        jq('#webSiteNetworkAuthSettingEnabledRow').find('input:checkbox:first').trigger('click');
+
+        let ctl = jq('#webSiteNetworkAuthSettingEnabledRow').find('input:checkbox:first')
+        if(ctl.prop('checked') === true)
+          ctl.trigger('click');
     }
 
     setScanType() {
-
         if (this.scanSettings) {
             let selectedScanType;
             if (this.scanSettings.websiteAssessment) {
@@ -989,22 +1014,10 @@ class DastFreeStyle {
         if (isVisible)
             jq('#dast-postman').closest('.tr').show();
         else
-            jq('#dast-postman').closest('.tr').hide();
+        jq('#dast-postman').closest('.tr').hide();
         jq('#dast-openApi').closest('.tr').hide()
         jq('#dast-graphQL').closest('.tr').hide();
         jq('#dast-grpc').closest('.tr').hide();
-    }
-
-    apiScanSettingVisibility(isVisible) {
-
-        let apiScanSettingRows = jq('.' + dastApiSetting);
-        jq('.' + dastApiSpecificControls).hide();
-        if (!isVisible) {
-            apiScanSettingRows.hide();
-        } else {
-            apiScanSettingRows.show();
-            validateDropdown('#apiTypeList');
-        }
     }
 
     onExcludeUrlBtnClick(event, args) {

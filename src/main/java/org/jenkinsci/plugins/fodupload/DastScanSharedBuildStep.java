@@ -38,6 +38,7 @@ public class DastScanSharedBuildStep {
     public static final String USERNAME = "username";
     public static final String PERSONAL_ACCESS_TOKEN = "personalAccessToken";
     public static final String TENANT_ID = "tenantId";
+    public static final String BSI_TOKEN = "useBsiToken";
     private int scanId;
     private PrintStream _printStream;
 
@@ -198,10 +199,47 @@ public class DastScanSharedBuildStep {
 
                 switch (dastApiType) {
                     case OpenApi:
-                        if (this.model.getSelectedOpenApiurl().isEmpty() && this.model.getSelectedOpenApiFileSource().isEmpty()
-                                && this.model.getOpenApiFilePath().isEmpty()) {
+                        if (isNullOrEmpty(this.model.getSelectedOpenApiurl()) && isNullOrEmpty(this.model.getSelectedOpenApiFileSource())
+                                && isNullOrEmpty(this.model.getOpenApiFilePath())) {
                             errors.add(FodGlobalConstants.FodDastValidation.DastScanOpenApiSourceNotFound);
                         }
+                        break;
+                    case Grpc:
+                        if(isNullOrEmpty(this.model.getSelectedGrpcUpload())
+                                && isNullOrEmpty(this.model.getGrpcFilePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSourceNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGrpcApiHost())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcHostNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGrpcApiServicePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcServicePathNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGrpcSchemeType())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSchemeTypeNotFound);
+                        }
+                        break;
+                    case GraphQL:
+                        if(isNullOrEmpty(this.model.getSelectedGraphQlUpload())
+                                && isNullOrEmpty(this.model.getGraphQlFilePath())
+                                && isNullOrEmpty(this.model.getSelectedGraphQlUrl())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSourceNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGraphQlApiHost())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlHostNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGraphQlApiServicePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlServicePathNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGraphQLSchemeType())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSchemeTypeNotFound);
+                        }
+                        break;
+                    case Postman:
+                        if(isNullOrEmpty(this.model.getSelectedPostmanFile()) && isNullOrEmpty(this.model.getPostmanFilePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanPostmanSourceNotFound);
+                        }
+                        break;
                 }
                 errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
                 break;
@@ -257,6 +295,56 @@ public class DastScanSharedBuildStep {
 
                 if (this.model.getScanPolicyType().isEmpty())
                     errors.add(FodGlobalConstants.FodDastValidation.DastScanPolicyNotFound);
+                break;
+            case API:
+
+                if (isNullOrEmpty(this.model.getSelectedApi()))
+                    errors.add(FodGlobalConstants.FodDastValidation.DastScanAPITypeNotFound);
+
+                switch(this.model.getSelectedApi()){
+                    case "openApi":
+                        if(isNullOrEmpty(this.model.getSelectedOpenApiurl()) && isNullOrEmpty(this.model.getSelectedOpenApiFileSource())
+                                && isNullOrEmpty(this.model.getOpenApiFilePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanOpenApiSourceNotFound);
+                        }
+                        break;
+                    case "grpc":
+                        if(isNullOrEmpty(this.model.getSelectedGrpcUpload())
+                                && isNullOrEmpty(this.model.getGrpcFilePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSourceNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGrpcApiHost())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcHostNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGrpcApiServicePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcServicePathNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGrpcSchemeType())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGrpcSchemeTypeNotFound);
+                        }
+                        break;
+                    case "graphQl":
+                        if(isNullOrEmpty(this.model.getSelectedGraphQlUpload())
+                                && isNullOrEmpty(this.model.getGraphQlFilePath())
+                                && isNullOrEmpty(this.model.getSelectedGraphQlUrl())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSourceNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGraphQlApiHost())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlHostNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGraphQlApiServicePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlServicePathNotFound);
+                        }
+                        if(isNullOrEmpty(this.model.getSelectedGraphQLSchemeType())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanGraphQlSchemeTypeNotFound);
+                        }
+                        break;
+                    case "postman":
+                        if(isNullOrEmpty(this.model.getSelectedPostmanFile()) && isNullOrEmpty(this.model.getPostmanFilePath())){
+                            errors.add(FodGlobalConstants.FodDastValidation.DastScanPostmanSourceNotFound);
+                        }
+                        break;
+                }
                 break;
         }
         return errors;
@@ -860,7 +948,8 @@ public class DastScanSharedBuildStep {
     public static ListBoxModel doFillSelectedReleaseTypeItems() {
         ListBoxModel items = new ListBoxModel();
         for (FodEnums.SelectedReleaseType selectedReleaseType : FodEnums.SelectedReleaseType.values()) {
-            items.add(new ListBoxModel.Option(selectedReleaseType.toString(), selectedReleaseType.getValue()));
+            if(!selectedReleaseType.getValue().equalsIgnoreCase(BSI_TOKEN))
+              items.add(new ListBoxModel.Option(selectedReleaseType.toString(), selectedReleaseType.getValue()));
         }
         return items;
     }
@@ -945,6 +1034,8 @@ public class DastScanSharedBuildStep {
         return GlobalConfiguration.all().get(FodGlobalDescriptor.class).testConnection(testApi);
 
     }
+
+
 }
 
 
