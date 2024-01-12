@@ -483,6 +483,8 @@ class DastPipelineGenerator {
                         this.onNetworkAuthTypeLoad();
                         this.onNetworkAuthTypeChanged();
                         this.setNetworkSettings();
+                        this.setLoginMacroCreationDetails();
+                        this.setFalsePositiveFlagRequest();
                         //Set the PatchUploadManifest File's fileId from get response.
                         this.setPatchUploadFileId();
                         //Enable scan Type right after assessment Type drop populated.
@@ -819,18 +821,15 @@ class DastPipelineGenerator {
     }
 
     apiScanSettingVisibility(isVisible) {
-        jq('.dast-api-scan').each((iterator, element) => {
-            let currentElement = jq(element);
-            let tr = closestRow(currentElement);
-            tr.addClass(fodApiScanTypeClassIdr);
-        });
-        let apiScanSettingRows = jq('.dast-api-scan');
-        if (!isVisible) {
-            apiScanSettingRows.hide();
-        } else {
-            apiScanSettingRows.show();
-        }
-    }
+               let apiScanSettingRows = jq('.' + dastApiSetting);
+               jq('.' + dastApiSpecificControls).hide();
+               if (!isVisible) {
+                   apiScanSettingRows.hide();
+               } else {
+                   apiScanSettingRows.show();
+                   validateDropdown('#apiTypeList');
+               }
+           }
 
     workflowScanSettingVisibility(isVisible) {
         let workflowScanSettingRows = jq('.dast-workflow-setting');
@@ -1122,6 +1121,29 @@ class DastPipelineGenerator {
         } else
             jq(fodpOverrideRowsSelector).hide();
     }
+     setLoginMacroCreationDetails(){
+            if(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails){
+                jq('#loginMacroPrimaryUsernameRow').find('input').val(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails.primaryUsername);
+                jq('#loginMacroPrimaryPasswordRow').find('input')
+                    .val(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails.primaryPassword);
+                     jq('#loginMacroSecondaryUsernameRow').find('input').val(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails.secondaryUsername);
+                    jq('#loginMacroSecondaryPasswordRow').find('input')
+                        .val(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails.secondaryPassword);
+                if (jq('#loginMacroFileCreationRow').find('input:checkbox:first').prop('checked') === false) {
+                    jq('#loginMacroFileCreationRow').find('input:checkbox:first').trigger('click');
+                }
+                let np = jq('#networkPasswordRow').find('input');
+                np.attr('type', 'password');
+            }
+        }
+
+    setFalsePositiveFlagRequest(){
+        if(this.scanSettings.requestFalsePositiveRemoval){
+            if (jq('#requestFalsePositiveRemovalRow').find('input:checkbox:first').prop('checked') === false) {
+                   jq('#requestFalsePositiveRemovalRow').find('input:checkbox:first').trigger('click');
+            }
+        }
+    }
 
     setApiScanSetting() {
         if (this.scanSettings.apiAssessment) {
@@ -1364,6 +1386,7 @@ class DastPipelineGenerator {
             jq('#openApiRadioSource').val(jq('#' + event.target.id).val());
         } else if (id === 'openApiInputUrl') {
             jq('.openApiSourceControls').show()
+            jq('#dast-openApi-api-key').show();
             jq('#dast-openApi-url').show();
             jq('#openApiRadioSource').val(jq('#' + event.target.id).val());
         } else if (id === 'graphQlInputFile') {
