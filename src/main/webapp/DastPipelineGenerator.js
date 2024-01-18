@@ -1122,7 +1122,6 @@ class DastPipelineGenerator {
     }
 
     fodOverrideRowsVisibility(isVisible) {
-debugger;
         jq(fodpOverrideRowsSelector)
             .each((i, e) => {
                 let jqe = jq(e);
@@ -1137,7 +1136,6 @@ debugger;
             jq(fodpOverrideRowsSelector).hide();
     }
    setLoginMacroCreationDetails(){
-       debugger;
            if(this.scanSettings && this.scanSettings.websiteAssessment && this.scanSettings.websiteAssessment.loginMacroFileCreationDetails){
                jq('#loginMacroPrimaryUsernameRow').find('input').val(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails.primaryUsername);
                jq('#loginMacroPrimaryPasswordRow').find('input')
@@ -1168,7 +1166,6 @@ debugger;
        }
 
        setFalsePositiveFlagRequest(){
-       debugger;
            if(this.scanSettings && this.scanSettings.requestFalsePositiveRemoval){
                if (jq('#requestFalsePositiveRemovalRow').find('input:checkbox:first').prop('checked') === false) {
                    jq('#requestFalsePositiveRemovalRow').find('input:checkbox:first').trigger('click');
