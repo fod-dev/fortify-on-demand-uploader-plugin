@@ -368,7 +368,6 @@ public class DastScanSharedBuildStep {
 
             PutDastWebSiteScanReqModel dynamicScanSetupReqModel;
             dynamicScanSetupReqModel = new PutDastWebSiteScanReqModel();
-            dynamicScanSetupReqModel.setRequestLoginMacroFileCreation(false);
             dynamicScanSetupReqModel.setEntitlementFrequencyType(entitlementFreq);
             dynamicScanSetupReqModel.setAssessmentTypeId(Integer.parseInt(assessmentTypeID));
             dynamicScanSetupReqModel.setTimeZone(timeZone);
