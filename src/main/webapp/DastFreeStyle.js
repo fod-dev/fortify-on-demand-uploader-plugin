@@ -411,7 +411,6 @@ class DastFreeStyle {
     }
 
     setLoginMacroCreationDetails(){
-    debugger;
         if(this.scanSettings && this.scanSettings.websiteAssessment && this.scanSettings.websiteAssessment.loginMacroFileCreationDetails){
             jq('#loginMacroPrimaryUsernameRow').find('input').val(this.scanSettings.websiteAssessment.loginMacroFileCreationDetails.primaryUsername);
             jq('#loginMacroPrimaryPasswordRow').find('input')
@@ -442,7 +441,6 @@ class DastFreeStyle {
     }
 
     setFalsePositiveFlagRequest(){
-    debugger;
         if(this.scanSettings && this.scanSettings.requestFalsePositiveRemoval){
             if (jq('#requestFalsePositiveRemovalRow').find('input:checkbox:first').prop('checked') === false) {
                 jq('#requestFalsePositiveRemovalRow').find('input:checkbox:first').trigger('click');
