@@ -857,7 +857,7 @@ public class DastScanSharedBuildStep {
 
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public void perform(Run<?, ?> build,
-                        TaskListener listener, String correlationId, FodApiConnection apiConnection) {
+                        TaskListener listener, String correlationId, FodApiConnection apiConnection) throws IOException {
         final PrintStream logger = listener.getLogger();
 
             taskListener.set(listener);
