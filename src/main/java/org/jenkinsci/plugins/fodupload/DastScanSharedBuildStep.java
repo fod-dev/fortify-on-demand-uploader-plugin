@@ -185,7 +185,7 @@ public class DastScanSharedBuildStep {
             dastScanType = FodEnums.DastScanType.valueOf(this.model.getSelectedScanType());
 
         switch (dastScanType) {
-            case Standard:
+            case Website:
                 if (Utils.isNullOrEmpty(this.model.getWebSiteUrl())) {
                     errors.add(FodGlobalConstants.FodDastValidation.DastPipelineWebSiteUrlNotFound);
                 }
@@ -302,7 +302,7 @@ public class DastScanSharedBuildStep {
             dastScanType = FodEnums.DastScanType.valueOf(this.model.getSelectedScanType());
 
         switch (dastScanType) {
-            case Standard:
+            case Website:
                 if (this.model.getWebSiteUrl().isEmpty()) {
                     errors.add(FodGlobalConstants.FodDastValidation.DastPipelineWebSiteUrlNotFound);
                 }
@@ -408,8 +408,8 @@ public class DastScanSharedBuildStep {
                     dynamicScanSetupReqModel.setLoginMacroFileId(Integer.parseInt(loginMacroId));
                     dynamicScanSetupReqModel.setRequiresSiteAuthentication(true);
                 }
-                else
-                    throw new IllegalArgumentException("Fortify DAST Invalid Login Macro Id");
+                //else
+                 //   dynamicScanSetupReqModel.setLoginMacroFileId(null);
             }
             try {
                 if (!Utils.isNullOrEmpty(timeboxScan))
@@ -550,12 +550,13 @@ public class DastScanSharedBuildStep {
 
             PutDastScanSetupResponse response = dynamicController.SaveDastWorkflowDrivenScanSettings(Integer.parseInt(userSelectedRelease),
                     dastWorkflowScanSetupReqModel);
+
             if (response.isSuccess && response.errors == null) {
                 Utils.logger(_printStream, "Successfully saved settings for release id = " + userSelectedRelease);
 
             } else {
                 String errMsg  = response.errors != null ? response.errors.stream().map(e -> e.errorCode + ":" + e.message)
-                        .collect(Collectors.joining(",")) : "";
+                            .collect(Collectors.joining(",")) : "";
                 throw new Exception(String.format("FOD API Error %s",errMsg));
             }
         } catch (Exception e) {
