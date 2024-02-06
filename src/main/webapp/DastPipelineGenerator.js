@@ -932,7 +932,7 @@ class DastPipelineGenerator {
 
     onScanTypeChanged() {
 
-        alert('change');
+
         this.resetAuthSettings();
         let selectedScanTypeValue = jq('#scanTypeList').val();
         if (!selectedScanTypeValue) {

@@ -27,7 +27,7 @@ const DastApiScanTypeEnum = Object.freeze({
 
 class DastFreeStyle {
     constructor() {
-        alert('ctor');
+
         this.api = new Api(instance, descriptor);
         this.uiLoaded = false;
         this.releaseId = null;
@@ -430,7 +430,7 @@ class DastFreeStyle {
                         this.onLoadTimeZone();
                         this.onTimeZoneChanged();
                         this.setScanType();
-                        alert('before onchange of scan type');
+
                         this.onScanTypeChanged();
                         this.setScanPolicy();
                         this.setTimeBoxScan();
@@ -761,7 +761,7 @@ class DastFreeStyle {
     }
 
     onScanTypeChanged() {
-        alert ('change');
+
         this.resetAuthSettings();
         jq('#apiTypeList').prop('selectedIndex', 0);
         let selectedScanTypeValue = jq('#scanTypeList').val();
@@ -1251,27 +1251,6 @@ class DastFreeStyle {
     async init() {
         try {
 
-            alert("init");
-
-            // jq('#ddAssessmentType')
-            //     .change(_ => this.onAssessmentChanged());
-            // jq('#entitlementSelectList')
-            //     .change(_ => this.onEntitlementChanged());
-            // jq('#scanTypeList').off('change').change(_ => this.onScanTypeChanged());
-            // jq('#btnAddExcludeUrl').click(_ => this.onExcludeUrlBtnClick());
-            // jq('#btnUploadLoginMacroFile').click(_ => this.onLoginMacroFileUpload());
-            // jq('#btnUploadWorkflowMacroFile').click(_ => this.onWorkflowMacroFileUpload());
-            // jq('#listWorkflowDrivenAllowedHostUrl').click(_ => this.onWorkflowDrivenHostChecked(event));
-            // jq('#listStandardScanTypeExcludedUrl').click(_ => this.onExcludeUrlChecked(event));
-            // jq('#apiTypeList').change(_ => this.onApiTypeChanged());
-            // jq('#openApiInputFile, #openApiInputUrl, #graphQlInputFile, #graphQlInputUrl').change(_ => this.onSourceChange(event.target.id));
-            // jq('#btnUploadPostmanFile, #btnUploadOpenApiFile, #btnUploadgraphQLFile, #btnUploadgrpcFile').click(_ => this.onFileUpload(event));
-            // jq('.fode-row-screc').hide();
-            // jq('.uploadedFileContainer').hide();
-            // jq('#requestFalsePositiveRemovalRow').hide();
-            // jq('#loginMacroFileCreationRow').hide();
-            // jq('#timeZoneStackSelectList').change(_ => this.onTimeZoneChanged());
-            // jq('#ddlNetworkAuthType').change(_ => this.onNetworkAuthTypeChanged());
             setOnblurEventForFreestyle(setOnblurEventForPipeline);
             this.hideMessages();
             this.showMessage('Select a release');
