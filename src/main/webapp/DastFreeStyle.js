@@ -430,7 +430,6 @@ class DastFreeStyle {
                         this.onLoadTimeZone();
                         this.onTimeZoneChanged();
                         this.setScanType();
-
                         this.onScanTypeChanged();
                         this.setScanPolicy();
                         this.setTimeBoxScan();
