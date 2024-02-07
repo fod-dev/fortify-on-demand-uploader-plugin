@@ -177,7 +177,7 @@ class DastFreeStyle {
     }
 
     timeBoxScanSettingVisibility(isVisible) {
-        debugger;
+
         if (isVisible) {
             jq('.dast-timebox-scan').show();
         } else
@@ -220,7 +220,7 @@ class DastFreeStyle {
     }
 
     workflowScanSettingVisibility(isVisible) {
-        debugger;
+
         let workflowScanSettingRows = jq('.dast-workflow-setting');
         if (!isVisible) {
             workflowScanSettingRows.hide();
@@ -559,10 +559,9 @@ class DastFreeStyle {
     }
 
     setExcludeUrlList() {
-        debugger;
+
         if (this.scanSettings && this.scanSettings.websiteAssessment) {
             jq('#listStandardScanTypeExcludedUrl').empty();
-
 
         }
     }
@@ -739,14 +738,26 @@ class DastFreeStyle {
 
 
     setScanType() {
-        if (this.scanSettings) {
+
+        if (this.scanSettings && this.scanSettings.scanType) {
             let selectedScanType;
-            if (this.scanSettings.websiteAssessment) {
-                selectedScanType = DastScanTypeEnum.Standard;
-            } else if (this.scanSettings.workflowdrivenAssessment) {
-                selectedScanType = DastScanTypeEnum.WorkflowDriven;
-            } else if (this.scanSettings.apiAssessment) {
-                selectedScanType = DastScanTypeEnum.Api;
+
+            switch (this.scanSettings.scanType) {
+                case DastScanTypeEnum.Standard:
+                {
+                    selectedScanType = DastScanTypeEnum.Standard;
+                    break;
+                }
+                case "WorkflowDriven" : {
+                    selectedScanType = DastScanTypeEnum.WorkflowDriven;
+                    break;
+                }
+                case DastScanTypeEnum.Api : {
+                        selectedScanType = DastScanTypeEnum.Api;
+                        break;
+                    }
+                default:
+                    throw ("Invalid Scan Type Passed");
             }
             let scanSel = jq('#scanTypeList');
             let currValSelected = false;
@@ -975,7 +986,7 @@ class DastFreeStyle {
         ).catch((err) => {
                 console.log('err' + err);
                 handleSpinner(ctl, true);
-                debugger;
+
                 if (err.toString().includes(invalidWorkflowMacroFile)) {
                     handleUploadStatusMessage(msgCtl, invalidWorkflowMacroFile, false);
                 } else
@@ -1095,7 +1106,7 @@ class DastFreeStyle {
             }
         } else {
             if (excludedUrls) {
-                debugger;
+
                 let urls = excludedUrls.split(',');
                 urls.forEach((entry) => {
                     if (entry === event.target.name) {
@@ -1238,7 +1249,7 @@ class DastFreeStyle {
     }
 
     onExcludeUrlBtnClick() {
-        debugger;
+
         let excludedUrl = jq('#standardScanExcludedUrlText').val();
         if (excludedUrl) {
             jq('#listStandardScanTypeExcludedUrl').append("<li> <input type='checkbox' id=' " + excludedUrl +

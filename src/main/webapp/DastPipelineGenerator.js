@@ -545,7 +545,7 @@ class DastPipelineGenerator {
     }
 
     setNetworkSettings() {
-        debugger;
+
         if (this.scanSettings && this.scanSettings.networkAuthenticationSettings) {
             jq('#networkUsernameRow').find('input').val(this.scanSettings.networkAuthenticationSettings.userName);
             jq('#networkPasswordRow').find('input')
@@ -636,14 +636,24 @@ class DastPipelineGenerator {
     }
 
     setScanType() {
-        if (this.scanSettings) {
+        if (this.scanSettings && this.scanSettings.scanType) {
             let selectedScanType;
-            if (this.scanSettings.websiteAssessment) {
-                selectedScanType = DastScanTypeEnum.Standard;
-            } else if (this.scanSettings.workflowdrivenAssessment) {
-                selectedScanType = DastScanTypeEnum.WorkflowDriven;
-            } else if (this.scanSettings.apiAssessment) {
-                selectedScanType = DastScanTypeEnum.Api;
+            switch (this.scanSettings.scanType) {
+                case DastScanTypeEnum.Standard:
+                {
+                    selectedScanType = DastScanTypeEnum.Standard;
+                    break;
+                }
+                case "WorkflowDriven" : {
+                    selectedScanType = DastScanTypeEnum.WorkflowDriven;
+                    break;
+                }
+                case DastScanTypeEnum.Api : {
+                    selectedScanType = DastScanTypeEnum.Api;
+                    break;
+                }
+                default:
+                    throw ("Invalid Scan Type Passed");
             }
             let scanSel = jq('#scanTypeList');
             let currValSelected = false;
@@ -914,7 +924,7 @@ class DastPipelineGenerator {
     }
 
     resetNetworkSettings() {
-        debugger;
+
         jq('#networkUsernameRow').find('input').val(undefined);
         jq('#networkPasswordRow').find('input').val(undefined);
         jq('#ddlNetworkAuthType').prop('selectedIndex', 0);
