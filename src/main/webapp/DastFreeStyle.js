@@ -457,7 +457,6 @@ class DastFreeStyle {
                         this.setWorkflowDrivenScanSetting();
                         this.setApiScanSetting();
                         this.setRestrictScan();
-                        jq('#ddlNetworkAuthType').val(networkAuthTypes);
                         this.onNetworkAuthTypeLoad();
                         this.onNetworkAuthTypeChanged();
                         this.setNetworkSettings();
@@ -695,7 +694,7 @@ class DastFreeStyle {
     }
 
     setNetworkSettings() {
-        debugger;
+
         if (this.scanSettings && this.scanSettings.networkAuthenticationSettings) {
             jq('#networkUsernameRow').find('input').val(this.scanSettings.networkAuthenticationSettings.userName);
             jq('#networkPasswordRow').find('input').val(this.scanSettings.networkAuthenticationSettings.password);
@@ -851,7 +850,7 @@ class DastFreeStyle {
     }
 
     setRestrictScan() {
-        debugger;
+
         if (this.scanSettings && this.scanSettings.restrictToDirectoryAndSubdirectories) {
             {
                 //  jq('#restrictScan').prop('checked', this.scanSettings.restrictToDirectoryAndSubdirectories);
@@ -860,12 +859,12 @@ class DastFreeStyle {
     }
 
     setScanPolicy() {
-        debugger;
+
         if (this.scanSettings && this.scanSettings.policy) {
             let selectedScanPolicyType = this.scanSettings.policy;
             let ScanPolicy = ["Standard", "Criticals and highs", "Passive Scan"]
-            let scanPolicySel = jq('#dast-standard-scan-policy').find('select');
-           scanPolicySel.find('option').not(':first').remove();
+            let scanPolicySel = jq('#dast-scan-policy-row').find('select');
+            scanPolicySel.find('option').remove();
             scanPolicySel.find('option').first().prop('selected', true);
             let currValSelected = false;
 
@@ -874,31 +873,24 @@ class DastFreeStyle {
                     selectedScanPolicyType.toLowerCase().trim() === p.toLowerCase().split(" ").join("")) {
                     currValSelected = true;
                     if (currValSelected && selectedScanPolicyType.toLowerCase() === 'CriticalsAndHighs'.toLowerCase()) {
-                        scanPolicySel.append(`<option value='${selectedScanPolicyType}'>${p}</option>`);
-                        scanPolicySel.val(selectedScanPolicyType);
+                        scanPolicySel.append(`<option value='${selectedScanPolicyType}' selected>${p}</option>`);
                     }
                     else if(currValSelected &&selectedScanPolicyType.toLowerCase() ==='PassiveScan'.toLowerCase())
                     {
-                        // setTimeout(_ => {
-                        //     apSel.find('option').first().prop('selected', true);
-                        //     apSel.prop('disabled', true);
-                        // }, 50);
-                        scanPolicySel.append(`<option value="${selectedScanPolicyType}">${p}</option>`);
-                        scanPolicySel.val(selectedScanPolicyType);
+                        scanPolicySel.append(`<option value="${selectedScanPolicyType}" selected>${p}</option>`);
                     }
-                    else {
-                        scanPolicySel.append(`<option value="${selectedScanPolicyType}" >${p}</option>`);
-                        scanPolicySel.val(selectedScanPolicyType);
+                    else if(currValSelected &&selectedScanPolicyType.toLowerCase() ==='Standard'.toLowerCase()){
+                        scanPolicySel.append(`<option value="${selectedScanPolicyType}" selected>${p}</option>`);
                     }
                 } else {
                     if (p.toLowerCase().split(" ").join("") === 'CriticalsAndHighs'.toLowerCase()) {
-                        scanPolicySel.append(`<option value="CriticalsAndHighs">${p}</option>`);
+                        scanPolicySel.append(`<option value="CriticalsAndHighs" >${p}</option>`);
                     }
-                    else if(p==='PassiveScan')
+                    else if(p==='Passive Scan')
                     {
                         scanPolicySel.append(`<option value="PassiveScan">${p}</option>`)
                     }
-                    else {
+                    else if(p==='Standard') {
                         scanPolicySel.append(`<option value="${p}">${p}</option>`);
                     }
                 }

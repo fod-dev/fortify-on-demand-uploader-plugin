@@ -514,7 +514,6 @@ class DastPipelineGenerator {
                         /*Set restrict scan value from response to UI */
                         this.setRestrictScan();
                         /*Set network settings from response. */
-                        jq('#ddlNetworkAuthType').val(networkAuthTypes);
                         this.onNetworkAuthTypeLoad();
                         this.onNetworkAuthTypeChanged();
                         this.setNetworkSettings();
@@ -546,6 +545,7 @@ class DastPipelineGenerator {
     }
 
     setNetworkSettings() {
+        debugger;
         if (this.scanSettings && this.scanSettings.networkAuthenticationSettings) {
             jq('#networkUsernameRow').find('input').val(this.scanSettings.networkAuthenticationSettings.userName);
             jq('#networkPasswordRow').find('input')
@@ -914,6 +914,7 @@ class DastPipelineGenerator {
     }
 
     resetNetworkSettings() {
+        debugger;
         jq('#networkUsernameRow').find('input').val(undefined);
         jq('#networkPasswordRow').find('input').val(undefined);
         jq('#ddlNetworkAuthType').prop('selectedIndex', 0);
@@ -963,7 +964,8 @@ class DastPipelineGenerator {
     }
 
     onScanTypeChanged() {
-        this.resetAuthSettings();
+        //this.resetAuthSettings();
+        
         jq('.dast-common-scan-scope').show();
         let selectedScanTypeValue = jq('#scanTypeList').val();
         if (!selectedScanTypeValue) {
@@ -989,7 +991,7 @@ class DastPipelineGenerator {
             let ScanPolicy = ["Standard", "Criticals and highs", "Passive Scan"]
             let scanPolicySel = jq('#dast-standard-scan-policy').find('select');
             let currValSelected = false;
-            scanPolicySel.find('option').not(':first').remove();
+            scanPolicySel.find('option').remove();
             scanPolicySel.find('option').first().prop('selected', true);
 
             for (let p of ScanPolicy) {
@@ -1005,19 +1007,18 @@ class DastPipelineGenerator {
                          scanPolicySel.append(`<option value="${selectedScanPolicyType}" >${p}</option>`);
                         scanPolicySel.val(selectedScanPolicyType);
                     }
-                    else {
-                        scanPolicySel.append(`<option value="${selectedScanPolicyType}" >${p}</option>`);
-                        scanPolicySel.val(selectedScanPolicyType);
+                    else if(currValSelected &&selectedScanPolicyType.toLowerCase() ==='Standard'.toLowerCase()){
+                        scanPolicySel.append(`<option value="${selectedScanPolicyType}" selected>${p}</option>`);
                     }
                 } else {
                     if (p.toLowerCase().split(" ").join("") === 'CriticalsAndHighs'.toLowerCase()) {
                         scanPolicySel.append(`<option value="CriticalsAndHighs">${p}</option>`);
                     }
-                    else if(p==='PassiveScan')
+                    else if(p==='Passive Scan')
                     {
                         scanPolicySel.append(`<option value="PassiveScan">${p}</option>`)
                     }
-                    else {
+                    else if(p==='Standard') {
                         scanPolicySel.append(`<option value="${p}">${p}</option>`);
                     }
                 }
