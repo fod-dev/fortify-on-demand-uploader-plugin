@@ -508,6 +508,7 @@ class DastPipelineGenerator {
                         this.setWebSiteScanSetting();
                         //set timebox scan
                         this.setTimeBoxScan();
+                        this.setExcludeUrlList()
                         this.setWorkflowDrivenScanSetting();
                         this.setApiScanSetting();
                         /*Set network settings from response. */
@@ -720,8 +721,29 @@ class DastPipelineGenerator {
 
     setExcludeUrlList()
     {
-        if (this.scanSettings && this.scanSettings.websiteAssessment)
-        {
+        if (this.scanSettings && this.scanSettings.websiteAssessment && this.scanSettings.websiteAssessment.exclusionsList) {
+            jq('#listStandardScanTypeExcludedUrl').empty();
+
+            this.scanSettings.websiteAssessment.exclusionsList.forEach((item, index, arr)=>
+            {
+                console.log(item.value);
+
+                jq('#listStandardScanTypeExcludedUrl').append("<li> <input type='checkbox' id=' " + item.value +
+                    " ' checked='checked' name='" + item.value + "'>" + item.value + "</li>");
+
+                jq('#listStandardScanTypeExcludedUrl').show();
+
+                let urlsList = jq('#excludedUrls').val();
+                if (urlsList) {
+                    if (urlsList !== '' && item.value !== '') {
+                        urlsList = urlsList + "," + item.value;
+                        jq('#excludedUrls').val(urlsList);
+                    } else
+                        jq('#excludedUrls').val(item.value);
+                } else
+                    jq('#excludedUrls').val(item.value);
+
+            });
 
         }
     }
