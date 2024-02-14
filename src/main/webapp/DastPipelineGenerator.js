@@ -694,7 +694,7 @@ class DastPipelineGenerator {
                 jq('#workflowMacroHosts').val(undefined);
                 jq('#workflowMacroId').val(this.scanSettings.workflowdrivenAssessment.workflowDrivenMacro[0].fileId);
                 this.scanSettings.workflowdrivenAssessment.workflowDrivenMacro[0].allowedHosts.forEach((item, index, arr) => {
-                        console.log(item);
+                        
                         if (arr[index]) {
                             jq('#listWorkflowDrivenAllowedHostUrl').append("<li>" + "<input type='checkbox' id=' " + arr[index] +
                                 " ' checked='checked' name='" + arr[index] + "'>" + arr[index] + "</li>");
