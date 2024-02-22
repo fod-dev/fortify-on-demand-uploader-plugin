@@ -212,7 +212,6 @@ public class ScanStatusPoller {
             logger.println(String.format("Scan Completed Date & Time: %s", scanSummaryDTO.getCompletedDateTime()));
             logger.println(String.format("Is False Positive Challenge Enabled: %s", scanSummaryDTO.getIsFalsePositiveChallenge()));
             logger.println(String.format("Is Remediation Scan: %s", scanSummaryDTO.getIsRemediationScan()));
-            logger.println(String.format("Is Remediation Scan: %s", scanSummaryDTO.getIsRemediationScan()));
             logger.println(String.format("Entitlement Units Consumed: %s", scanSummaryDTO.getEntitlementUnitsConsumed()));
             logger.println(String.format("Star Rating: %s", scanSummaryDTO.getStarRating()));
             logger.println(String.format("Notes: %s", scanSummaryDTO.getNotes()));
