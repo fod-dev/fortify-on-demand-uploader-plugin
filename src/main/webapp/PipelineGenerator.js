@@ -314,6 +314,7 @@ class PipelineGenerator {
                 case _scanCentralBuildTypes.DotNet:
                     if (this.overrideServerSettings || this.autoProvMode) {
                         closestRow(jq('#technologyStackForm')).show();
+                        jq('.fodp-row-sc-msbuild').show();
                         let currVal = this.techStacks[jq('#technologyStackSelect').val()];
                         if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelect').val(techStackConsts.none);
                         techStackFilter = this.isDotNetStack;

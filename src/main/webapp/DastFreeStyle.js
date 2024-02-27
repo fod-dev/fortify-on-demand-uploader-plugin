@@ -347,9 +347,32 @@ class DastFreeStyle {
     }
 
     async loadEntitlementSettings(releaseChangedPayload) {
-        this.registerChangeEvents();
         if (releaseChangedPayload && releaseChangedPayload.mode === ReleaseSetMode.releaseId
             && numberOrNull(releaseChangedPayload.releaseId) > 0) {
+            //Register the all Event on change here After the LoadEntitlement triggered from AppSelection.js
+            jq('#ddAssessmentType')
+                .change(_ => this.onAssessmentChanged());
+            jq('#entitlementSelectList')
+                .change(_ => this.onEntitlementChanged());
+            jq('#scanTypeList').off('change').change(_ => this.onScanTypeChanged());
+            jq('#btnAddExcludeUrl').click(_ => this.onExcludeUrlBtnClick());
+            jq('#btnUploadLoginMacroFile').click(_ => this.onLoginMacroFileUpload());
+            jq('#btnUploadWorkflowMacroFile').click(_ => this.onWorkflowMacroFileUpload());
+            jq('#listWorkflowDrivenAllowedHostUrl').click(_ => this.onWorkflowDrivenHostChecked(event));
+            jq('#listStandardScanTypeExcludedUrl').click(_ => this.onExcludeUrlChecked(event));
+            jq('#apiTypeList').change(_ => this.onApiTypeChanged());
+            jq('#openApiInputFile, #openApiInputUrl, #graphQlInputFile, #graphQlInputUrl').change(_ => this.onSourceChange(event.target.id));
+            jq('#btnUploadPostmanFile, #btnUploadOpenApiFile, #btnUploadgraphQLFile, #btnUploadgrpcFile').click(_ => this.onFileUpload(event));
+            jq('.fode-row-screc').hide();
+            jq('.uploadedFileContainer').hide();
+            jq('.workloadUploadedFileContainer').hide();
+            jq('#requestFalsePositiveRemovalRow').hide();
+            jq('#loginMacroFileCreationRow').hide();
+            jq('#timeZoneStackSelectList').change(_ => this.onTimeZoneChanged());
+            jq('#ddlNetworkAuthType').change(_ => this.onNetworkAuthTypeChanged());
+            jq('#graphQlSchemeTypeList').change(_ => this.onGraphQlSchemeTypeChanged());
+            jq('#grpcSchemeTypeList').change(_ => this.onGrpcSchemeTypeChanged());
+            jq('#dast-standard-scan-scope input').change(_ => this.onStandardScanRestrictionOptionChanged (event.target.id));
             setOnblurEventForFreestyle();
             this.uiLoaded = true;
         }
@@ -455,34 +478,6 @@ class DastFreeStyle {
         }
 
         fields.removeClass('spinner');
-    }
-
-    registerChangeEvents()
-    {
-        //Register the all Event on change here After the LoadEntitlement triggered from AppSelection.js
-        jq('#ddAssessmentType')
-            .change(_ => this.onAssessmentChanged());
-        jq('#entitlementSelectList')
-            .change(_ => this.onEntitlementChanged());
-        jq('#scanTypeList').change(_ => this.onScanTypeChanged());
-        jq('#btnAddExcludeUrl').click(_ => this.onExcludeUrlBtnClick());
-        jq('#btnUploadLoginMacroFile').click(_ => this.onLoginMacroFileUpload());
-        jq('#btnUploadWorkflowMacroFile').click(_ => this.onWorkflowMacroFileUpload());
-        jq('#listWorkflowDrivenAllowedHostUrl').click(_ => this.onWorkflowDrivenHostChecked(event));
-        jq('#listStandardScanTypeExcludedUrl').click(_ => this.onExcludeUrlChecked(event));
-        jq('#apiTypeList').change(_ => this.onApiTypeChanged());
-        jq('#openApiInputFile, #openApiInputUrl, #graphQlInputFile, #graphQlInputUrl').change(_ => this.onSourceChange(event.target.id));
-        jq('#btnUploadPostmanFile, #btnUploadOpenApiFile, #btnUploadgraphQLFile, #btnUploadgrpcFile').click(_ => this.onFileUpload(event));
-        jq('.fode-row-screc').hide();
-        jq('.uploadedFileContainer').hide();
-        jq('.workloadUploadedFileContainer').hide();
-        jq('#requestFalsePositiveRemovalRow').hide();
-        jq('#loginMacroFileCreationRow').hide();
-        jq('#timeZoneStackSelectList').change(_ => this.onTimeZoneChanged());
-        jq('#ddlNetworkAuthType').change(_ => this.onNetworkAuthTypeChanged());
-        jq('#graphQlSchemeTypeList').change(_ => this.onGraphQlSchemeTypeChanged());
-        jq('#grpcSchemeTypeList').change(_ => this.onGrpcSchemeTypeChanged());
-        jq('#dast-standard-scan-scope input').change(_ => this.onStandardScanRestrictionOptionChanged (event.target.id));
     }
 
     setLoginMacroCreationDetails() {

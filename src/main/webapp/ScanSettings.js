@@ -275,6 +275,7 @@ class ScanSettings {
                 case _scanCentralBuildTypes.DotNet:
                     closestRow(jq('#technologyStackForm')).show();
                     let currVal = this.techStacks[jq('#technologyStackSelectList').val()];
+                    jq('.fode-row-sc-msbuild').show();
 
                     if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelectList').val(techStackConsts.none);
                     techStackFilter = this.isDotNetStack;
