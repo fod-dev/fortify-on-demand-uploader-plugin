@@ -311,6 +311,7 @@ class PipelineGenerator {
                 });
             switch (val) {
                 case _scanCentralBuildTypes.MSBuild:
+                case _scanCentralBuildTypes.DotNet:
                     if (this.overrideServerSettings || this.autoProvMode) {
                         closestRow(jq('#technologyStackForm')).show();
                         let currVal = this.techStacks[jq('#technologyStackSelect').val()];
@@ -672,6 +673,7 @@ class PipelineGenerator {
                 ssbf = jq('#scanCentralBuildFileInput').val();
                 break;
             case _scanCentralBuildTypes.MSBuild:
+            case _scanCentralBuildTypes.DotNet:
                 ssbc = jq('#scanCentralBuildCommandInput').val();
                 ssbf = jq('#scanCentralBuildFileInput').val();
                 break;

@@ -250,7 +250,6 @@ class DastFreeStyle {
 
     populateAssessmentsDropdown() {
         let atsel = jq(`#ddAssessmentType`);
-
         atsel.find('option').remove();
         jq(`#entitlementSelectList`).find('option').remove();
 
@@ -263,6 +262,7 @@ class DastFreeStyle {
     }
 
     async onAssessmentChanged(skipAuditPref) {
+    debugger;
         let atval = jq('#ddAssessmentType').val();
         let entsel = jq('#entitlementSelectList');
         let at = this.assessments ? this.assessments[atval] : null;
@@ -347,33 +347,9 @@ class DastFreeStyle {
     }
 
     async loadEntitlementSettings(releaseChangedPayload) {
+        this.registerChangeEvents();
         if (releaseChangedPayload && releaseChangedPayload.mode === ReleaseSetMode.releaseId
             && numberOrNull(releaseChangedPayload.releaseId) > 0) {
-
-            //Register the all Event on change here After the LoadEntitlement triggered from AppSelection.js
-            jq('#ddAssessmentType')
-                .change(_ => this.onAssessmentChanged());
-            jq('#entitlementSelectList')
-                .change(_ => this.onEntitlementChanged());
-            jq('#scanTypeList').off('change').change(_ => this.onScanTypeChanged());
-            jq('#btnAddExcludeUrl').click(_ => this.onExcludeUrlBtnClick());
-            jq('#btnUploadLoginMacroFile').click(_ => this.onLoginMacroFileUpload());
-            jq('#btnUploadWorkflowMacroFile').click(_ => this.onWorkflowMacroFileUpload());
-            jq('#listWorkflowDrivenAllowedHostUrl').click(_ => this.onWorkflowDrivenHostChecked(event));
-            jq('#listStandardScanTypeExcludedUrl').click(_ => this.onExcludeUrlChecked(event));
-            jq('#apiTypeList').change(_ => this.onApiTypeChanged());
-            jq('#openApiInputFile, #openApiInputUrl, #graphQlInputFile, #graphQlInputUrl').change(_ => this.onSourceChange(event.target.id));
-            jq('#btnUploadPostmanFile, #btnUploadOpenApiFile, #btnUploadgraphQLFile, #btnUploadgrpcFile').click(_ => this.onFileUpload(event));
-            jq('.fode-row-screc').hide();
-            jq('.uploadedFileContainer').hide();
-            jq('.workloadUploadedFileContainer').hide();
-            jq('#requestFalsePositiveRemovalRow').hide();
-            jq('#loginMacroFileCreationRow').hide();
-            jq('#timeZoneStackSelectList').change(_ => this.onTimeZoneChanged());
-            jq('#ddlNetworkAuthType').change(_ => this.onNetworkAuthTypeChanged());
-            jq('#graphQlSchemeTypeList').change(_ => this.onGraphQlSchemeTypeChanged());
-            jq('#grpcSchemeTypeList').change(_ => this.onGrpcSchemeTypeChanged());
-            jq('#dast-standard-scan-scope input').change(_ => this.onStandardScanRestrictionOptionChanged (event.target.id));
             setOnblurEventForFreestyle();
             this.uiLoaded = true;
         }
@@ -388,7 +364,6 @@ class DastFreeStyle {
         let rows = jq(fodeRowSelector);
         rows.hide();
         this.hideMessages();
-
         let releaseId = releaseChangedPayload ? releaseChangedPayload.releaseId : null;
         let fields = jq('.fode-field.spinner-container');
         releaseId = numberOrNull(releaseId);
@@ -480,6 +455,34 @@ class DastFreeStyle {
         }
 
         fields.removeClass('spinner');
+    }
+
+    registerChangeEvents()
+    {
+        //Register the all Event on change here After the LoadEntitlement triggered from AppSelection.js
+        jq('#ddAssessmentType')
+            .change(_ => this.onAssessmentChanged());
+        jq('#entitlementSelectList')
+            .change(_ => this.onEntitlementChanged());
+        jq('#scanTypeList').change(_ => this.onScanTypeChanged());
+        jq('#btnAddExcludeUrl').click(_ => this.onExcludeUrlBtnClick());
+        jq('#btnUploadLoginMacroFile').click(_ => this.onLoginMacroFileUpload());
+        jq('#btnUploadWorkflowMacroFile').click(_ => this.onWorkflowMacroFileUpload());
+        jq('#listWorkflowDrivenAllowedHostUrl').click(_ => this.onWorkflowDrivenHostChecked(event));
+        jq('#listStandardScanTypeExcludedUrl').click(_ => this.onExcludeUrlChecked(event));
+        jq('#apiTypeList').change(_ => this.onApiTypeChanged());
+        jq('#openApiInputFile, #openApiInputUrl, #graphQlInputFile, #graphQlInputUrl').change(_ => this.onSourceChange(event.target.id));
+        jq('#btnUploadPostmanFile, #btnUploadOpenApiFile, #btnUploadgraphQLFile, #btnUploadgrpcFile').click(_ => this.onFileUpload(event));
+        jq('.fode-row-screc').hide();
+        jq('.uploadedFileContainer').hide();
+        jq('.workloadUploadedFileContainer').hide();
+        jq('#requestFalsePositiveRemovalRow').hide();
+        jq('#loginMacroFileCreationRow').hide();
+        jq('#timeZoneStackSelectList').change(_ => this.onTimeZoneChanged());
+        jq('#ddlNetworkAuthType').change(_ => this.onNetworkAuthTypeChanged());
+        jq('#graphQlSchemeTypeList').change(_ => this.onGraphQlSchemeTypeChanged());
+        jq('#grpcSchemeTypeList').change(_ => this.onGrpcSchemeTypeChanged());
+        jq('#dast-standard-scan-scope input').change(_ => this.onStandardScanRestrictionOptionChanged (event.target.id));
     }
 
     setLoginMacroCreationDetails() {
@@ -739,12 +742,14 @@ class DastFreeStyle {
 
     setEnvFacing() {
         if (this.scanSettings) {
-           let selectedVal = this.scanSettings.dynamicScanEnvironmentFacingType;
-           let items = jq('#dastEnvList').find('option');
-           for(let item of items) {
-             if (item.value.toLowerCase() == selectedVal.toLowerCase())
-             item.setAttribute('selected', 'selected');
-           }
+            let selectedVal = this.scanSettings.dynamicScanEnvironmentFacingType;
+            let items = jq('#dastEnvList').find('option');
+            if (selectedVal) {
+                for (let item of items) {
+                    if (item.value.toLowerCase() == selectedVal.toLowerCase())
+                        item.setAttribute('selected', 'selected');
+                }
+            }
         }
     }
 

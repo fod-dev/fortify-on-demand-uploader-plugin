@@ -272,13 +272,14 @@ class ScanSettings {
 
             switch (val) {
                 case _scanCentralBuildTypes.MSBuild:
+                case _scanCentralBuildTypes.DotNet:
                     closestRow(jq('#technologyStackForm')).show();
                     let currVal = this.techStacks[jq('#technologyStackSelectList').val()];
 
                     if (!currVal || !this.isDotNetStack(currVal)) jq('#technologyStackSelectList').val(techStackConsts.none);
                     techStackFilter = this.isDotNetStack;
                     break;
-                case _scanCentralBuildTypes.Maven:
+
                 case _scanCentralBuildTypes.Gradle:
                     jq('#technologyStackSelectList').val(techStackConsts.java);
                     break;
