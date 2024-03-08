@@ -12,6 +12,7 @@ Fortify on Demand is a Software as a Service (SaaS) solution that enables your o
 This plugin requires a Fortify on Demand account. For more information on Fortify on Demand and to request a free trial, see https://www.opentext.com/products/fortify-on-demand.
 
 **More Information**
+
 Changelog: https://github.com/jenkinsci/fortify-on-demand-uploader-plugin/blob/master/CHANGELOG.md  
 Usage instructions: https://www.microfocus.com/documentation/fortify-on-demand-jenkins-plugin/
 
