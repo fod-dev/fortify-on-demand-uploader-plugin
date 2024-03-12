@@ -306,7 +306,7 @@ class PipelineGenerator {
                 .each((i, e) => {
                     let jqe = jq(e);
 
-                    if (jqe.hasClass(scClass)) jqe.show();
+                    if (jqe.hasClass(scClass) || jqe.hasClass('fodp-row-sc-all')) jqe.show();
                     else jqe.hide();
                 });
             switch (val) {

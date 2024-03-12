@@ -302,7 +302,7 @@
         </f:entry>
 
         <f:entry title="Exclude Files" help="/plugin/fortify-on-demand-uploader/help-scanCentral-excludeFile.html">
-            <div id="excludeFilesForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-gradle fodp-row-sc-maven fodp-row-sc-msbuild fodp-row-sc-python fodp-row-sc-php">
+            <div id="excludeFilesForm" class="fodp-field spinner-container fodp-row-sc fodp-row-sc-all">
                 <input type="text" id="scanCentralExcludeFilesInput" class="setting-input"/>
             </div>
         </f:entry>
