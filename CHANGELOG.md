@@ -6,8 +6,8 @@
 - Added **Exclude Files** field for packaging with Fortify ScanCentral SAST.
 
 **Important**: 
-Submitting DAST Automated asssessment is a technology preview. The folllowing are known limitations:
-- Plugin 8.0 supports up to Jenkins 2.346.1. Some UI components, including application and release fields, do not load in versions greater than 2.346.1.
+The DAST Automated asssessment task is a technology preview. The following are known limitations:
+- Fortify on Demand Jenkins Plugin 8.0 supports up to Jenkins 2.346.1. Some UI components, including application and release fields, do not load in versions greater than 2.346.1.
 - (Website scan) Selection of **Enable redundant page detection** is not retained.
 - (Website scan) Excluded URLs are not applied in pipelines.
 
