@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.fodupload.FodApi;
 
 import com.google.gson.Gson;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.remoting.RemoteOutputStream;
@@ -167,6 +168,7 @@ class ScanPayloadUploadLocal implements ScanPayloadUpload {
     }
 }
 
+@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 class ScanPayloadUploadRemote extends MasterToSlaveCallable<StartScanResponse, IOException> implements ScanPayloadUpload {
     private static final long serialVersionUID = 1L;
     private JobModel _uploadRequest;

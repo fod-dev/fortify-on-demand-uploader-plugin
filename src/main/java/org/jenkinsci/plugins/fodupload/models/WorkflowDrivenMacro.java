@@ -1,6 +1,8 @@
 package org.jenkinsci.plugins.fodupload.models;
 
-public class WorkflowDrivenMacro {
+import java.io.Serializable;
+
+public class WorkflowDrivenMacro implements Serializable {
     public int fileId;
     public String[] allowedHosts;
 }

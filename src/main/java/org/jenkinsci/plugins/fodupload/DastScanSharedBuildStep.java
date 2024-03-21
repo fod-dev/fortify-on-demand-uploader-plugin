@@ -592,7 +592,7 @@ public class DastScanSharedBuildStep {
             default:
                 throw new IllegalArgumentException("Manifest upload file type is not set for the release: " + getModel().get_releaseId());
         }
-        patchDastScanFileUploadReq.Content = fileContent.getBytes(CharEncoding.UTF_8);
+        patchDastScanFileUploadReq.content = fileContent.getBytes(CharEncoding.UTF_8);
         return dastScanController.dastFileUpload(patchDastScanFileUploadReq);
     }
 

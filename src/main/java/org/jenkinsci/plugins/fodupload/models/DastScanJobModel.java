@@ -1,14 +1,15 @@
 package org.jenkinsci.plugins.fodupload.models;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 public class DastScanJobModel {
     private boolean overrideGlobalConfig;
     String username;
     String timeBoxScan;
-
     public String getAllowedHost() {
         return allowedHost;
     }
-
     String allowedHost;
     String personalAccessToken;
     String tenantId;

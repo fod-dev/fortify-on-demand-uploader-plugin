@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.fodupload;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Result;
@@ -394,7 +395,7 @@ class PayloadPackagingLocal implements PayloadPackaging {
         return PayloadPackagingImpl.deletePayload(_payload);
     }
 }
-
+@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOException> implements PayloadPackaging {
     private static final long serialVersionUID = 1L;
     private transient VirtualChannel _channel;

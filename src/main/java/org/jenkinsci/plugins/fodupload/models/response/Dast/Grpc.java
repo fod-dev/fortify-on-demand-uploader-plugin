@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.fodupload.models.response.Dast;
 
 public class Grpc {
-    public int FileId;
+    public int fileId;
 
     public String schemeType;
     public String host;

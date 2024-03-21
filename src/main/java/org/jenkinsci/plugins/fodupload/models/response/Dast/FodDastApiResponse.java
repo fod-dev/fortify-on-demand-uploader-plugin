@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 
 public class FodDastApiResponse implements Serializable {
-    public List<error> errors;
+    public List<Error> errors;
     public boolean isSuccess;
-    public int HttpCode;
+    public int httpCode;
 
     public String reason;
 

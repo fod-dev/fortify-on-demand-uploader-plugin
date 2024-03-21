@@ -1,6 +1,8 @@
 package org.jenkinsci.plugins.fodupload.models;
 
-public class LoginMacroFileCreationDetails {
+import java.io.Serializable;
+
+public class LoginMacroFileCreationDetails implements Serializable {
     public String primaryUsername;
     @SuppressWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
     public String primaryPassword;

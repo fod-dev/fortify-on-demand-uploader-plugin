@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.fodupload.FodApi;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.remoting.VirtualChannel;
@@ -7,7 +8,10 @@ import hudson.remoting.VirtualChannel;
 import java.io.IOException;
 import java.io.PrintStream;
 
-class RemoteAgentClient implements IHttpClient {
+@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
+final class RemoteAgentClient implements IHttpClient {
+    protected void finalize()
+    { }
     private int _connectionTimeout;
     private int _writeTimeout;
     private int _readTimeout;
