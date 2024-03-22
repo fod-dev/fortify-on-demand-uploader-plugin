@@ -30,6 +30,7 @@ public abstract class HttpRequest implements Serializable {
         return _url;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public Collection<Map.Entry<String, String>> headers() {
         return _headers;
     }

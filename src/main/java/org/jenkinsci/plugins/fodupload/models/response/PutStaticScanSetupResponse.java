@@ -13,6 +13,7 @@ public class PutStaticScanSetupResponse {
     private List<String> messages;
 
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public PutStaticScanSetupResponse(boolean success, String bsiToken, List<String> errors, List<String> messages) {
         this.success = success;
         this.bsiToken = bsiToken;
@@ -28,10 +29,12 @@ public class PutStaticScanSetupResponse {
         return bsiToken;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getErrors() {
         return errors;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getMessages() {
         return messages;
     }

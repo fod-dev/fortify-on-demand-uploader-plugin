@@ -16,6 +16,7 @@ public class EntitlementSettings {
     private Integer languageLevel; // real enum
     private boolean sonatypeScan;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public EntitlementSettings(Integer assessmentType, List<LookupItemsModel> assessmentTypes,
                                Integer entitlement, List<LookupItemsModel> entitlements,
                                Integer auditPreference, List<LookupItemsModel> auditPreferences,
@@ -35,6 +36,7 @@ public class EntitlementSettings {
         return assessmentType;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<LookupItemsModel> getAssessmentTypes() {
         return assessmentTypes;
     }
@@ -43,6 +45,7 @@ public class EntitlementSettings {
         return entitlement;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<LookupItemsModel> getEntitlements() {
         return entitlements;
     }
@@ -51,6 +54,7 @@ public class EntitlementSettings {
         return auditPreference;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<LookupItemsModel> getAuditPreferences() {
         return auditPreferences;
     }

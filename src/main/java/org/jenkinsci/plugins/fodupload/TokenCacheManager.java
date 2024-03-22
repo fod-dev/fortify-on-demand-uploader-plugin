@@ -23,6 +23,7 @@ public class TokenCacheManager {
     private final static HashMap<String, Token> tokens = new HashMap<>();
     private PrintStream _logger;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public TokenCacheManager(PrintStream logger) {
         _logger = logger;
     }

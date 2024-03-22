@@ -11,6 +11,7 @@ public class PostReleaseWithUpsertApplicationResponseModel {
     private Boolean success;
     private List<String> errors;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public PostReleaseWithUpsertApplicationResponseModel(Integer applicationId, Integer releaseId, Boolean success, List<String> errors) {
         this.applicationId = applicationId;
         this.releaseId = releaseId;
@@ -30,6 +31,7 @@ public class PostReleaseWithUpsertApplicationResponseModel {
         return success;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getErrors() {
         if(errors == null) errors = new ArrayList<>();
 

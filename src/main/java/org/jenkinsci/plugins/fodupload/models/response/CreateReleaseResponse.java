@@ -12,6 +12,7 @@ public class CreateReleaseResponse {
     private List<String> errors;
 
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CreateReleaseResponse(Integer releaseId, Boolean success, List<String> errors) {
         this.releaseId = releaseId;
         this.success = success;
@@ -26,6 +27,7 @@ public class CreateReleaseResponse {
         return success;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getErrors() {
         return errors;
     }

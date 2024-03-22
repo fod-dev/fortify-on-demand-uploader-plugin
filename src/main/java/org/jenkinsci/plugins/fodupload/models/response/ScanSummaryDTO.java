@@ -2,7 +2,6 @@ package org.jenkinsci.plugins.fodupload.models.response;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@SuppressFBWarnings("EI_EXPOSE_REP")
 public class ScanSummaryDTO {
     private int applicationId;
     private String applicationName;
@@ -137,6 +136,7 @@ public class ScanSummaryDTO {
         return isSubscriptionEntitlement;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public ScanPauseDetail[] getPauseDetails() {
         ScanPauseDetail[] returnDetails = pauseDetails;
         return returnDetails;

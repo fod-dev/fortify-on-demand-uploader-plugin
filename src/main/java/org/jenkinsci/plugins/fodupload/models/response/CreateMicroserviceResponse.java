@@ -12,6 +12,7 @@ public class CreateMicroserviceResponse {
     private List<String> errors;
 
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CreateMicroserviceResponse(Integer microserviceId, Boolean success, List<String> errors) {
         this.microserviceId = microserviceId;
         this.success = success;
@@ -22,10 +23,12 @@ public class CreateMicroserviceResponse {
         return microserviceId;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public Boolean getSuccess() {
         return success;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getErrors() {
         return errors;
     }

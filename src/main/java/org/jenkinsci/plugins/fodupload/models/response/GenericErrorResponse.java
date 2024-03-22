@@ -8,6 +8,7 @@ import java.util.List;
 public class GenericErrorResponse {
     private List<ErrorResponse> errors;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<ErrorResponse> getErrors() {
         return errors;
     }
@@ -18,13 +19,15 @@ public class GenericErrorResponse {
         sb.append("\n");
 
         int index = 1;
-        for (ErrorResponse error : errors) {
+        if (errors != null) {
+            for (ErrorResponse error : errors) {
 
-            sb.append(index);
-            sb.append(") ");
-            sb.append(error.getMessage());
-            if (index < errors.size())
-                sb.append("\n");
+                sb.append(index);
+                sb.append(") ");
+                sb.append(error.getMessage());
+                if (index < errors.size())
+                    sb.append("\n");
+            }
         }
         return sb.toString();
     }

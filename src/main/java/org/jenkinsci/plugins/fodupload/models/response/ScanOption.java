@@ -11,6 +11,7 @@ public class ScanOption {
     private String lastSelectedOption;
     private List<LookupItemsModel> options;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ScanOption(Integer id, String name, String lastSelectedOption, List<LookupItemsModel> options) {
         this.id = id;
         this.name = name;
@@ -30,6 +31,7 @@ public class ScanOption {
         return lastSelectedOption;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<LookupItemsModel> getOptions() {
         return options;
     }

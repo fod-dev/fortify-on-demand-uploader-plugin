@@ -5,7 +5,6 @@ import org.jenkinsci.plugins.fodupload.FodApi.FodApiConnection;
 import org.jenkinsci.plugins.fodupload.controllers.LookupItemsController;
 import org.jenkinsci.plugins.fodupload.controllers.ReleaseController;
 import org.jenkinsci.plugins.fodupload.models.AnalysisStatusTypeEnum;
-import org.jenkinsci.plugins.fodupload.models.FodEnums;
 import org.jenkinsci.plugins.fodupload.models.response.LookupItemsModel;
 import org.jenkinsci.plugins.fodupload.models.response.PollingSummaryDTO;
 import org.jenkinsci.plugins.fodupload.models.response.PollingSummaryPauseDetail;
@@ -35,6 +34,7 @@ public class ScanStatusPoller {
      * @param pollingInterval the polling interval in minutes
      * @param logger          the PrintStream that will be logged to
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ScanStatusPoller(FodApiConnection apiConnection, int pollingInterval, PrintStream logger) {
         this.apiConnection = apiConnection;
         this.pollingInterval = pollingInterval;
@@ -92,24 +92,24 @@ public class ScanStatusPoller {
 
                 pollerThread.start();
                 pollerThread.join();
-                if (pollerThread.fail) {
+                if (pollerThread.getFail()) {
                     failCount++;
                     continue;
                 }
 
                 if (failCount < MAX_FAILS) {
-                    if (!pollerThread.fail && pollerThread.statusString != null) {
+                    if (!pollerThread.getFail() && pollerThread.getStatusString() != null) {
                         failCount = 0;
-                        logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.statusString);
+                        logger.println(pollerThread.getName() + ") Poll Status: " + pollerThread.getStatusString());
 
-                        if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.pollingSummaryDTO.getPauseDetails() != null)
+                        if (pollerThread.getStatusString().equals(AnalysisStatusTypeEnum.Waiting.name()) && pollerThread.pollingSummaryDTO.getPauseDetails() != null)
                             printPauseMessages(pollerThread.pollingSummaryDTO);
-                        if (pollerThread.finished) {
-                            finished = pollerThread.finished;
+                        if (pollerThread.getFinished()) {
+                            finished = pollerThread.getFinished();
 
-                            if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Canceled.name())) {
+                            if (pollerThread.getStatusString().equals(AnalysisStatusTypeEnum.Canceled.name())) {
                                 printCancelMessages(pollerThread.pollingSummaryDTO, releaseId);
-                            } else if (pollerThread.statusString.equals(AnalysisStatusTypeEnum.Completed.name())) {
+                            } else if (pollerThread.getStatusString().equals(AnalysisStatusTypeEnum.Completed.name())) {
                                 printPassFail(pollerThread.pollingSummaryDTO, releaseId);
                             }
                         }
@@ -126,7 +126,7 @@ public class ScanStatusPoller {
                 pollerThread.interrupt();
             }
         }
-        return pollerThread.result;
+        return pollerThread.getResult();
     }
 
     /**

@@ -12,6 +12,7 @@ public class Result<T> {
     private String reason;
     private T value;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public Result(Boolean success, List<String> errors, T value) {
         this.success = success;
         this.errors = errors;
@@ -29,6 +30,7 @@ public class Result<T> {
         return value;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getErrors() {
         return errors;
     }

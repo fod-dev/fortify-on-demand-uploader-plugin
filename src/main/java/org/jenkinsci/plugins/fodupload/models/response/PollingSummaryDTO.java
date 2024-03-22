@@ -2,7 +2,6 @@ package org.jenkinsci.plugins.fodupload.models.response;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@SuppressFBWarnings("EI_EXPOSE_REP")
 public class PollingSummaryDTO {
     private int ScanId;
     private int OpenSourceScanId;
@@ -83,6 +82,7 @@ public class PollingSummaryDTO {
         return PassFailReasonType;
     };
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public PollingSummaryPauseDetail[] getPauseDetails() {
         PollingSummaryPauseDetail[] returnDetails = PauseDetails;
         return returnDetails;

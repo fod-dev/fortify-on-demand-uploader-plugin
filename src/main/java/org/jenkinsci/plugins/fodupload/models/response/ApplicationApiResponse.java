@@ -48,6 +48,8 @@ public class ApplicationApiResponse {
     public Boolean getHasMicroservices() {
         return hasMicroservices;
     };
+
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<ApplicationAttributeExtended> getAttributes() {
         return attributes;
     };
