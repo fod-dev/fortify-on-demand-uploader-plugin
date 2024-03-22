@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.fodupload.models;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jenkinsci.plugins.fodupload.models.response.Dast.GetDastScanSettingResponse;
-@SuppressFBWarnings("PA_PUBLIC_PRIMITIVE_ATTRIBUTE")
+@SuppressFBWarnings({"PA_PUBLIC_PRIMITIVE_ATTRIBUTE","SE_NO_SERIALVERSIONID"})
 public class PutDastAutomatedGrpcReqModel extends PutDastScanSetupReqModel {
 
     public int FileId;

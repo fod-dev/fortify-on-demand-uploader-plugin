@@ -32,6 +32,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 public class FortifyDastFreeStyleBuildStep extends Recorder implements SimpleBuildStep {
 
     DastScanSharedBuildStep dastSharedBuildStep;
@@ -376,7 +377,7 @@ public class FortifyDastFreeStyleBuildStep extends Recorder implements SimpleBui
                         throw new IllegalArgumentException("Dast Manifest upload file type is not set for the release Id: " + releaseId);
                 }
 
-                patchDastScanFileUploadReq.Content = fileContent.getBytes(CharEncoding.UTF_8);
+                patchDastScanFileUploadReq.content = fileContent.getBytes(CharEncoding.UTF_8);
                 patchDastScanFileUploadReq.fileName = fileName;
                 return dastScanController.dastFileUpload(patchDastScanFileUploadReq);
 

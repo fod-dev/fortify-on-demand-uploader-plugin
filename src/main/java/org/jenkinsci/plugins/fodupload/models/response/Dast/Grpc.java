@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings({"UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD", "NM_FIELD_NAMING_CONVENTION"})
 public class Grpc {
-    public int FileId;
+    public int fileId;
 
     public String schemeType;
     public String host;

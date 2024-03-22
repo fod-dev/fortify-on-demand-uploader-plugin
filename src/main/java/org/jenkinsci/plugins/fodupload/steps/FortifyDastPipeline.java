@@ -529,7 +529,7 @@ public class FortifyDastPipeline extends FortifyStep {
         this.entitlementFrequency = entitlementFrequency;
     }
 
-    public final void SaveScanSettings(FilePath workspace, PrintStream logger, DastScanSharedBuildStep dastScanSharedBuildStep) throws Exception {
+    public final void saveScanSettings(FilePath workspace, PrintStream logger, DastScanSharedBuildStep dastScanSharedBuildStep) throws Exception {
 
         if (dastScanSharedBuildStep == null) {
             throw new Exception("DastScanSharedBuildStep Object not set");
@@ -971,7 +971,7 @@ public class FortifyDastPipeline extends FortifyStep {
     }
 
     @Override
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+    @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "DLS_DEAD_STORE"})
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, IllegalArgumentException {
 
         PrintStream printStream = listener.getLogger();
@@ -1093,7 +1093,7 @@ public class FortifyDastPipeline extends FortifyStep {
                 throw  new IllegalArgumentException("Invalid Fortify DAST scan setting, Either among the release Id or release name is allowed");
             }
 
-            SaveScanSettings(workspace, printStream, dastScanSharedBuildStep);
+            saveScanSettings(workspace, printStream, dastScanSharedBuildStep);
 
             dastScanSharedBuildStep.perform(build, listener, correlationId, apiConnection);
             CrossBuildAction crossBuildAction = build.getAction(CrossBuildAction.class);
@@ -1195,6 +1195,7 @@ public class FortifyDastPipeline extends FortifyStep {
             }
         }
 
+        @SuppressFBWarnings("UPM - UPM_UNCALLED_PRIVATE_METHOD")
         private static <T extends Enum<T>> ListBoxModel doFillFromEnum(Class<T> enumClass) {
             ListBoxModel items = new ListBoxModel();
             for (T selected : EnumSet.allOf(enumClass)) {

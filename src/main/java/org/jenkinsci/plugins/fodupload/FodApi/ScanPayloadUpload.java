@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.fodupload.FodApi;
 
 import com.google.gson.Gson;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
 import hudson.remoting.RemoteOutputStream;
@@ -167,6 +168,7 @@ class ScanPayloadUploadLocal implements ScanPayloadUpload {
     }
 }
 
+@SuppressFBWarnings("CT_CONSTRUCTOR_THROW")
 class ScanPayloadUploadRemote extends MasterToSlaveCallable<StartScanResponse, IOException> implements ScanPayloadUpload {
     private static final long serialVersionUID = 1L;
     private JobModel _uploadRequest;
@@ -202,7 +204,7 @@ class ScanPayloadUploadRemote extends MasterToSlaveCallable<StartScanResponse, I
 
     @Override
     public StartScanResponse call() throws IOException {
-        OkHttpClient client = Utils.CreateOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
+        OkHttpClient client = Utils.createOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
         PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
 
         return ScanPayloadUploadImpl.performUpload(_uploadRequest, _correlationId, _fragUrl, _bearerToken, client, logger);

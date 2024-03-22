@@ -6,9 +6,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class BlackoutHourDTO {    /// <summary>
     /// The 24 hour identifier (0-23)
     /// </summary>
-    public int Hour;
+    public int hour;
     /// <summary>
     /// Checked is true when this hour is blocked out. It is false when clear to scan
     /// </summary>
-    public boolean Checked;
+    public boolean checked;
 }

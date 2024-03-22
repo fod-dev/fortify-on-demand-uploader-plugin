@@ -30,8 +30,13 @@ import java.util.stream.Collectors;
 
 import static org.jenkinsci.plugins.fodupload.Utils.*;
 
+<<<<<<< HEAD
 @SuppressFBWarnings({"EI_EXPOSE_REP", "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"})
+public class DastScanSharedBuildStep {
+=======
+@SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
 public class DastScanSharedBuildStep  {
+>>>>>>> 1731f9eceb0b0caad006dd324fcfe19c947cc4c8
     private final DastScanJobModel model;
     private final AuthenticationModel authModel;
     public static final ThreadLocal<TaskListener> taskListener = new ThreadLocal<>();

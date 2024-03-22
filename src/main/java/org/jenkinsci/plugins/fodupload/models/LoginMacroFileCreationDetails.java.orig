@@ -1,10 +1,15 @@
 package org.jenkinsci.plugins.fodupload.models;
 
+<<<<<<< HEAD
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.io.Serializable;
 
 @SuppressFBWarnings({"EI_EXPOSE_REP", "PA_PUBLIC_PRIMITIVE_ATTRIBUTE"})
+public class LoginMacroFileCreationDetails {
+=======
+import java.io.Serializable;
+
 public class LoginMacroFileCreationDetails implements Serializable {
+>>>>>>> 1731f9eceb0b0caad006dd324fcfe19c947cc4c8
     public String primaryUsername;
     @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
     public String primaryPassword;

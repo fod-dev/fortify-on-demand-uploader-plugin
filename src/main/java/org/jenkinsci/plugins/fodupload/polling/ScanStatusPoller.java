@@ -220,7 +220,7 @@ public class ScanStatusPoller {
        }
     }
 
-    public ScanSummaryDTO GetScanSummary(int releaseId, int scanId) throws IOException {
+    public ScanSummaryDTO getScanSummary(int releaseId, int scanId) throws IOException {
         ReleaseController releaseController = new ReleaseController(this.apiConnection, this.logger, "");
 
         return releaseController.getRelease(releaseId, scanId);

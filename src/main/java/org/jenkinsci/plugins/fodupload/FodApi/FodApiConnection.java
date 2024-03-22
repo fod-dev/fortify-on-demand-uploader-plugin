@@ -13,7 +13,6 @@ import org.jenkinsci.plugins.fodupload.Json;
 import org.jenkinsci.plugins.fodupload.TokenCacheManager;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.GrantType;
 import org.jenkinsci.plugins.fodupload.models.JobModel;
-import org.jenkinsci.plugins.fodupload.models.PatchDastScanFileUploadReq;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -70,7 +69,7 @@ public class FodApiConnection {
             _launcher = launcher;
             client = new RemoteAgentClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher, _httpLogger);
         } else
-            client = new ServerClient(Utils.CreateOkHttpClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy), _httpLogger);
+            client = new ServerClient(Utils.createOkHttpClient(CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy), _httpLogger);
     }
 
     /**
@@ -216,7 +215,7 @@ public class FodApiConnection {
                     correlationId, logger, CONNECTION_TIMEOUT, WRITE_TIMEOUT, READ_TIMEOUT, proxy, _launcher);
         }
     }
-
+@SuppressFBWarnings("UPM - UPM_UNCALLED_PRIVATE_METHOD")
     private void log(String msg) {
         if (_httpLogger != null) _httpLogger.println(msg);
     }
