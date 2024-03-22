@@ -53,7 +53,8 @@ public class PutDastScanSetupReqModel implements Serializable {
 
     public boolean requiresNetworkAuthentication;
 
-    @SuppressFBWarnings({"SE_NO_SERIALVERSIONID","SIC_INNER_SHOULD_BE_STATIC","SE_INNER_CLASS"})
+  
+    @SuppressFBWarnings({"SE_NO_SERIALVERSIONID", "SE_NO_SERIALVERSIONID", "SIC_INNER_SHOULD_BE_STATIC", "SE_INNER_CLASS"})
     public class NetworkAuthentication implements Serializable {
 
         public void setUserName(String userName) {
