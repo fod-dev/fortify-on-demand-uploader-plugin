@@ -51,6 +51,7 @@ public class GetDastScanSettingResponse {
     public boolean hasUtilizedAdditionalServices;
     public boolean requestFalsePositiveRemoval;
 
+    @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC")
     public class  FileDetails{
         public int fileId;
         public String fileName;

@@ -152,8 +152,8 @@ public class Utils {
     }
 
 
-    @SuppressFBWarnings("Nm - NM_METHOD_NAMING_CONVENTION")
-    public static  <T> T ConvertHttpResponseIntoDastApiResponse(ResponseContent response, T fodApiResponse) throws IOException {
+
+    public static  <T> T convertHttpResponseIntoDastApiResponse(ResponseContent response, T fodApiResponse) throws IOException {
         if (response.code() < 300) {
             System.out.println("response code: " + response.code());
             return parseHttpSuccessResponse(response, fodApiResponse);

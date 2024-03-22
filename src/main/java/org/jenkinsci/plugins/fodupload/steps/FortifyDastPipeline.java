@@ -799,6 +799,7 @@ public class FortifyDastPipeline extends FortifyStep {
         return true;
     }
 
+    @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
     private void saveWebSiteScanSettings(FilePath workspace, PrintStream printStream, DastScanSharedBuildStep dastScanSharedBuildStep) throws Exception {
 
         if (loginMacroFilePath != null && loginMacroFilePath.length() > 1) {
@@ -971,7 +972,7 @@ public class FortifyDastPipeline extends FortifyStep {
     }
 
     @Override
-    @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "DLS_DEAD_STORE"})
+    @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "DLS_DEAD_STORE", "DLS_DEAD_LOCAL_STORE", "DLS_DEAD_LOCAL_STORE"})
     public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, IllegalArgumentException {
 
         PrintStream printStream = listener.getLogger();

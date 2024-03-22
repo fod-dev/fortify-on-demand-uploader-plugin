@@ -10,4 +10,6 @@ public class Website {
     public LoginMacroFileCreationDetails loginMacroFileCreationDetails;
     public ExclusionDTO[] exclusionsList;
 
+    public boolean enableRedundantPageDetection;
+
 }

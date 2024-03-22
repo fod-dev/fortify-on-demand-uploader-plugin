@@ -75,17 +75,18 @@ public class DastScanJobModel {
     Boolean requestFalsePositiveRemoval;
 
 
+    @SuppressFBWarnings("URF_UNREAD_FIELD")
     public DastScanJobModel(Boolean overrideGlobalConfig, String username, String personalAccessToken, String tenantId, String releaseId,
                             String webSiteUrl, String dastEnv, String scanTimebox,
                             boolean scanScope, String selectedScanType, String scanPolicy,
                             String selectedDynamicTimeZone,
                             boolean enableRedundantPageDetection,
                             String networkAuthUserName, String loginMacroFilePath,
-                            String workflowMacroFilePath,int loginMacroId,
+                            String workflowMacroFilePath, int loginMacroId,
                             String workflowMacroId, String allowedHost,
                             String networkAuthPassword, String assessmentTypeId,
                             String entitlementId, String entitlementFrequencyType,
-                            String selectedNetworkAuthType,boolean timeBoxChecked,
+                            String selectedNetworkAuthType, boolean timeBoxChecked,
                             boolean requestLoginMacroFileCreation, String loginMacroPrimaryUserName, String loginMacroPrimaryPassword,
                             String loginMacroSecondaryUsername, String loginMacroSecondaryPassword, boolean requestFalsePositiveRemoval,
                             String excludedUrlList){

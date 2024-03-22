@@ -26,6 +26,7 @@ public class PutDastWebSiteScanReqModel  extends PutDastScanSetupReqModel {
         this.timeBoxInHours = timeBoxInHours;
     }
     Integer timeBoxInHours;
+    @SuppressFBWarnings("SE_BAD_FIELD")
     List<ExclusionDTO> exclusionsList;
 
     public void setExclusionsList(List<ExclusionDTO> exclusionsList) {

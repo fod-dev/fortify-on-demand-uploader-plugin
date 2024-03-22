@@ -54,7 +54,7 @@ public final class DastScanPayloadUploadImpl {
                 throw new IOException("Fortify OnDemand: Failed to upload DAST manifest payload");
             }
             patchDastFileUploadResponse = new PatchDastFileUploadResponse();
-            patchDastFileUploadResponse = Utils.ConvertHttpResponseIntoDastApiResponse(responseContent, patchDastFileUploadResponse);
+            patchDastFileUploadResponse = Utils.convertHttpResponseIntoDastApiResponse(responseContent, patchDastFileUploadResponse);
 
         } catch (IOException ex) {
             log.printf("Failed to upload DAST manifest payload for release id %s", releaseId);
