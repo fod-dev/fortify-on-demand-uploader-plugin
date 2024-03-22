@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.fodupload.models;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@SuppressFBWarnings({"CT_CONSTRUCTOR_THROW"})
+@SuppressFBWarnings({"CT_CONSTRUCTOR_THROW","URF_UNREAD_FIELD"})
 public class DastScanJobModel {
     private boolean overrideGlobalConfig;
     String username;
