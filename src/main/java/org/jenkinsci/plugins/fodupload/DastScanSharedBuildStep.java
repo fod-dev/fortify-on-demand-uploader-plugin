@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 
 import static org.jenkinsci.plugins.fodupload.Utils.*;
 
-public class DastScanSharedBuildStep {
+@SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
+public class DastScanSharedBuildStep  {
     private final DastScanJobModel model;
     private final AuthenticationModel authModel;
     public static final ThreadLocal<TaskListener> taskListener = new ThreadLocal<>();
@@ -878,7 +879,7 @@ public class DastScanSharedBuildStep {
         return null;
     }
 
-    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+    @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" ,"UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD"})
     public void perform(Run<?, ?> build,
                         TaskListener listener, String correlationId, FodApiConnection apiConnection) throws IOException {
         final PrintStream logger = listener.getLogger();

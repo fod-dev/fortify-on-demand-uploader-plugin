@@ -57,7 +57,7 @@ public final class DastScanPayloadUploadRemote extends MasterToSlaveCallable<Pat
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        OkHttpClient client = Utils.CreateOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
+        OkHttpClient client = Utils.createOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
         try {
             return DastScanPayloadUploadImpl.performUpload(_filePath, _releaseId, _apiUri, _correlationId, _bearerToken, client, logger);
         } catch (Exception e) {

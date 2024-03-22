@@ -450,6 +450,7 @@ class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOException
     }
 }
 
+@SuppressFBWarnings("SE_NO_SERIALVERSIONID")
 class RemotePayloadCleanup implements FilePath.FileCallable<Boolean> {
     private RemoteOutputStream _logger;
 

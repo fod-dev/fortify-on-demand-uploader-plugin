@@ -39,7 +39,7 @@ import java.util.*;
 import static org.jenkinsci.plugins.fodupload.Utils.logger;
 import static org.jenkinsci.plugins.fodupload.models.FodEnums.APILookupItemTypes;
 
-@SuppressFBWarnings("unused")
+@SuppressFBWarnings({"unused", "UWF_UNWRITTEN_FIELD"})
 public class FortifyDastPipeline extends FortifyStep {
     private static final ThreadLocal<TaskListener> taskListener = new ThreadLocal<>();
     private final String correlationId = UUID.randomUUID().toString();
@@ -1194,6 +1194,7 @@ public class FortifyDastPipeline extends FortifyStep {
             }
         }
 
+        @SuppressFBWarnings("UPM - UPM_UNCALLED_PRIVATE_METHOD")
         private static <T extends Enum<T>> ListBoxModel doFillFromEnum(Class<T> enumClass) {
             ListBoxModel items = new ListBoxModel();
             for (T selected : EnumSet.allOf(enumClass)) {

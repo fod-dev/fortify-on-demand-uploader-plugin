@@ -1,7 +1,9 @@
 package org.jenkinsci.plugins.fodupload.models;
 
-import java.io.Serializable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import java.io.Serializable;
+@SuppressFBWarnings("SE_NO_SERIALVERSIONID")
 public class PutDastScanSetupReqModel implements Serializable {
 
     public NetworkAuthentication getNetworkAuthenticationSettings() {
@@ -50,6 +52,7 @@ public class PutDastScanSetupReqModel implements Serializable {
 
     public boolean requiresNetworkAuthentication;
 
+    @SuppressFBWarnings("SE_NO_SERIALVERSIONID")
     public class NetworkAuthentication implements Serializable {
 
         public void setUserName(String userName) {

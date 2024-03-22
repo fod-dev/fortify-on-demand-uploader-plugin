@@ -204,7 +204,7 @@ class ScanPayloadUploadRemote extends MasterToSlaveCallable<StartScanResponse, I
 
     @Override
     public StartScanResponse call() throws IOException {
-        OkHttpClient client = Utils.CreateOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
+        OkHttpClient client = Utils.createOkHttpClient(_connectionTimeout, _writeTimeout, _readTimeout, _proxy);
         PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
 
         return ScanPayloadUploadImpl.performUpload(_uploadRequest, _correlationId, _fragUrl, _bearerToken, client, logger);

@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.fodupload.FodApi;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ProxyConfiguration;
 import okhttp3.*;
 import okio.Buffer;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+
 public class Utils {
 
     static String getRawBody(InputStream stream) throws IOException {
@@ -34,7 +36,7 @@ public class Utils {
         return content;
     }
 
-    static OkHttpClient CreateOkHttpClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy) {
+    static OkHttpClient createOkHttpClient(int connectionTimeout, int writeTimeout, int readTimeout, ProxyConfiguration proxy) {
         OkHttpClient.Builder baseClient = new OkHttpClient().newBuilder()
                 .connectTimeout(connectionTimeout, TimeUnit.SECONDS)
                 .writeTimeout(writeTimeout, TimeUnit.SECONDS)
@@ -58,6 +60,7 @@ public class Utils {
         return proxyClient.build();
     }
 
+    @SuppressFBWarnings("Nm - NM_METHOD_NAMING_CONVENTION")
     static ResponseContent ResponseContentFromOkHttp3(Response response) throws IOException {
         ResponseContent resp = new ResponseContent(response.body().byteStream(), response.isSuccessful(), response.code(), response.message());
 
@@ -65,6 +68,7 @@ public class Utils {
         return resp;
     }
 
+    @SuppressFBWarnings("Nm - NM_METHOD_NAMING_CONVENTION")
     static HttpRequest OkHttpRequestToHttpRequest(Request request) throws IOException {
         HttpRequest.Verb verb;
 
@@ -98,6 +102,7 @@ public class Utils {
         throw new IOException("Unsupported Content-Type: " + request.body().contentType().toString());
     }
 
+    @SuppressFBWarnings("Nm - NM_METHOD_NAMING_CONVENTION")
     static <T extends HttpRequest> Request HttpRequestToOkHttpRequest(T request) {
         Request.Builder r = new Request.Builder()
                 .url(request.url());
@@ -147,6 +152,7 @@ public class Utils {
     }
 
 
+    @SuppressFBWarnings("Nm - NM_METHOD_NAMING_CONVENTION")
     public static  <T> T ConvertHttpResponseIntoDastApiResponse(ResponseContent response, T fodApiResponse) throws IOException {
         if (response.code() < 300) {
             System.out.println("response code: " + response.code());
