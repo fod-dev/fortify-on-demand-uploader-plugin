@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.fodupload;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.jenkinsci.plugins.fodupload.FodApi.FormBodyRequest;
 import org.jenkinsci.plugins.fodupload.FodApi.HttpRequest;
 import org.jenkinsci.plugins.fodupload.FodApi.IHttpClient;
@@ -21,6 +22,7 @@ public class TokenCacheManager {
     private final static HashMap<String, Token> tokens = new HashMap<>();
     private PrintStream _logger;
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public TokenCacheManager(PrintStream logger) {
         _logger = logger;
     }

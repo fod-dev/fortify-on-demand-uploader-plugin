@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.fodupload.FodApi;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.ProxyConfiguration;
@@ -11,8 +12,7 @@ import okhttp3.*;
 import org.jenkinsci.plugins.fodupload.Json;
 import org.jenkinsci.plugins.fodupload.TokenCacheManager;
 import org.jenkinsci.plugins.fodupload.models.FodEnums.GrantType;
-import org.jenkinsci.plugins.fodupload.models.JobModel;
-import org.jenkinsci.plugins.fodupload.models.PatchDastScanFileUploadReq;
+import org.jenkinsci.plugins.fodupload.models.SastJobModel;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -48,6 +48,7 @@ public class FodApiConnection {
      * @param secret  apiConnection secret
      * @param baseUrl apiConnection baseUrl
      */
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public FodApiConnection(final String id, final String secret, final String baseUrl, final String apiUrl, final GrantType grantType, final String scope, boolean executeOnRemoteAgent, Launcher launcher, PrintStream logger) {
         this.id = id;
         this.secret = secret;
@@ -197,7 +198,7 @@ public class FodApiConnection {
 
     }
 
-    public ScanPayloadUpload getScanPayloadUploadInstance(JobModel uploadRequest, String correlationId, String fragUrl, PrintStream logger) throws IOException {
+    public ScanPayloadUpload getScanPayloadUploadInstance(SastJobModel uploadRequest, String correlationId, String fragUrl, PrintStream logger) throws IOException {
         if (this.client instanceof ServerClient) {
             return new ScanPayloadUploadLocal(((ServerClient) this.client).client(), getTokenFromCache(), uploadRequest, correlationId, fragUrl, logger);
         } else {

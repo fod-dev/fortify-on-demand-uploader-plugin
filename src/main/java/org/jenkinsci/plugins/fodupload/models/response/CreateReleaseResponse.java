@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.fodupload.models.response;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.util.List;
 
 public class CreateReleaseResponse {
@@ -9,6 +11,7 @@ public class CreateReleaseResponse {
     private List<String> errors;
 
 
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CreateReleaseResponse(Integer releaseId, Boolean success, List<String> errors) {
         this.releaseId = releaseId;
         this.success = success;
@@ -23,6 +26,7 @@ public class CreateReleaseResponse {
         return success;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<String> getErrors() {
         return errors;
     }

@@ -14,6 +14,7 @@ public class GenericListResponse<T> {
         return totalCount;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public List<T> getItems() {
         return items;
     }

@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.fodupload.FodApi;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -27,6 +29,7 @@ public abstract class HttpRequest implements Serializable {
         return _url;
     }
 
+    @SuppressFBWarnings("EI_EXPOSE_REP")
     public Collection<Map.Entry<String, String>> headers() {
         return _headers;
     }
