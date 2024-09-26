@@ -34,7 +34,7 @@ public interface PayloadPackaging {
 
 final class PayloadPackagingImpl {
     static FilePath performPackaging(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
-        logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
+        logger.println("Starting Zip Packaging for source @ " + model.getSrcLocation());
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;
 
@@ -55,6 +55,7 @@ final class PayloadPackagingImpl {
                 throw new IOException("Source is empty for given Technology Stack and Language Level.");
             }
         } else {
+            logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
             File scanCentralPath;
             String scEnv = null;
             String scPath = null;
