@@ -34,16 +34,13 @@ public interface PayloadPackaging {
 
 final class PayloadPackagingImpl {
     static FilePath performPackaging(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
-        logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;
-
         if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
-
+            logger.println("Starting Zip Packaging for source @ " + model.getSrcLocation());
             if (ValidationUtils.isScanCentralRecommended(technologyStack)) {
                 logger.println("\nFortify recommends using ScanCentral Client to package code for comprehensive scan results.\n");
             }
-
             // zips the file in a temporary location
             payload = Utils.createZipFile(technologyStack, srcLocation, logger);
             if (payload.length() == 0) {
@@ -55,6 +52,7 @@ final class PayloadPackagingImpl {
                 throw new IOException("Source is empty for given Technology Stack and Language Level.");
             }
         } else {
+            logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
             File scanCentralPath;
             String scEnv = null;
             String scPath = null;
