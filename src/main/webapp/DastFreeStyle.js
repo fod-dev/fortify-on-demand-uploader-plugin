@@ -355,7 +355,7 @@ class DastFreeStyle {
     }
 
     async loadEntitlementSettings(releaseChangedPayload) {
-        if (releaseChangedPayload && releaseChangedPayload.mode === ReleaseSetMode.releaseId
+        if (releaseChangedPayload
             && numberOrNull(releaseChangedPayload.releaseId) > 0) {
             //Register the all Event on change here After the LoadEntitlement triggered from AppSelection.js
             jq('#ddAssessmentType')
