@@ -220,5 +220,14 @@ public class FodApiConnection {
         if (_httpLogger != null) _httpLogger.println(msg);
     }
 
+    @Override
+    public String toString() {
+        return "FodApiConnection{" +
+                "apiUrl=" + apiUrl +
+                ", client=" + client.getClass().getSimpleName() +
+                ", grantType=" + grantType +
+                ", scope=" + scope +
+                '}';
+    }
 }
 

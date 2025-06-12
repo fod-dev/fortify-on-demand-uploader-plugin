@@ -27,6 +27,7 @@ public interface PayloadPackaging {
     boolean deletePayload() throws IOException, InterruptedException;
 
     public static PayloadPackaging getInstance(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, Launcher launcher, PrintStream logger) {
+        Utils.traceLog(logger, "Entered PayloadPackaging.getInstance()");
         if (workspace.isRemote()) return new PayloadPackagingRemote(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, launcher, logger);
         else return new PayloadPackagingLocal(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, logger);
     }
@@ -34,11 +35,11 @@ public interface PayloadPackaging {
 
 final class PayloadPackagingImpl {
     static FilePath performPackaging(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
-        logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;
 
         if (model.getSelectedScanCentralBuildType().equalsIgnoreCase(FodEnums.SelectedScanCentralBuildType.None.toString())) {
+            logger.println("Starting zip packaging for source @ " + model.getSrcLocation());
 
             if (ValidationUtils.isScanCentralRecommended(technologyStack)) {
                 logger.println("\nFortify recommends using ScanCentral Client to package code for comprehensive scan results.\n");
@@ -55,6 +56,8 @@ final class PayloadPackagingImpl {
                 throw new IOException("Source is empty for given Technology Stack and Language Level.");
             }
         } else {
+            logger.println("Starting ScanCentral Packaging for source @ " + model.getSrcLocation());
+
             File scanCentralPath;
             String scEnv = null;
             String scPath = null;
@@ -379,6 +382,8 @@ final class PayloadPackagingLocal implements PayloadPackaging {
         _openSourceAnalysis = openSourceAnalysis;
         _workspace = workspace;
         _globalSCPath = globalSCPath;
+
+        Utils.traceLog(logger, String.format("%s: Instantiating packaging on master node", this.getClass().getSimpleName()));
     }
 
     @Override
@@ -411,10 +416,14 @@ final class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOExc
         _workspace = workspace;
         _globalSCPath = globalSCPath;
 
+        Utils.traceLog(logger, String.format("%s: Getting remote channel", this.getClass().getSimpleName()));
+
         _channel = launcher.getChannel();
         if (_channel == null) {
             throw new IllegalStateException("Launcher doesn't support remoting but it is required");
         }
+
+        Utils.traceLog(logger, String.format("%s: Remote channel acquired", this.getClass().getSimpleName()));
 
         _logger = new RemoteOutputStream(logger);
     }
@@ -422,6 +431,8 @@ final class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOExc
     @Override
     public FilePath call() throws IOException {
         PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
+
+        Utils.traceLog(logger, String.format("%s.call(): Performing remote packaging", this.getClass().getSimpleName()));
 
         _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, logger);
         return _payload;

@@ -396,6 +396,11 @@ public class SharedUploadBuildStep {
         FodApiConnection apiConnection = null;
         boolean isRemoteAgent = workspace.isRemote();
 
+        Utils.traceLog(logger,
+                String.format("\n\t\tcorrelationId: %s", correlationId) +
+                        String.format("\n\t\tisRemoteAgent: %s", isRemoteAgent) +
+                        String.format("\n\t\tworkspace: %s (%s)", workspace.getName(), workspace.getBaseName()));
+
         try {
             taskListener.set(listener);
 
@@ -408,6 +413,7 @@ public class SharedUploadBuildStep {
                         return;
                     }
                 } else {
+                    Utils.traceLog(logger, "Getting auth creds from global config");
                     if (GlobalConfiguration.all().get(FodGlobalDescriptor.class).getAuthTypeIsApiKey()) {
                         if (!Utils.isCredential(GlobalConfiguration.all().get(FodGlobalDescriptor.class).getOriginalClientSecret())) {
                             build.setResult(Result.UNSTABLE);
@@ -455,9 +461,12 @@ public class SharedUploadBuildStep {
             String technologyStack = null;
             Boolean openSourceAnalysis = false;
 
+            Utils.traceLog(logger, "Connecting to FOD API");
+
             apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher, logger);
 
             if (apiConnection != null) {
+                Utils.traceLog(logger, String.format("apiConnection: %s", apiConnection));
                 StaticScanController staticScanController = new StaticScanController(apiConnection, logger, correlationId);
 
                 if (releaseId <= 0 && model.loadBsiToken()) technologyStack = model.getBsiToken().getTechnologyStack();
@@ -482,9 +491,15 @@ public class SharedUploadBuildStep {
                 if (model.getOpenSourceScan() != null) openSourceAnalysis = Boolean.parseBoolean(model.getOpenSourceScan());
 
                 String scsetting = GlobalConfiguration.all().get(FodGlobalDescriptor.class).getScanCentralPath();
+                Utils.traceLog(logger, "Preparing packaging" +
+                        String.format("\n\t\ttechnologyStack: %s", technologyStack) +
+                        String.format("\n\t\topenSourceAnalysis: %s", openSourceAnalysis) +
+                        String.format("\n\t\tscsetting: %s", scsetting) +
+                        String.format("\n\t\tworkspace: [%s] %s (%s)", workspace.isRemote() ? "remote" : "master", workspace.getName(), workspace.getBaseName()));
                 PayloadPackaging packaging = PayloadPackaging.getInstance(model, technologyStack, openSourceAnalysis, scsetting, workspace, launcher, logger);
 
                 try {
+                    Utils.traceLog(logger,"Invoking packaging");
                     model.setPayload(packaging.packagePayload());
                 } catch (Exception e) {
                     logger.println(e.getMessage());
@@ -492,14 +507,19 @@ public class SharedUploadBuildStep {
                     return;
                 }
 
+                Utils.traceLog(logger,"Packaging complete");
+
                 String notes = String.format("[%d] %s - Assessment submitted from Jenkins FoD Plugin",
                         build.getNumber(),
                         build.getDisplayName());
+
+                Utils.traceLog(logger,"Queueing scan");
 
                 StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, model, notes);
                 boolean deleted = false;
 
                 try {
+                    Utils.traceLog(logger,"Deleting payload");
                     deleted = packaging.deletePayload();
                 } catch (Exception ignored) {
 

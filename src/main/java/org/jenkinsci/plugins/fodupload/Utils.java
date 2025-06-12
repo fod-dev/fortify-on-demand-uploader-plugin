@@ -299,6 +299,10 @@ public class Utils {
         return _traceLogging;
     }
 
+    public static void traceLog(PrintStream logger, String msg) {
+        if (Utils.traceLogging()) logger.println("TRACE\t|\t" + msg);
+    }
+
     public static void logger(PrintStream printStream ,String msg)
     {
         if(printStream!=null)
