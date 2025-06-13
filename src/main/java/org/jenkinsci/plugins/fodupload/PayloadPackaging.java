@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.fodupload;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.remoting.RemoteOutputStream;
 import hudson.remoting.VirtualChannel;
 import jenkins.security.MasterToSlaveCallable;
@@ -22,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface PayloadPackaging {
-    FilePath packagePayload() throws IOException;
+    FilePath packagePayload() throws IOException, InterruptedException;
 
     boolean deletePayload() throws IOException, InterruptedException;
 
@@ -34,7 +35,10 @@ public interface PayloadPackaging {
 }
 
 final class PayloadPackagingImpl {
-    static FilePath performPackaging(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException {
+    static FilePath performPackaging(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException, InterruptedException {
+
+        logger.println("Is a Remote agent"+ workspace.isRemote());
+
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;
 
@@ -86,8 +90,16 @@ final class PayloadPackagingImpl {
                 throw new IOException("Scan Central package output not found.");
             }
         }
-
-        return new FilePath(payload);
+        /*
+        A FilePath instance is tied to the remoting channel (agent or controller) where it was created.
+         Using a FilePath on a different channel, Jenkins throws an IllegalStateException
+        Copy the payload to the agent's workspace and reconstruct FilePath there ---
+        */
+        FilePath agentPayload = workspace.child(payload.getName());
+        // If payload is already on the agent, this is a no-op if already present; if not, copy from controller to remote agent.
+        new FilePath(payload).copyTo(agentPayload);
+        logger.println("Payload copied to agent workspace: " + agentPayload.getRemote());
+        return agentPayload;
     }
 
     static boolean deletePayload(FilePath payload) throws IOException, InterruptedException {
@@ -387,7 +399,7 @@ final class PayloadPackagingLocal implements PayloadPackaging {
     }
 
     @Override
-    public FilePath packagePayload() throws IOException {
+    public FilePath packagePayload() throws IOException, InterruptedException {
         _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, _logger);
         return _payload;
     }
@@ -434,7 +446,11 @@ final class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOExc
 
         Utils.traceLog(logger, String.format("%s.call(): Performing remote packaging", this.getClass().getSimpleName()));
 
-        _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, logger);
+        try {
+            _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, logger);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return _payload;
     }
 
