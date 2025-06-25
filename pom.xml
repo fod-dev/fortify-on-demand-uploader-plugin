@@ -153,7 +153,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>324.va_f5d6774f3a_d</version>
+            <version>1.19</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci</groupId>
@@ -175,36 +175,7 @@
             <artifactId>maven-artifact</artifactId>
             <version>3.9.6</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-job</artifactId>
-            <version>1316.vd2290d3341a_f</version>
-
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-api</artifactId>
-            <version>1213.v646def1087f9</version>
-
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-support</artifactId>
-            <version>839.v35e2736cfd5c</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-step-api</artifactId>
-            <version>639.v6eca_cd8c04a_a_</version>
-
-        </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>

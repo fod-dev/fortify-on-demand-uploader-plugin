@@ -396,13 +396,7 @@ public class SharedUploadBuildStep {
         FodApiConnection apiConnection = null;
 
         boolean isRemoteAgent = workspace.isRemote();
-        logger.println("isRemoteAgent detection from workspace library "+ isRemoteAgent);
-
-        Node node = NodeDetectionUtil.getExecutionNode(build);
-        String nodeName = node.getNodeName();
-        logger.println("Node name: " + nodeName);
-        boolean isRemoteAgentAdv =  NodeDetectionUtil.isRunningOnAgent(node);
-        logger.println("isRemoteAgent detection from NodeDetectionUtil library "+ isRemoteAgentAdv);
+        logger.println("Is a RemoteAgent execution: "+ isRemoteAgent);
 
  Utils.traceLog(logger,
                 String.format("\n\t\tcorrelationId: %s", correlationId) +
