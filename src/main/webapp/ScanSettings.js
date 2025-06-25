@@ -132,15 +132,8 @@ class ScanSettings {
     }
 
     async loadEntitlementSettings(releaseChangedPayload) {
-//        if (!this.uiLoaded) {
-//            this.deferredLoadEntitlementSettings = _ => this.loadEntitlementSettings(releaseChangedPayload);
-//            return;
-//        } else this.deferredLoadEntitlementSettings = null;
-
         this.releaseId = null;
-
         let rows = jq(fodeRowSelector);
-
         rows.hide();
         this.hideMessages();
         this.isBsi = false;
