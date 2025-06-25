@@ -3,9 +3,10 @@ package org.jenkinsci.plugins.fodupload;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.Util;
-import hudson.remoting.RemoteOutputStream;
 import hudson.remoting.VirtualChannel;
+import hudson.remoting.Channel;
+import hudson.remoting.RemoteOutputStream;
+import io.jenkins.plugins.casc.model.CNode;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -29,15 +30,17 @@ public interface PayloadPackaging {
 
     public static PayloadPackaging getInstance(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, Launcher launcher, PrintStream logger) {
         Utils.traceLog(logger, "Entered PayloadPackaging.getInstance()");
-        if (workspace.isRemote()) return new PayloadPackagingRemote(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, launcher, logger);
-        else return new PayloadPackagingLocal(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, logger);
+
+        if (workspace.isRemote())
+            return new PayloadPackagingRemote(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, launcher, logger);
+        else
+            return new PayloadPackagingLocal(model, technologyStack, openSourceAnalysis, globalSCPath, workspace, logger);
     }
 }
 
+
 final class PayloadPackagingImpl {
     static FilePath performPackaging(SastJobModel model, String technologyStack, Boolean openSourceAnalysis, String globalSCPath, FilePath workspace, PrintStream logger) throws IOException, InterruptedException {
-
-        logger.println("Is a Remote agent"+ workspace.isRemote());
 
         FilePath srcLocation = new FilePath(workspace, model.getSrcLocation());
         File payload;

@@ -394,13 +394,20 @@ public class SharedUploadBuildStep {
 
         final PrintStream logger = listener.getLogger();
         FodApiConnection apiConnection = null;
-        boolean isRemoteAgent = workspace.isRemote();
 
-        Utils.traceLog(logger,
+        boolean isRemoteAgent = workspace.isRemote();
+        logger.println("isRemoteAgent detection from workspace library "+ isRemoteAgent);
+
+        Node node = NodeDetectionUtil.getExecutionNode(build);
+        String nodeName = node.getNodeName();
+        logger.println("Node name: " + nodeName);
+        boolean isRemoteAgentAdv =  NodeDetectionUtil.isRunningOnAgent(node);
+        logger.println("isRemoteAgent detection from NodeDetectionUtil library "+ isRemoteAgentAdv);
+
+ Utils.traceLog(logger,
                 String.format("\n\t\tcorrelationId: %s", correlationId) +
                         String.format("\n\t\tisRemoteAgent: %s", isRemoteAgent) +
                         String.format("\n\t\tworkspace: %s (%s)", workspace.getName(), workspace.getBaseName()));
-
         try {
             taskListener.set(listener);
 
@@ -462,7 +469,6 @@ public class SharedUploadBuildStep {
             Boolean openSourceAnalysis = false;
 
             Utils.traceLog(logger, "Connecting to FOD API");
-
             apiConnection = ApiConnectionFactory.createApiConnection(getAuthModel(), isRemoteAgent, launcher, logger);
 
             if (apiConnection != null) {
@@ -508,13 +514,11 @@ public class SharedUploadBuildStep {
                 }
 
                 Utils.traceLog(logger,"Packaging complete");
-
                 String notes = String.format("[%d] %s - Assessment submitted from Jenkins FoD Plugin",
                         build.getNumber(),
                         build.getDisplayName());
 
                 Utils.traceLog(logger,"Queueing scan");
-
                 StartScanResponse scanResponse = staticScanController.startStaticScan(releaseId, model, notes);
                 boolean deleted = false;
 
