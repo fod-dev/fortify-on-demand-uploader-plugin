@@ -56,7 +56,7 @@ public class SastJobModel implements Serializable {
     private String microserviceName;
     private Boolean isMicroservice;
 
-    private FilePath payload;
+    private transient FilePath payload;
 
     /**
      * Build model used to pass values around

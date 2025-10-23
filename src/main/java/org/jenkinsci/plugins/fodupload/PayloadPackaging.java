@@ -4,9 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.remoting.VirtualChannel;
-import hudson.remoting.Channel;
 import hudson.remoting.RemoteOutputStream;
-import io.jenkins.plugins.casc.model.CNode;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -93,16 +91,17 @@ final class PayloadPackagingImpl {
                 throw new IOException("Scan Central package output not found.");
             }
         }
-        /*
-        A FilePath instance is tied to the remoting channel (agent or controller) where it was created.
-         Using a FilePath on a different channel, Jenkins throws an IllegalStateException
-        Copy the payload to the agent's workspace and reconstruct FilePath there ---
-        */
-        FilePath agentPayload = workspace.child(payload.getName());
-        // If payload is already on the agent, this is a no-op if already present; if not, copy from controller to remote agent.
-        new FilePath(payload).copyTo(agentPayload);
-        logger.println("Payload copied to agent workspace: " + agentPayload.getRemote());
-        return agentPayload;
+        
+        // The payload File object now needs to be converted to a FilePath on the correct channel
+        // Since we're already executing on the agent (in remote mode) or master (in local mode),
+        // we can safely create a FilePath from the workspace's channel
+        FilePath payloadFilePath = new FilePath(workspace.getChannel(), payload.getAbsolutePath());
+        
+        Utils.traceLog(logger, String.format("Created FilePath for payload: %s (channel: %s)", 
+            payloadFilePath.getRemote(), 
+            workspace.getChannel() != null ? workspace.getChannel().toString() : "local"));
+        
+        return payloadFilePath;
     }
 
     static boolean deletePayload(FilePath payload) throws IOException, InterruptedException {
@@ -438,7 +437,11 @@ final class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOExc
             throw new IllegalStateException("Launcher doesn't support remoting but it is required");
         }
 
-        Utils.traceLog(logger, String.format("%s: Remote channel acquired", this.getClass().getSimpleName()));
+        Utils.traceLog(logger, String.format("%s: Remote channel acquired: %s", 
+            this.getClass().getSimpleName(), _channel.toString()));
+        Utils.traceLog(logger, String.format("%s: Workspace channel: %s", 
+            this.getClass().getSimpleName(), 
+            workspace.getChannel() != null ? workspace.getChannel().toString() : "null (local)"));
 
         _logger = new RemoteOutputStream(logger);
     }
@@ -448,9 +451,18 @@ final class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOExc
         PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
 
         Utils.traceLog(logger, String.format("%s.call(): Performing remote packaging", this.getClass().getSimpleName()));
+        Utils.traceLog(logger, String.format("%s.call(): Workspace channel: %s", 
+            this.getClass().getSimpleName(),
+            _workspace.getChannel() != null ? _workspace.getChannel().toString() : "null (local)"));
 
         try {
             _payload = PayloadPackagingImpl.performPackaging(_model, _technologyStack, _openSourceAnalysis, _globalSCPath, _workspace, logger);
+            
+            Utils.traceLog(logger, String.format("%s.call(): Packaging complete. Payload: %s (channel: %s)", 
+                this.getClass().getSimpleName(),
+                _payload.getRemote(),
+                _payload.getChannel() != null ? _payload.getChannel().toString() : "null (local)"));
+                
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -460,7 +472,16 @@ final class PayloadPackagingRemote extends MasterToSlaveCallable<FilePath, IOExc
     @Override
     public FilePath packagePayload() throws IOException {
         try {
+            PrintStream logger = new PrintStream(_logger, true, StandardCharsets.UTF_8.name());
+            Utils.traceLog(logger, String.format("%s.packagePayload(): Calling remote channel: %s", 
+                this.getClass().getSimpleName(), _channel.toString()));
+            
             _payload = _channel.call(this);
+            
+            Utils.traceLog(logger, String.format("%s.packagePayload(): Remote call completed. Payload channel: %s", 
+                this.getClass().getSimpleName(),
+                _payload.getChannel() != null ? _payload.getChannel().toString() : "null (local)"));
+            
             return _payload;
         } catch (InterruptedException e) {
             throw new IOException("PayloadPackagingRemote failed", e);
