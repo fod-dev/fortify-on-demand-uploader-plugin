@@ -176,7 +176,6 @@
             <version>3.9.6</version>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
